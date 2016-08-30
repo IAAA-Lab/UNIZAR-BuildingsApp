@@ -31,11 +31,15 @@ public class BusquedasRestController {
 			value = "/codigoespacios", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String codigoEspacios(){
+	public String codigoEspacios()
+	{
 		logger.info("Servicio: codigoEspacios()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"ID_ESPACIO\" from \"TB_ESPACIOS\" ORDER BY \"ID_ESPACIO\" ASC";
+
+		String query = "SELECT DISTINCT \"ID_ESPACIO\" FROM \"TB_ESPACIOS\" ORDER BY \"ID_ESPACIO\" ASC";
+
 		List<Espacios> resultado = new ArrayList<Espacios>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -56,12 +60,18 @@ public class BusquedasRestController {
 			value = "/campus", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String campus(@RequestParam("ciudad") String ciudad){
+	public String campus(@RequestParam("ciudad") String ciudad)
+	{
 		logger.info("Servicio: campus()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"ID\" , \"CAMPUS\" from \"TB_CODIGOS_DE_CAMPUS\" WHERE \"CIUDAD\" = "+ciudad+" ORDER BY \"CAMPUS\" ASC";
+
+		String query = "SELECT DISTINCT \"ID\" , \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\" ";
+		query += "WHERE \"CIUDAD\" = "+ciudad+" ORDER BY \"CAMPUS\" ASC";
+
 		System.out.println(query);
+
 		List<Campus> resultado = new ArrayList<Campus>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -82,12 +92,18 @@ public class BusquedasRestController {
 			value = "/edificio", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String edificio(@RequestParam("campus") String campus){
+	public String edificio(@RequestParam("campus") String campus)
+	{
 		logger.info("Servicio: edificio()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" from \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = "+campus +" ORDER BY \"EDIFICIO\" ASC";
+
+		String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
+		query += "FROM \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = "+campus +" ORDER BY \"EDIFICIO\" ASC";
+
 		System.out.println(query);
+
 		List<Edificio> resultado = new ArrayList<Edificio>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -109,12 +125,18 @@ public class BusquedasRestController {
 			value = "/infoedificio", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String infoEdificio(@RequestParam("edificio") String edificio){
+	public String infoEdificio(@RequestParam("edificio") String edificio)
+	{
 		logger.info("Servicio: edificio()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" from \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = '"+edificio+"'";
+
+		String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
+		query += "FROM \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = '"+edificio+"'";
+
 		System.out.println(query);
+
 		List<Edificio> resultado = new ArrayList<Edificio>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -132,14 +154,15 @@ public class BusquedasRestController {
 		return gson.toJson(resultado);
 	}
 	
-	private static List<String> obtenerPlantasEdificio(Connection connection,String ID_EDIFICIO){
-		String query = "select distinct SUBSTRING(\"ID_UTC\",1,2) as \"Pisos\" from \"TB_ESPACIOS\" where \"ID_EDIFICIO\" = '" + ID_EDIFICIO +"' ORDER BY \"Pisos\" ASC";
+	private static List<String> obtenerPlantasEdificio(Connection connection,String ID_EDIFICIO)
+	{
+		String query = "SELECT DISTINCT SUBSTRING(\"ID_UTC\",1,2) AS \"Pisos\" ";
+		query += "FROM \"TB_ESPACIOS\" WHERE \"ID_EDIFICIO\" = '" + ID_EDIFICIO +"' ORDER BY \"Pisos\" ASC";
+
 		List<String> plantas = new ArrayList<String>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
-
 			while (respuesta.next()){
-
 				plantas.add(respuesta.getString("Pisos"));
 			}
 

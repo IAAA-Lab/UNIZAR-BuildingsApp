@@ -31,7 +31,8 @@ public class EstanciasRestController {
 			value = "/id_estancia", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String infoEstancia(@RequestParam("estancia") String estancia){
+	public String infoEstancia(@RequestParam("estancia") String estancia)
+	{
 		logger.info("Servicio: infoEstancia()");
 		Connection connection = ConnectionManager.getConnection();
 		
@@ -78,12 +79,19 @@ public class EstanciasRestController {
 			value = "/getEstancia", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String getEstancia(@RequestParam("estancia") String estancia){
+	public String getEstancia(@RequestParam("estancia") String estancia)
+	{
 		logger.info("Servicio: infoEstancia()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"A\".\"ID_ESPACIO\" ,\"A\".\"ID_CENTRO\", \"B\".\"TIPO_DE_USO\", round(\"A\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" from \"TB_ESPACIOS\" \"A\",\"TB_TIPO_DE_USO\" \"B\"  WHERE \"A\".\"TIPO_DE_USO\" = \"B\".ID AND \"A\".\"ID_ESPACIO\" = '"+estancia+"' ";
+
+		String query = "SELECT DISTINCT \"A\".\"ID_ESPACIO\" ,\"A\".\"ID_CENTRO\", \"B\".\"TIPO_DE_USO\", round(\"A\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
+		query += "FROM \"TB_ESPACIOS\" \"A\",\"TB_TIPO_DE_USO\" \"B\"  ";
+		query += "WHERE \"A\".\"TIPO_DE_USO\" = \"B\".ID AND \"A\".\"ID_ESPACIO\" = '"+estancia+"' ";
+
 		System.out.println(query);
+
 		Espacios resultado;
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -105,12 +113,19 @@ public class EstanciasRestController {
 			value = "/getAllEstancias", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String getAllEstancias(@RequestParam("estancia") String espacio){
+	public String getAllEstancias(@RequestParam("estancia") String espacio)
+	{
 		logger.info("Servicio: infoEstancia()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
-		String query = "Select distinct \"ID_ESPACIO\" ,\"ID_CENTRO\" from \"TB_ESPACIOS\" WHERE \"ID_ESPACIO\" LIKE '%"+espacio+ "%'  ORDER BY \"ID_CENTRO\" ASC";
+
+		String query = "SELECT DISTINCT \"ID_ESPACIO\" ,\"ID_CENTRO\" ";
+		query += "FROM \"TB_ESPACIOS\" ";
+		query += "WHERE \"ID_ESPACIO\" LIKE '%"+espacio+ "%'  ORDER BY \"ID_CENTRO\" ASC";
+
 		System.out.println(query);
+
 		List<Espacios> resultado = new ArrayList<Espacios>();
 		try {
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
@@ -129,12 +144,17 @@ public class EstanciasRestController {
 			value = "/campus", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public String getCampusValues(){
+	public String getCampusValues()
+	{
 		logger.info("Servicio: getCampusValues()");
+
 		Connection connection = ConnectionManager.getConnection();
 		Gson gson = new Gson();
+
 		String query = "SELECT \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\"";
+		
 		System.out.println(query);
+
 		List<String> result = new ArrayList<String>();
 		try {
 			ResultSet res = connection.prepareStatement(query).executeQuery();
