@@ -2,11 +2,19 @@
  * EstanciaCtrl: Controlador encargado de la página de información de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionicPopup, geoService, infoService, sharedProperties, APP_CONSTANTS){
+UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $timeout, $ionicLoading, $ionicPopup, geoService, infoService, APP_CONSTANTS){
+
+        $scope.showInfoPopup = function(title, msg){
+            $ionicPopup.alert({
+                title: title,
+                template: msg
+            });
+        };
 
         //This code will be executed every time the controller view is loaded
         $scope.$on('$ionicView.beforeEnter', function(){
             var estancia=localStorage.estancia;
+            $ionicLoading.show({ template: 'Buscando...'});
             infoService.getEstancia(estancia).then(
                 function (data) {
                     $scope.infoEstancia = data;
@@ -17,6 +25,16 @@ UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionic
                         type: data.tipo_uso,
                         area: data.superficie
                     };
+                },
+                function(err){
+                    console.log("Error on getEstancia", err);
+                    $ionicLoading.hide();
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
+                    errorMsg += 'la estancia '+estancia+'</div>';
+                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    $timeout(function() {
+                      $('#estancia-view .back-btn').click();
+                    }, 0);
                 }
             );
         });
@@ -66,15 +84,5 @@ UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionic
         $scope.volver = function() {
             estancia = undefined;
             window.history.back();
-        };
-
-        $scope.favoritos = function() {
-            localStorage.favoritos+=estancia;
-            var alertPopup = $ionicPopup.alert({
-                title: $scope.translation.ADDFAVOURITE
-            });
-            alertPopup.then(function(res) {
-                //console.log('Thank you for not eating my delicious ice cream cone');
-            });
         };
     });

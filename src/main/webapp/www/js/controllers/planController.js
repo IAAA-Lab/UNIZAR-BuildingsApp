@@ -129,7 +129,6 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     $scope.finalSubmitCreatePOI = function(data) {
         console.log("finalSubmitCreatePOI form",data);
         $ionicLoading.show({ template: 'Enviando...'});
-        $ionicLoading.hide();
         poisService.createPOI(data).then(
             function(poi) {
                 console.log("Create POI success",poi);

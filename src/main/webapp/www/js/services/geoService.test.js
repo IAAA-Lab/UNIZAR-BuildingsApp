@@ -154,6 +154,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     var markerLayer = sharedProperties.getMarkerLayer();
                     markerLayer.addLayer(marker);
                     sharedProperties.setMarkerLayer(markerLayer);
+                },
+                function(err){
+                    console.log("Error on getInfoEdificio", err);
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                    errorMsg += 'información de algunos edificios</div>';
+                    showInfoPopup('¡Error!', errorMsg);
                 }
             );
         }
@@ -318,6 +324,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="informacionEstancia(this)">'+$scope.translation.MASINFO+' </button></div>';
                     var html =  html_list + html_button;
                     e.layer.bindPopup(html).openPopup();
+                },
+                function(err){
+                    console.log("Error on getInfoEstancia", err);
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                    errorMsg += 'la información del espacio</div>';
+                    showInfoPopup('¡Error!', errorMsg);
                 }
             );
         }
@@ -385,5 +397,15 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 });
             }
         );
+    }
+
+    function showInfoPopup(title, msg){
+        if ($('.ionic-alert-popup').is(":visible") == false) {
+            $ionicPopup.alert({
+                cssClass: 'ionic-alert-popup',
+                title: title,
+                template: msg
+            });
+        }
     }
 });
