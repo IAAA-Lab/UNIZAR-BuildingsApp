@@ -2,29 +2,34 @@
  * EstanciaCtrl: Controlador encargado de la página de información de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionicPopup, $http, $filter, geoService, infoService, APP_CONSTANTS){
+UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionicPopup, geoService, infoService, sharedProperties, APP_CONSTANTS){
 
-        var estancia=localStorage.estancia;
-
-        infoService.getEstancia(estancia).then(
-            function (data) {
-                $scope.infoEstancia = data;
-                console.log(data);
-                if (data.length == 0) {
-                    $scope.resultadoEstanciaVacio = true;
+        //This code will be executed every time the controller view is loaded
+        $scope.$on('$ionicView.beforeEnter', function(){
+            var estancia=localStorage.estancia;
+            infoService.getEstancia(estancia).then(
+                function (data) {
+                    $scope.infoEstancia = data;
+                    localStorage.lastSearch = data.ID_espacio;
+                    $scope.data = {
+                        city: data.ID_espacio,
+                        estancia: data.ID_centro,
+                        type: data.tipo_uso,
+                        area: data.superficie
+                    };
                 }
-                /*angular.element(document.querySelector('#dato_estancia')).html(data.ID_espacio);
-                angular.element(document.querySelector('#nombre_estancia')).html(data.ID_centro);
-                angular.element(document.querySelector('#tipo_estancia')).html(data.tipo_uso);
-                angular.element(document.querySelector('#superficie_estancia')).html(data.superficie);*/
-                $scope.data = {
-                    city: data.ID_espacio,
-                    estancia: data.ID_centro,
-                    type: data.tipo_uso,
-                    area: data.superficie
-                };
+            );
+        });
+
+        //Load the plan of the searched room
+        $scope.verMapa = function(){
+            var idEspacioArray = $scope.infoEstancia.ID_espacio.split('.');
+            var planta = {
+                floor: idEspacioArray[2],
+                value: idEspacioArray.splice(0,idEspacioArray.length-1).join('_')
             }
-        );
+            selectPlano(planta);
+        };
 
         $scope.mostrarFoto = function() {//Comprueba si hay imagenes para dicha estancia, si no hay muestra un error, si lo hay, lo carga al usuario
             var fotos = 0,
@@ -48,7 +53,6 @@ UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $ionic
             }
             $rootScope.numeroFotos = fotos;
             if (fotos > 0) {
-                //TODO: [DGP] Why the "(" character at the end of the url?
                 url = APP_CONSTANTS.URI_fotos + estancia + "(";
                 console.log(url);
                 $rootScope.urlFoto = url;

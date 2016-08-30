@@ -250,14 +250,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             }
 
             L.geoJson(data, {
-                /*style: function (feature) {
+                style: function (feature) {
                     var et_id = feature.properties.et_id;
-                    console.log("Fature properties", feature.properties);
-                    var et_id_int = parseInt(et_id.split(".")[et_id.split(".").length-1]);
-                    if (et_id_int < 100) return {color: "blue"};
-                    else if (et_id_int > 300) return {color: "red"};
-                    else return {color: "black"};
-                },*/
+                    //Remark last serach room
+                    if (typeof(localStorage.lastSearch) != 'undefined'){
+                        if (feature.properties.et_id == localStorage.lastSearch) return {color: "black"};
+                    }
+                },
                 onEachFeature: function(feature, layer){
                     onEachFeature(feature, layer, createModal);
                 }
@@ -287,10 +286,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 function (data) {
                     $scope.infoEstancia = data;
                     console.log("infoEstancia",data);
-                    if (data.length == 0) {
-                        $scope.resultadoEstanciaVacio = true;
-                    }
-                    //var html = data.ID_espacio + ' ' + data.ID_centro + '<br/><button value="'+data.ID_espacio+'" class="button button-positive" onclick="informacionEstancia(this)">'+$scope.translation.MASINFO+' </button>';
                     var html_list = '<div><ul class="list-group">';
                     var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
                     html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
@@ -327,9 +322,9 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     //Add markers for every POI
     function updatePOIs(plano, sharedProperties){
 
-        var building = localStorage.planta,
-            floor = JSON.parse(localStorage.floor).floor,
-            markers = [];
+        var floor = localStorage.floor.indexOf('floor') == -1 ? localStorage.floor : JSON.parse(localStorage.floor).floor,
+            building = localStorage.planta,
+            markers = []
 
         poisService.getRoomPOIs(building, floor).then(
             function(pois) {
