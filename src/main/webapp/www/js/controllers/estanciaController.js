@@ -19,6 +19,7 @@ UZCampusWebMapApp.controller('EstanciaCtrl', function($scope, $rootScope, $timeo
                 function (data) {
                     $scope.infoEstancia = data;
                     localStorage.lastSearch = data.ID_espacio;
+                    $ionicLoading.hide();
                     $scope.data = {
                         city: data.ID_espacio,
                         estancia: data.ID_centro,

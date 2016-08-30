@@ -16,6 +16,7 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             infoService.getEspacios().then(
                 function (data) {
                     $rootScope.codigoEspacios = data;
+                    $ionicLoading.hide();
                     if (data.length == 0){
                         $rootScope.resultadoCodigoEspacioVacio = true;
                     }
@@ -38,6 +39,7 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             infoService.getCampus(ciudad).then(
                 function (data) {
                     $rootScope.Campus = data;
+                    $ionicLoading.hide();
                     console.log(data);
                     if (data.length == 0){
                         $rootScope.resultadoCampusVacio = true;
@@ -59,6 +61,7 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             infoService.getEdificio(campus).then(
                 function (data) {
                     $rootScope.Edificio = data;
+                    $ionicLoading.hide();
                     console.log(data);
                     if (data.length == 0){
                         $rootScope.resultadoEdificioVacio = true;
@@ -90,6 +93,7 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             infoService.getAllEstancias($rootScope.EdificioEscogido+planta).then(
                 function (data) {
                     $rootScope.Estancias = data;
+                    $ionicLoading.hide();
                     console.log(data);
                     if (data.length == 0){
                         $rootScope.resultadoEstanciasVacio = true;
