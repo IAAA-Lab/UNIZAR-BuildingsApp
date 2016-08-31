@@ -105,9 +105,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         });
                 
         function handleJson(data) {
+
             var coordenadas = data.features[0].geometry.coordinates[0][0][0];
             var edificioName = APP_CONSTANTS.edificios[index].split("_").join(".").substring(0,9);
-            infoService.getInfoEdificio(edificioName).then(//Para adecuar el edificio a la bd
+
+            infoService.getInfoEdificio(edificioName).then(
                 function (dataEdificio) {
                     if (dataEdificio.length == 0){
                         $rootScope.resultadoInfoEdificioVacio = true;
@@ -215,7 +217,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
+        
+        //Close opened popup on previous map
+        var mapa = sharedProperties.getMapa();
+        if (typeof(mapa) != 'undefined') mapa.closePopup();
+
         var edificio=localStorage.planta;
+
         var url = APP_CONSTANTS.URI_Geoserver + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio.toLowerCase()+'&srsName=epsg:4326&outputFormat=application/json';
         $.ajax({
             url : url,
