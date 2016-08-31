@@ -14,6 +14,7 @@ WebContent/.bowerrc
 src/main/webapp/.bowerrc
 admin/bower_components/
 sql/
+photos/
 .directory
 
 # ---------- Java 
