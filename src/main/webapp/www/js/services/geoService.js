@@ -224,15 +224,20 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             crossDomain: true,
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function(data) {
-                handleJson(data, sharedProperties, poisService, createModal, function(plano){
-                    addLegend(plano, function(){
-                        // Define legend behaviour
-                        $('.legend').hide();
-                        $('.legend-button').click(function(){
-                            if ($('.legend').is(":visible")) $('.legend').hide(500);
-                            else $('.legend').show(500);
+                handleJson(data, sharedProperties, poisService, createModal, function(plano, addLegendToPlan){
+                    if (addLegendToPlan) {
+                        addLegend(plano, function(){
+                            // Define legend behaviour
+                            $('.legend').hide();
+                            $('.legend-button').click(function(){
+                                if ($('.legend').is(":visible")) $('.legend').hide(500);
+                                else $('.legend').show(500);
+                            });
+                            sharedProperties.setPlano(plano);
                         });
-                    });
+                    } else {
+                        sharedProperties.setPlano(plano);
+                    }
                 });
             }
         });
