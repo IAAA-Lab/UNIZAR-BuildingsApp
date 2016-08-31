@@ -413,3 +413,10 @@ table.dataTable tbody tr.selected {
     margin-top: 5px !important;
     margin-bottom: 15px !important;
 }
+#dataTable_wrapper .checkbox-inline {
+    vertical-align: top !important;
+    float: left !important;
+}
+#dataTable_wrapper .th-text {
+    margin-left: 15px !important;
+}
