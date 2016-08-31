@@ -54,7 +54,6 @@
     <script src="js/controllers/searchController.js"></script>
     <script src="js/controllers/appController.js"></script>
 
-
     <!-- Librerias para geolocalizar al usuario-->
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" >
     <link rel="stylesheet" href="lib/L.Control.Locate.min.css" />
@@ -67,15 +66,7 @@
 </head>
 
 <body ng-app="UZCampusWebMapApp" ng-controller="TranslationCtrl">
-    
     <ion-nav-view ></ion-nav-view>
-
-    <script type="text/javascript" src="lib/imageMapResizer.min.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function() {
-            imageMapResize(document.getElementById('aragonMap'));
-         })
-    </script>
 </body>
 
 <script>
@@ -85,8 +76,11 @@
 */
     //Selecciono un plano de la planta seleccionada.
     function selectPlano(planta) {
+        console.log("selectPlano", arguments);
         localStorage.planta = planta.value;
-        localStorage.floor = JSON.stringify($('.'+planta.value).data());
+        var floor = JSON.stringify($('.'+planta.value).data());
+        if (typeof(floor) == 'undefined') localStorage.floor = planta.floor;
+        else localStorage.floor = floor;
         window.location = "#/app/plano";
     }
     //Selecciono un plano de la planta seleccionada.

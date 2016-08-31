@@ -124,6 +124,11 @@ $(function() {
                 }},
                 { data: 'comment', defaultContent: ''},
                 { data: 'reason', defaultContent: ''},
+                { data: 'requestDate', defaultContent: ''},
+                { data: 'actionDate', defaultContent: '', render: function(data, type, full, meta){
+                    if (full.status !== 'pending') return data;
+                    else return '';
+                }},
                 { data: 'city' },
                 { data: 'campus' },
                 { data: 'building' },

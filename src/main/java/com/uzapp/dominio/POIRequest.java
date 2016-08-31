@@ -1,4 +1,5 @@
 package com.uzapp.dominio;
+import java.util.Date;
 
 public class POIRequest {
 
@@ -17,9 +18,13 @@ public class POIRequest {
     private String room;
     private int floor;
 
+    private Date requestDate;
+    private Date actionDate;
+
     public POIRequest() {}
 
-    public POIRequest(int id, String type, int poi, String category, String comment, String status, String email){
+    public POIRequest(int id, String type, int poi, String category, String comment, String status, 
+        String email, Date requestDate, Date actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
@@ -27,6 +32,8 @@ public class POIRequest {
         this.comment=comment;
         this.status=status;
         this.email=email;
+        this.requestDate=requestDate;
+        this.actionDate=actionDate;
     }
 
     public POIRequest(String type, int poi, String category, String comment, String reason, String status, String email){
@@ -47,16 +54,20 @@ public class POIRequest {
         this.email=email;
     }
 
-    public POIRequest(int id, String type, int poi, String status, String email){
+    public POIRequest(int id, String type, int poi, String status, String email,
+        String reason, Date requestDate, Date actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
         this.status=status;
         this.email=email;
+        this.reason=reason;
+        this.requestDate=requestDate;
+        this.actionDate=actionDate;
     }
 
     public POIRequest(int id, String type, int poi, String category, String comment, String reason, String email, 
-        String status, String city, String campus, String building, String room, int floor){
+        String status, String city, String campus, String building, String room, int floor, Date requestDate, Date actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
@@ -70,6 +81,8 @@ public class POIRequest {
         this.building=building;
         this.room=room;
         this.floor=floor;
+        this.requestDate=requestDate;
+        this.actionDate=actionDate;
     }
 
     public int getId() { return id; }
@@ -95,4 +108,10 @@ public class POIRequest {
 
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }
+
+    public Date getRequestDate() { return this.requestDate; }
+    public void setRequestDate(Date requestDate) { this.requestDate = requestDate; }
+
+    public Date getActionDate() { return this.actionDate; }
+    public void setActionDate(Date actionDate) { this.actionDate = actionDate; }
 }

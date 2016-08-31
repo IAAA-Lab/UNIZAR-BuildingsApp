@@ -33,6 +33,22 @@ constants.cities = [
         { label: 'Teruel', value: 'Teruel', id: 3}
     ];
 
+constants.POIfields = [
+        { name: 'ID', value: 'id' },
+        { name: 'Aprobado', value: 'approved' },
+        { name: 'Categoría', value: 'category' },
+        { name: 'Ciudad', value: 'city' },
+        { name: 'Campus', value: 'campus' },
+        { name: 'Edificio', value: 'building' },
+        { name: 'Estancia ID', value: 'roomID' },
+        { name: 'Estancia Nombre', value: 'roomName' },
+        { name: 'Dirección', value: 'address' },
+        { name: 'Planta', value: 'floor' },
+        { name: 'Comentario', value: 'comments' },
+        { name: 'Latitud', value: 'latitude' },
+        { name: 'Longitud', value: 'longitude' }
+    ];
+
 function getConstants(key){
     return constants[key];
 };

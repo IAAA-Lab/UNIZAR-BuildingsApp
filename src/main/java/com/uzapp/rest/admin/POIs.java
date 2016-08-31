@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/pois")
 public class POIs {
-
     private static final Logger logger = LoggerFactory.getLogger(POI.class);
 
     //Returns POI object from query result
@@ -45,7 +44,8 @@ public class POIs {
                         rs.getDouble("lat"),
                         rs.getDouble("lng"),
                         rs.getBoolean("approved"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        new java.util.Date(rs.getTimestamp("updated").getTime()));
             }
             return new ResponseEntity<>("{\"data\":"+gson.toJson(poi)+"}", HttpStatus.OK);
 
@@ -108,7 +108,8 @@ public class POIs {
                         rs.getDouble("lat"),
                         rs.getDouble("lng"),
                         rs.getBoolean("approved"),
-                        rs.getString("email")));
+                        rs.getString("email"),
+                        new java.util.Date(rs.getTimestamp("updated").getTime())));
             }
 
             conn.close();
@@ -190,7 +191,7 @@ public class POIs {
         Connection connection = ConnectionManager.getConnection();
 
         try {
-            String query = "INSERT INTO pois(ciudad,campus,edificio,estancia_id,estancia_nombre,planta,categoria,comment,dir,lat,lng,approved,email) values (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            String query = "INSERT INTO pois(ciudad,campus,edificio,estancia_id,estancia_nombre,planta,categoria,comment,dir,lat,lng,approved,email,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, poi.getCity());
@@ -206,6 +207,7 @@ public class POIs {
             preparedStmt.setDouble(11, poi.getLongitude());
             preparedStmt.setBoolean(12, false);
             preparedStmt.setString(13, poi.getEmail());
+            preparedStmt.setTimestamp(14, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -230,7 +232,7 @@ public class POIs {
         Connection connection = ConnectionManager.getConnection();
         try {
             String query = "UPDATE pois ";
-            query += "SET  ciudad=?, campus=?, edificio=?, planta=?, categoria=?, comment=?, dir=?, approved=? ";
+            query += "SET  ciudad=?, campus=?, edificio=?, planta=?, categoria=?, comment=?, dir=?, approved=?, updated=?";
             query += "WHERE id=?";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
@@ -243,6 +245,7 @@ public class POIs {
             preparedStmt.setString(7, poi.getAddress());
             preparedStmt.setBoolean(8, poi.getApproved());
             preparedStmt.setInt(9, poi.getId());
+            preparedStmt.setTimestamp(10, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -327,7 +330,9 @@ public class POIs {
                         rs.getString("campus"),
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta")));
+                        rs.getInt("planta"),
+                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
+                        new java.util.Date(rs.getTimestamp("action_date").getTime())));
                 }
                 //If es an {delete} request, get original category and comment
                 else {
@@ -344,7 +349,9 @@ public class POIs {
                         rs.getString("campus"),
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta")));
+                        rs.getInt("planta"),
+                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
+                        new java.util.Date(rs.getTimestamp("action_date").getTime())));
                 }
             }
 
@@ -368,7 +375,7 @@ public class POIs {
         Connection connection = ConnectionManager.getConnection();
 
         try {
-            String query = "INSERT INTO request(type,poi,category,comment,reason,status,email) values (?,?,?,?,?,?,?)";
+            String query = "INSERT INTO request(type,poi,category,comment,reason,status,email,request_date,action_date) values (?,?,?,?,?,?,?,?,?)";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, poiRequest.getType());
@@ -378,6 +385,8 @@ public class POIs {
             preparedStmt.setString(5, poiRequest.getReason());
             preparedStmt.setString(6, "pending");
             preparedStmt.setString(7, poiRequest.getEmail());
+            preparedStmt.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setTimestamp(9, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
             connection.close();
@@ -405,7 +414,9 @@ public class POIs {
                         rs.getString("category"),
                         rs.getString("comment"),
                         rs.getString("status"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
+                        new java.util.Date(rs.getTimestamp("action_date").getTime()));
             }
             return poiRequest;
         } 
@@ -439,16 +450,18 @@ public class POIs {
             connection.setAutoCommit(false);
 
             //Update related poi to request
-            String queryUpdatePois = "UPDATE pois SET comment=?, categoria=? WHERE id=?";
+            String queryUpdatePois = "UPDATE pois SET comment=?, categoria=?, updated=? WHERE id=?";
             preparedStmtUpdatePOI = connection.prepareStatement(queryUpdatePois);
             preparedStmtUpdatePOI.setString(1, poiRequest.getComment());
             preparedStmtUpdatePOI.setString(2, poiRequest.getCategory());
-            preparedStmtUpdatePOI.setInt(3, poiRequest.getPOI());
+            preparedStmtUpdatePOI.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdatePOI.setInt(4, poiRequest.getPOI());
             
             //Update status of the request
-            String queryUpdateRequest = "UPDATE request SET status='approved' WHERE id=?";
+            String queryUpdateRequest = "UPDATE request SET status='approved', action_date=? WHERE id=?";
             preparedStmtUpdateRequest = connection.prepareStatement(queryUpdateRequest);
-            preparedStmtUpdateRequest.setInt(1, id);
+            preparedStmtUpdateRequest.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdateRequest.setInt(2, id);
 
             //Execute queries
             preparedStmtUpdatePOI.executeUpdate();
@@ -461,11 +474,9 @@ public class POIs {
                 try {
                     System.err.print("Transaction is being rolled back");
                     connection.rollback();
-                    //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                     error = e.getMessage();
                 } catch(SQLException excep) {
                     error = excep.getMessage();
-                    //return new ResponseEntity<>(excep.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                 }
             }
         } finally {
@@ -502,7 +513,10 @@ public class POIs {
                         rs.getString("type"),
                         rs.getInt("poi"),
                         rs.getString("status"),
-                        rs.getString("email"));
+                        rs.getString("email"),
+                        rs.getString("reason"),
+                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
+                        new java.util.Date(rs.getTimestamp("action_date").getTime()));
             }
             return poiRequest;
         } 
@@ -540,9 +554,10 @@ public class POIs {
             preparedStmtDelete.setInt(1, poiRequest.getPOI());
 
             //Update status of the request
-            String queryUpdate = "UPDATE request SET status='approved' WHERE id=?";
+            String queryUpdate = "UPDATE request SET status='approved', action_date=? WHERE id=?";
             preparedStmtUpdate = connection.prepareStatement(queryUpdate);
-            preparedStmtUpdate.setInt(1, id);
+            preparedStmtUpdate.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdate.setInt(2, id);
 
             //Execute queries
             preparedStmtDelete.executeUpdate();
@@ -555,10 +570,8 @@ public class POIs {
                 try {
                     System.err.print("Transaction is being rolled back");
                     connection.rollback();
-                    //return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                     error = e.getMessage();
                 } catch(SQLException excep) {
-                    //return new ResponseEntity<>(excep.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
                     error = excep.getMessage();
                 }
             }
@@ -590,10 +603,11 @@ public class POIs {
         logger.info("Servicio: rejectRequest()");
         Connection connection = ConnectionManager.getConnection();
         try {
-            String query = "UPDATE request SET status='rejected' WHERE id=?";
+            String query = "UPDATE request SET status='rejected', action_date=? WHERE id=?";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
-            preparedStmt.setInt(1, id);
+            preparedStmt.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setInt(2, id);
             int rowsInserted =preparedStmt.executeUpdate();
 
             connection.close();

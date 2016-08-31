@@ -145,6 +145,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     var markerLayer = sharedProperties.getMarkerLayer();
                     markerLayer.addLayer(marker);
                     sharedProperties.setMarkerLayer(markerLayer);
+                },
+                function(err){
+                    console.log("Error on getInfoEdificio", err);
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                    errorMsg += 'información de algunos edificios</div>';
+                    showInfoPopup('¡Error!', errorMsg);
                 }
             );
         }
@@ -250,14 +256,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             }
 
             L.geoJson(data, {
-                /*style: function (feature) {
+                style: function (feature) {
                     var et_id = feature.properties.et_id;
-                    console.log("Fature properties", feature.properties);
-                    var et_id_int = parseInt(et_id.split(".")[et_id.split(".").length-1]);
-                    if (et_id_int < 100) return {color: "blue"};
-                    else if (et_id_int > 300) return {color: "red"};
-                    else return {color: "black"};
-                },*/
+                    //Remark last serach room
+                    if (typeof(localStorage.lastSearch) != 'undefined'){
+                        if (feature.properties.et_id == localStorage.lastSearch) return {color: "black"};
+                    }
+                },
                 onEachFeature: function(feature, layer){
                     onEachFeature(feature, layer, createModal);
                 }
@@ -287,10 +292,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 function (data) {
                     $scope.infoEstancia = data;
                     console.log("infoEstancia",data);
-                    if (data.length == 0) {
-                        $scope.resultadoEstanciaVacio = true;
-                    }
-                    //var html = data.ID_espacio + ' ' + data.ID_centro + '<br/><button value="'+data.ID_espacio+'" class="button button-positive" onclick="informacionEstancia(this)">'+$scope.translation.MASINFO+' </button>';
                     var html_list = '<div><ul class="list-group">';
                     var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
                     html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
@@ -298,6 +299,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="informacionEstancia(this)">'+$scope.translation.MASINFO+' </button></div>';
                     var html =  html_list + html_button;
                     e.layer.bindPopup(html).openPopup();
+                },
+                function(err){
+                    console.log("Error on getInfoEstancia", err);
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                    errorMsg += 'la información del espacio</div>';
+                    showInfoPopup('¡Error!', errorMsg);
                 }
             );
         }
@@ -327,9 +334,9 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     //Add markers for every POI
     function updatePOIs(plano, sharedProperties){
 
-        var building = localStorage.planta,
-            floor = JSON.parse(localStorage.floor).floor,
-            markers = [];
+        var floor = localStorage.floor.indexOf('floor') == -1 ? localStorage.floor : JSON.parse(localStorage.floor).floor,
+            building = localStorage.planta,
+            markers = []
 
         poisService.getRoomPOIs(building, floor).then(
             function(pois) {
@@ -365,5 +372,15 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 });
             }
         );
+    }
+
+    function showInfoPopup(title, msg){
+        if ($('.ionic-alert-popup').is(":visible") == false) {
+            $ionicPopup.alert({
+                cssClass: 'ionic-alert-popup',
+                title: title,
+                template: msg
+            });
+        }
     }
 });

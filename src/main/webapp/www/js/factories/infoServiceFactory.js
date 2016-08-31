@@ -19,8 +19,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEspacioError = true;
+                        console.log("Error getEspacios: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -43,8 +43,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoCampusError = true;
+                        console.log("Error getCampus: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -67,8 +67,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEdificioError = true;
+                        console.log("Error getEdificio: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -91,8 +91,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEdificioError = true;
+                        console.log("Error getPlano: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -114,8 +114,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEdificioError = true;
+                        console.log("Error getInfoEdificio: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -137,7 +137,6 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                     },
                     function(err){
                         console.log("Error getInfoEstancia: ",err);
-                        $rootScope.resultadoEdificioError = true;
                         deferred.reject(err);
                     }
                 );
@@ -159,8 +158,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEdificioError = true;
+                        console.log("Error getEstancia: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
@@ -181,8 +180,8 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
                         deferred.resolve(result.data);
                     },
                     function(err){
-                        console.log(err.status);
-                        $rootScope.resultadoEdificioError = true;
+                        console.log("Error getAllEstancias: ",err);
+                        deferred.reject(err);
                     }
                 );
             });
