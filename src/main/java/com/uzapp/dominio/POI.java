@@ -1,4 +1,5 @@
 package com.uzapp.dominio;
+import java.util.Date;
 
 public class POI {
 
@@ -16,6 +17,7 @@ public class POI {
     private double longitude;
     private Boolean approved;
     private String email;
+    private Date updated;
 
     public POI() {}
 
@@ -53,7 +55,7 @@ public class POI {
     }
 
     public POI(int id, String city, String campus, String building, String roomId, String roomName, int floor, String category,
-                String comments, String address, double latitude, double longitude, Boolean approved, String email){
+                String comments, String address, double latitude, double longitude, Boolean approved, String email, Date updated){
         this.id=id;
         this.city=city;
         this.campus=campus;
@@ -68,6 +70,7 @@ public class POI {
         this.longitude=longitude;
         this.approved=approved;
         this.email=email;
+        this.updated=updated;
     }
 
     public int getId() { return id; }
@@ -111,4 +114,7 @@ public class POI {
 
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }
+
+    public Date getUpdated() { return this.updated; }
+    public void setUpdated(Date updated) { this.updated = updated; }
 }
