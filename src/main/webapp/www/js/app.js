@@ -7,7 +7,7 @@
 var UZCampusWebMapApp = angular.module(
             'UZCampusWebMapApp',
             //['ionic', 'starter.controllers', 'starter.services', 'angularSlideables','ngResource','ngRoute']
-            ['ionic', 'angularSlideables','ngResource','ngRoute']
+            ['ionic', 'angularSlideables','ngResource','ngRoute','ngCordova']
     );
 
 UZCampusWebMapApp.run(function($ionicPlatform) {
@@ -22,7 +22,6 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
             // StatusBar.styleDefault();
         }
       });
-
     })
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/:type/:ciudad', {
