@@ -137,7 +137,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
                     var redireccion = "'https://maps.google.es/maps?saddr=" +
                         sharedProperties.getLatUser() + "," + sharedProperties.getLonUser() +
-                        "&daddr=" + coordenadas[1]+ ',' + coordenadas[0]+"'";
+                        "&daddr=" + coordenadas[1]+ ',' + coordenadas[0]+"&output=embed'";
 
                     var html_button='<button class="button button-small button-positive button-how" onclick="location.href ='+redireccion+'" >'+$scope.translation.HOWTOARRIVE+' </button></div>';
                     var html = html_header + html_select + html_button;
