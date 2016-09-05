@@ -95,7 +95,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     $scope.confirmCreatePOI = function(data) {
 
         var confirmCreatePOIpopup = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmCreatePOI.html',
+            templateUrl: 'templates/popups/confirmCreatePOI.html',
             title: 'Confirmar creación de POI',
             scope: $scope,
             buttons: [
@@ -195,7 +195,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.confirmEditPOI = function(data) {
         var confirmEditPOIpopup = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmEditPOI.html',
+            templateUrl: 'templates/popups/confirmEditPOI.html',
             title: 'Confirmar modificación',
             scope: $scope,
             buttons: [
@@ -256,7 +256,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.confirmDeletePOI = function(data) {
         var confirmDeletePOI = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmDeletePOI.html',
+            templateUrl: 'templates/popups/confirmDeletePOI.html',
             title: 'Confirmar modificación',
             scope: $scope,
             buttons: [
