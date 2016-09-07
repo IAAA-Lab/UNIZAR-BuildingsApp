@@ -118,7 +118,7 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             }
             else{
                 localStorage.estancia = $("#selectEstancia option:selected").val().trim();
-                $window.location = "#/app/estancia";
+                $window.location = "#/app/roomDetails";
             }
         };
     });

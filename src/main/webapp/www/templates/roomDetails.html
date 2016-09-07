@@ -1,4 +1,4 @@
-<ion-view id="estancia-view" title={{translation.INICIO}} xmlns="http://www.w3.org/1999/html">
+<ion-view id="room-details-view" title={{translation.INICIO}} xmlns="http://www.w3.org/1999/html">
 
     <ion-nav-buttons side="left">
         <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
@@ -22,14 +22,11 @@
                 <span class="input-label">{{translation.DATOSSUPERFICIE}}:</span>
                 <input type="text" ng-model="data.area" disabled>
             </label>
-            <button class="button button-full button-positive" ng-click="mostrarFoto()">
+            <button class="button button-full button-positive" ng-click="loadPhotos()">
                 {{translation.PHOTO}}
             </button>
-            <button class="button button-full button-positive" ng-click="verMapa()">
+            <button class="button button-full button-positive" ng-click="goToRoomPlan()">
                 {{translation.VER_MAPA}}
-            </button>
-            <button class="button button-full button-positive back-btn" ng-click="volver()">
-                {{translation.BACK}}
             </button>
         </div>
     </ion-content>

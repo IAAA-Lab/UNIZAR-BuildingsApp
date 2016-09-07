@@ -1,82 +1,80 @@
 /**************************************************************************
- * PhotosCtrl: Controlador encargado de las acciones de la vista de fotos de una estancia
+ * RoomDetailsCtrl: Controlador encargado de la página de información de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window, infoService, $ionicLoading, $ionicPopup, $cordovaCamera, APP_CONSTANTS){
+UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, infoService, photosService, APP_CONSTANTS){
 
-        var photos = $rootScope.photos,
-            numPhotos = photos.length,
-            firstPhoto = photos[0];
-        
-        $scope.dimensions = {"width": APP_CONSTANTS.photosWidth, "height": APP_CONSTANTS.photosHeight};
-
-        $rootScope.photoIndex = 1;
-
-        $scope.calculateDimensions = function() {
-            console.log("Device width", $window.innerWidth);
-            console.log("Device height", $window.innerHeight);
-            return {
-                "width": $window.innerWidth,
-                "height": $window.innerHeight-150
-            }
-        }
-
-        angular.element($window).bind('resize', function(){
-            $scope.$apply(function() {
-              $scope.dimensions = $scope.calculateDimensions();    
-            })       
-          });
+        $scope.showInfoPopup = function(title, msg){
+            $ionicPopup.alert({
+                title: title,
+                template: msg
+            });
+        };
 
         //This code will be executed every time the controller view is loaded
         $scope.$on('$ionicView.beforeEnter', function(){
-            photos = $rootScope.photos;
-            $rootScope.photoIndex = 1;
-            $scope.dimensions = $scope.calculateDimensions();
+            var estancia = localStorage.estancia;
+            $ionicLoading.show({ template: 'Buscando...'});
+            infoService.getEstancia(estancia).then(
+                function (data) {
+                    $scope.infoEstancia = data;
+                    localStorage.lastSearch = data.ID_espacio;
+                    $ionicLoading.hide();
+                    $scope.data = {
+                        city: data.ID_espacio,
+                        estancia: data.ID_centro,
+                        type: data.tipo_uso,
+                        area: data.superficie
+                    };
+                },
+                function(err){
+                    console.log('Error on getEstancia', err);
+                    $ionicLoading.hide();
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
+                    errorMsg += 'la estancia '+estancia+'</div>';
+                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    $timeout(function() {
+                      $('#estancia-view .back-btn').click();
+                    }, 0);
+                }
+            );
         });
 
-        $rootScope.disableBtnPrevious = true;
-        $rootScope.disableBtnNext = numPhotos > 1 ? false : true;
-        
-        $scope.dimensions = $scope.calculateDimensions();
-        var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
-
-        $("#roomImage").html('<img src="' + APP_CONSTANTS.URI_Photos + firstPhoto + '"'+imageWidthHeight+'></img>');
-        $("#photosData").html('<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>');
-
-        //Click on previous photo button
-        $scope.previous = function() {
-            $rootScope.photoIndex -= 1;
-
-            $scope.dimensions = $scope.calculateDimensions();
-            var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
-
-            var imagePath = APP_CONSTANTS.URI_Photos + photos[$rootScope.photoIndex-1];
-            var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
-            var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
-
-            if ($rootScope.photoIndex == 1) $rootScope.disableBtnPrevious = true;
-            $rootScope.disableBtnNext = false;
-            
-            $("#roomImage").html(image);
-            $("#photosData").html(imageData);
+        // Load plan of searched room
+        $scope.goToRoomPlan = function(){
+            var idEspacioArray = $scope.infoEstancia.ID_espacio.split('.');
+            var planta = {
+                floor: idEspacioArray[2],
+                value: idEspacioArray.splice(0,idEspacioArray.length-1).join('_')
+            }
+            selectPlano(planta);
         };
 
-        //Click on next photo button
-        $scope.next = function() {
-            $rootScope.photoIndex += 1;
+        $scope.loadPhotos = function() {
 
-            $scope.dimensions = $scope.calculateDimensions();
-            var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
-
-            var imagePath = APP_CONSTANTS.URI_Photos + photos[$rootScope.photoIndex-1];
-            var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
-            var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
-
-            if ($rootScope.photoIndex == numPhotos) $rootScope.disableBtnNext = true;
-            $rootScope.disableBtnPrevious = false;
-            
-            $("#roomImage").html(image);
-            $("#photosData").html(imageData);
+            var estancia = localStorage.estancia;
+            $ionicLoading.show({ template: 'Cargando...'});
+            // Get count of room photos that exists on server
+            photosService.count(estancia).then(
+                function (data) {
+                    console.log('Success getting photos: ',data);
+                    $ionicLoading.hide();
+                    if (data.length === 0) {
+                        $scope.popupNoPhotosFound();
+                    }
+                    else {
+                        $rootScope.photos = data;
+                        window.location = '#/app/photos';
+                    }
+                },
+                function(err){
+                    console.log('Error getting photos: ',err);
+                    $ionicLoading.hide();
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
+                    errorMsg += 'las fotos del espacio seleccionado</div>';
+                    $scope.showInfoPopup('¡Error!', errorMsg);
+                }
+            );
         };
 
         //Function to check is email has been checked and is a valid one
@@ -98,13 +96,13 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         };
 
         //Open popup for adding a photo
-        $scope.addPhoto = function(data) {
+        $scope.popupNoPhotosFound = function(data) {
 
-            $scope.hideNoPhotosText = true;
+            $scope.hideNoPhotosText = false;
 
             var addPhotoPopup = $ionicPopup.show({
                 templateUrl: 'templates/popups/confirmUploadPhoto.html',
-                title: 'Subir foto',
+                title: 'No hay fotos',
                 scope: $scope,
                 buttons: [
                     {
@@ -159,7 +157,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                     if (mode == 'CAMERA') {
                         $scope.picURL = imageData;
                         $scope.ftLoad = true;
-                        $scope.uploadPicture(email, popup);
+                        $scope.uploadPicture(email,popup);
                     }
                     else {
                         window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
@@ -181,7 +179,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         //Upload picture to server
         $scope.uploadPicture = function(email, popup) {
-            $ionicLoading.show({template: 'Sto inviando la foto...'});
+            $ionicLoading.show({template: 'Enviando la foto...'});
             var fileURL = $scope.picURL;
             var options = new FileUploadOptions();
             options.fileKey = 'file';
@@ -216,7 +214,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                 }, options, true);
         };
 
-        /*$scope.volver = function() {
-            $window.history.back();
+        /*$scope.back = function() {
+            estancia = undefined;
+            window.history.back();
         };*/
     });
