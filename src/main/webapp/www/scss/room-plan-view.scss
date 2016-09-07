@@ -1,6 +1,17 @@
 #plan {
+  
+  /* GENERAL */
+  width: 98%;
+  height: 97%;
+  border-style: solid;
+  border-width: 1px;
+  margin-left:1%;
+  margin-right:1%;
+  margin-top:1%;
+  margin-bottom:2%;
 
-  /* Markers */
+
+  /* MARKERS */
   .list-group-item {
     margin-bottom: 8px !important;
   }
@@ -23,7 +34,7 @@
     margin-left: 10px;
   }
 
-  /* Legend */
+  /* LEGEND */
   .legend {
 		padding: 10px;
     background-color: white;

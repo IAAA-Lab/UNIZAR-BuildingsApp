@@ -1,0 +1,27 @@
+#photos-view {
+  #roomImage {
+    text-align: center;
+  }
+  #photosData {
+    text-align: center;
+    font-size: 20px;
+    margin-top: 5px;
+  }
+  #btnPrevPhoto {
+    margin-top: 10px;
+  }
+  #btnPrevPhoto, #btnNextPhoto {
+    height: 8%;
+    width: 20%;
+    float: right;
+    border-width: 0px;
+  }
+  #btnAddPhoto {
+    width: 100px;
+    height: 8%;
+    float: right;
+  }
+  .botones {
+    width: 80%;
+  }
+}
