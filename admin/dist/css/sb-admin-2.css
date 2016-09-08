@@ -356,7 +356,7 @@ table.dataTable thead .sorting:after {
 
 
 /* GENERAL */
-.form-control[disabled] {
+.form-control[disabled], .btn[disabled] {
     cursor: default !important;
 }
 .form-error {
@@ -369,6 +369,9 @@ table.dataTable thead .sorting:after {
 }
 .page-header {
     color: #337ab7 !important;
+}
+.panel-heading {
+    font-weight: bold;
 }
 
 /* DISABLED LINKS */
@@ -404,14 +407,19 @@ table.dataTable tbody tr.selected {
     padding: 10px !important;
 }
 
-#admin-poi-explanation, #admin-poi-requests-explanation{
+#admin-poi-explanation, #admin-poi-requests-explanation,
+#admin-upload-photo-explanation {
     text-align: justify;
     font-size: 15px;
     color: black;
 }
-#admin-poi-explanation ul, #admin-poi-requests-explanation ul {
+#admin-poi-explanation ul, #admin-poi-requests-explanation ul,
+#admin-upload-photo-explanation ol {
     margin-top: 5px !important;
     margin-bottom: 15px !important;
+}
+#admin-upload-photo-explanation ol li {
+    line-height: 20px;
 }
 #dataTable_wrapper .checkbox-inline {
     vertical-align: top !important;

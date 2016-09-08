@@ -194,7 +194,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
             var params = {};
             params.name = options.fileName;
-            //params.email = email;
+            params.email = email;
+            params.mode = 'user';
 
             options.params = params;
 

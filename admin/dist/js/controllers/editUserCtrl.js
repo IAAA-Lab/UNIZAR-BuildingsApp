@@ -18,7 +18,7 @@ $(function() {
     cancelBtn.hide();
 
     var userData = JSON.parse(sessionStorage.getItem('userData'));
-    console.log(userData);
+    console.log("userData", userData);
     $.each(userData, function(key,val){
         $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
     });

@@ -30,6 +30,25 @@ public class EstanciasRestController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EstanciasRestController.class);
 	
+	public ResultSet getInfoEstancia(Connection connection, String roomId) throws SQLException 
+	{
+		String querySelect = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\", \"TBES\".\"ID_CENTRO\", ";
+		querySelect += "\"TBED\".\"EDIFICIO\" AS \"edificio\", \"TBED\".\"DIRECCION\" AS \"dir\", ";
+		querySelect += "\"TBCI\".\"CIUDADES\" AS \"ciudad\", \"TBCC\".\"CAMPUS\" AS \"campus\" ";
+
+		String queryFrom = "FROM \"TB_ESPACIOS\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
+		queryFrom += "\"TB_EDIFICIOS\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
+
+		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = '"+roomId+"' AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
+		queryWhere +=  "AND \"TBED\".\"CAMPUS\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
+
+		String query = querySelect + queryFrom + queryWhere;
+	
+		ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+
+		return respuesta;
+	}
+
 	@RequestMapping(
 			value = "/id_estancia", 
 			method = RequestMethod.GET,
@@ -43,20 +62,7 @@ public class EstanciasRestController {
 		Espacios resultado = null;
 
 		try {
-			String querySelect = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\", \"TBES\".\"ID_CENTRO\", ";
-			querySelect += "\"TBED\".\"EDIFICIO\" AS \"edificio\", \"TBED\".\"DIRECCION\" AS \"dir\", ";
-			querySelect += "\"TBCI\".\"CIUDADES\" AS \"ciudad\", \"TBCC\".\"CAMPUS\" AS \"campus\" ";
-
-			String queryFrom = "FROM \"TB_ESPACIOS\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
-			queryFrom += "\"TB_EDIFICIOS\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
-
-			String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = '"+estancia+"' AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
-			queryWhere +=  "AND \"TBED\".\"CAMPUS\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
-
-			String query = querySelect + queryFrom + queryWhere;
-		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
-
+			ResultSet respuesta = getInfoEstancia(connection, estancia);
 			if (respuesta.next()){
 				resultado = new Espacios(
 												respuesta.getString("ID_ESPACIO"),

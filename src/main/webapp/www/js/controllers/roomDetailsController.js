@@ -192,7 +192,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
 
             var params = {};
             params.name = options.fileName;
-            //params.email = email;
+            params.email = email;
+            params.mode = 'user';
 
             options.params = params;
 

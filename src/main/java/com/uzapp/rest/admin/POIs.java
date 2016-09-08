@@ -179,8 +179,7 @@ public class POIs {
         }
     }
 
-    //API: Create a request for create a POI  
-    //TODO: [DGP] Create Request
+    //API: Create a request for create a POI
     @RequestMapping(
             value = "/",
             method = RequestMethod.POST)
