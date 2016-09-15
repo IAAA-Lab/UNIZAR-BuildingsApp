@@ -12,13 +12,21 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         $rootScope.photoIndex = 1;
 
+        //Calculates image dimensions based on device dimensions
         $scope.calculateDimensions = function() {
-            console.log("Device width", $window.innerWidth);
-            console.log("Device height", $window.innerHeight);
             return {
                 "width": $window.innerWidth,
                 "height": $window.innerHeight-150
             }
+        }
+
+        $scope.resizeImage = function(width, height) {
+            var maxWidth = $scope.dimensions.width,
+                maxHeight = $scope.dimensions.height,
+                ratio = Math.min(maxWidth / width, maxHeight / height);
+
+            var imageWidthHeight = 'width="' + width*ratio + '" height="' + height*ratio + '"';
+            return imageWidthHeight;
         }
 
         angular.element($window).bind('resize', function(){
@@ -38,45 +46,58 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         $rootScope.disableBtnNext = numPhotos > 1 ? false : true;
         
         $scope.dimensions = $scope.calculateDimensions();
-        var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
 
-        $("#roomImage").html('<img src="' + APP_CONSTANTS.URI_Photos + firstPhoto + '"'+imageWidthHeight+'></img>');
-        $("#photosData").html('<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>');
+        var tempImage = new Image();
+        tempImage.src = APP_CONSTANTS.URI_Photos + firstPhoto;
+        tempImage.onload = function() {
+            var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+
+            $("#roomImage").html('<img src="' + APP_CONSTANTS.URI_Photos + firstPhoto + '"'+imageWidthHeight+'></img>');
+            $("#photosData").html('<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>');
+        }
 
         //Click on previous photo button
         $scope.previous = function() {
             $rootScope.photoIndex -= 1;
-
             $scope.dimensions = $scope.calculateDimensions();
-            var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
 
             var imagePath = APP_CONSTANTS.URI_Photos + photos[$rootScope.photoIndex-1];
-            var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
-            var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
+            var tempImage = new Image();
+            tempImage.src = imagePath;
+            tempImage.onload = function() {
+                var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+
+                var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
+                var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
+                
+                $("#roomImage").html(image);
+                $("#photosData").html(imageData);
+            }
 
             if ($rootScope.photoIndex == 1) $rootScope.disableBtnPrevious = true;
             $rootScope.disableBtnNext = false;
-            
-            $("#roomImage").html(image);
-            $("#photosData").html(imageData);
         };
 
         //Click on next photo button
         $scope.next = function() {
             $rootScope.photoIndex += 1;
-
             $scope.dimensions = $scope.calculateDimensions();
-            var imageWidthHeight = 'width="' + $scope.dimensions.width + '" height="' + $scope.dimensions.height + '"';
 
             var imagePath = APP_CONSTANTS.URI_Photos + photos[$rootScope.photoIndex-1];
-            var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
-            var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
+            var tempImage = new Image();
+            tempImage.src = imagePath;
+            tempImage.onload = function() {
+                var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+                
+                var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
+                var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
+                
+                $("#roomImage").html(image);
+                $("#photosData").html(imageData);
+            }
 
             if ($rootScope.photoIndex == numPhotos) $rootScope.disableBtnNext = true;
             $rootScope.disableBtnPrevious = false;
-            
-            $("#roomImage").html(image);
-            $("#photosData").html(imageData);
         };
 
         //Function to check is email has been checked and is a valid one
