@@ -140,8 +140,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
         //Open camera or gallery to select a photo
         $scope.selectPicture = function(email, popup, mode) {
 
-            var destinationType = mode == 'CAMERA' ? Camera.DestinationType.FILE_URL : Camera.DestinationType.FILE_URI;
-            var sourceType = mode == 'CAMERA' ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY;
+            var destinationType = (mode === 'CAMERA') ? Camera.DestinationType.FILE_URL : Camera.DestinationType.FILE_URI;
+            var sourceType = (mode === 'CAMERA') ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY;
             var options = {
                 quality: 20,
                 saveToPhotoAlbum: true,
@@ -154,20 +154,9 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             $cordovaCamera.getPicture(options).then(
                 function(imageData) {
                     console.log('Image', imageData);
-                    if (mode == 'CAMERA') {
-                        $scope.picURL = imageData;
-                        $scope.ftLoad = true;
-                        $scope.uploadPicture(email,popup);
-                    }
-                    else {
-                        window.resolveLocalFileSystemURI(imageURI, function(fileEntry) {
-                            console.log('fileEntry', fileEntry);
-                            $scope.picURL = fileEntry.nativeURL;
-                            $scope.ftLoad = true;
-                            var image = document.getElementById('myImage');
-                            image.src = fileEntry.nativeURL;
-                        });
-                    }
+                    $scope.picURL = imageData;
+                    $scope.ftLoad = true;
+                    $scope.uploadPicture(email,popup);
                 },
                 function(err){
                     console.log('Error selecting picture', err);
