@@ -195,7 +195,12 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                     var alertPopup = $ionicPopup.alert({
                         title: 'Foto subida con éxito',
                         template: '<p>La imagen se ha enviado con éxito. Recuerde que primero deberá ser aprobada por un administrador</p>'
-                   });
+                    });
+                    alertPopup.then(function(res){
+                        if ($('.popup-container').length > 0) {
+                            $('.popup-container').remove();
+                        }
+                    });
                 },
                 function(){
                     console.log("Error uploading photo to server", arguments);
