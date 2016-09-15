@@ -86,10 +86,10 @@ public class POIs {
     {
         logger.info("Servicio: getAllPOIs()");
         Gson gson = new Gson();
-        Connection conn = ConnectionManager.getConnection();
+        Connection connection = ConnectionManager.getConnection();
         try {
             String query = "SELECT * FROM pois";
-            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POI> result = new ArrayList<POI>();
@@ -112,7 +112,7 @@ public class POIs {
                         new java.util.Date(rs.getTimestamp("updated").getTime())));
             }
 
-            conn.close();
+            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 
         } catch (SQLException e) {
@@ -145,11 +145,11 @@ public class POIs {
     {
         logger.info("Servicio: getFloorPOIS()");
         Gson gson = new Gson();
-        Connection conn = ConnectionManager.getConnection();
+        Connection connection = ConnectionManager.getConnection();
         try {
             String query = "SELECT * FROM pois WHERE estancia_id LIKE \'"+building+"%\' AND planta="+floor+" AND approved=true";
             System.out.println("Query: " + query);
-            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POI> result = new ArrayList<POI>();
@@ -170,7 +170,7 @@ public class POIs {
                         rs.getString("email")));
             }
 
-            conn.close();
+            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 
         } catch (SQLException e) {
@@ -209,11 +209,11 @@ public class POIs {
             preparedStmt.setTimestamp(14, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
+            connection.close();
             if (rowsInserted > 0) {
                 return new ResponseEntity<>(gson.toJson(poi), HttpStatus.OK);
             }
             else {
-                connection.close();
                 return new ResponseEntity<>("Error creating POI", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (SQLException e) {
@@ -249,6 +249,7 @@ public class POIs {
 
             if (rowsInserted > 0) {
                 ResponseEntity<?> result = getPOI(connection, poi.getId());
+                connection.close();
                 return result;
             }
             else {
@@ -268,7 +269,6 @@ public class POIs {
     public ResponseEntity<?> deletePOI(@PathVariable("id") int id)
     {
         logger.info("Servicio: deletePOI");
-        Gson gson = new Gson();
         Connection connection = ConnectionManager.getConnection();
 
         try {
@@ -284,6 +284,7 @@ public class POIs {
                 preparedStmt.setInt(1, id);
                 rowsDeleted =preparedStmt.executeUpdate();
 
+                connection.close();
                 return new ResponseEntity<>("Success deleting POI with id " +  id, HttpStatus.OK);
             }
             else {
@@ -305,11 +306,11 @@ public class POIs {
     {
         logger.info("Servicio: getAllPendingPOIRequests()");
         Gson gson = new Gson();
-        Connection conn = ConnectionManager.getConnection();
+        Connection connection = ConnectionManager.getConnection();
         try {
             String query = "SELECT r.*, p.ciudad, p.campus, p.edificio, p.estancia_nombre, p.planta, p.categoria as categoria_poi, p.comment as comment_poi ";
             query += "FROM request AS r INNER JOIN pois AS p ON r.poi=p.id WHERE r.status='pending'";
-            PreparedStatement preparedStmt = conn.prepareStatement(query);
+            PreparedStatement preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POIRequest> result = new ArrayList<POIRequest>();
@@ -354,7 +355,7 @@ public class POIs {
                 }
             }
 
-            conn.close();
+            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 
         } catch (SQLException e) {
