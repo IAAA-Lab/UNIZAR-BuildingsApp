@@ -8,7 +8,7 @@ UZCampusWebMapApp.factory('photosService', function($http, $q, $timeout, $state,
             var deferred = $q.defer();
             var request = {
                 method: 'GET',
-                url: APP_CONSTANTS.URI_API + 'photos/'+roomId+'/',
+                url: APP_CONSTANTS.URI_API + 'photos/approved/'+roomId+'/',
                 contentType: 'application/json',
                 dataType: "json"
             };
