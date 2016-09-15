@@ -55,6 +55,8 @@
     <!-- Controller -->
     <script src="../dist/js/config.js"></script>
     <script src="../dist/js/controllers/dashboardController.js"></script>
+    <script src="../dist/js/services/infoService.js"></script>
+    <script src="../dist/js/services/photosService.js"></script>
     <script src="../dist/js/controllers/uploadPhotoCtrl.js"></script>
 
 </head>
@@ -128,7 +130,7 @@
                                 <a href="#"><i class="fa fa-picture-o fa-fw"></i> Fotos<span class="fa arrow"></span></a>
                                 <ul class="nav nav-third-level">
                                     <li>
-                                        <a href="#" class="disabled-link">Listado fotos</a>
+                                        <a href="photoList.html">Listado fotos</a>
                                     </li>
                                     <li>
                                         <a href="#" class="disabled-link">Añadir fotos</a>
@@ -174,7 +176,7 @@
                                 <input type="file" name="image_opt1" class="form-control">
                             </div>
                             <div style="text-align: center">
-                                <button id="upload-btn-opt1" type="submit" class="btn btn-success">Subir</button>
+                                <button id="upload-btn-opt1" type="submit" class="btn btn-success" accept="image/png, image/jpeg, image/gif">Subir</button>
                             </div>
                         </form>
                     </div>
@@ -216,7 +218,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Imagen *</label>
-                                <input type="file" name="image_opt2" class="form-control" disabled>
+                                <input type="file" name="image_opt2" accept="image/png, image/jpeg, image/gif" class="form-control" disabled>
                             </div>
                             <div style="text-align: center">
                                 <button id="upload-btn-opt2" type="submit" class="btn btn-success">Subir</button>

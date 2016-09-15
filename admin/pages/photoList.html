@@ -55,7 +55,9 @@
     <!-- Controller -->
     <script src="../dist/js/config.js"></script>
     <script src="../dist/js/controllers/dashboardController.js"></script>
-    <script src="../dist/js/controllers/adminPOIRequests.js"></script>
+    <script src="../dist/js/services/infoService.js"></script>
+    <script src="../dist/js/services/photosService.js"></script>
+    <script src="../dist/js/controllers/photosCtrl.js"></script>
 
 </head>
 
@@ -63,12 +65,14 @@
 
 <div id="wrapper">
 
-    <div class="alert alert-success alert-dismissible" role="alert" id="admin-requests-success">
-        <span id="admin-requests-success-text"></span>
+    <div class="alert alert-success alert-dismissible" role="alert" id="admin-photos-success">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <span id="admin-photos-success-text"></span>
     </div>
 
-    <div class="alert alert-danger alert-dismissible" role="alert" id="admin-requests-error">
-        <span id="admin-requests-error-text"></span>
+    <div class="alert alert-danger alert-dismissible" role="alert" id="admin-photos-error">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <span id="admin-photos-error-text"></span>
     </div>
 
     <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
@@ -118,7 +122,7 @@
                                         <a href="adminPOIs.html">Listado completo</a>
                                     </li>
                                     <li>
-                                        <a href="adminPOIRequests.html" class="disabled-link">Peticiones pendientes</a>
+                                        <a href="adminPOIRequests.html">Peticiones pendientes</a>
                                     </li>
                                 </ul>
                             </li>
@@ -126,7 +130,7 @@
                                 <a href="#"><i class="fa fa-picture-o fa-fw"></i> Fotos<span class="fa arrow"></span></a>
                                 <ul class="nav nav-third-level">
                                     <li>
-                                        <a href="photoList.html">Listado fotos</a>
+                                        <a href="photoList.html" class="disabled-link">Listado fotos</a>
                                     </li>
                                     <li>
                                         <a href="uploadPhoto.html">Añadir fotos</a>
@@ -143,38 +147,38 @@
     <div id="page-wrapper">
         <div class="row">
             <div class="col-lg-12">
-                <h2 class="page-header">Peticiones pendientes de edición y eliminación</h2>
+                <h2 class="page-header">Administración de imágenes de los espacios</h2>
             </div>
         </div>
-        <div class="row" id="admin-poi-requests-explanation">
+        <div class="row" id="admin-photos-explanation">
             <div class="col-lg-8">
-                En la tabla inferior se muestran todos las peticiones de edición y eliminación de los usuarios de la aplicación sobre los puntos de interés existentes. Se podrán llevar a cabo las siguientes acciones seleccionando una petición de la tabla:
+                En la tabla inferior se muestran los datos de todas los imágenes existentes de los espacios. Se podrán llevar a cabo las siguientes acciones seleccionando una fila de la tabla:
                 <ul>
-                    <li>Aprobar una petición</li>
-                    <li>Rechazar una petición</li>
+                    <li>Editar los datos relativos a una imagen</li>
+                    <li>Aprobar/rechazar una imagen pendiente</li>
+                    <li>Eliminar una imagen</li>
                 </ul>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <div class="dataTable_wrapper">
-                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTable-requests">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTable-photos">
                         <thead>
                             <tr>
                                 <th>ID</th>
-                                <th>Tipo</th>
                                 <th>Estado</th>
-                                <th>POI</th>
-                                <th>Categoría</th>
-                                <th>Comentario</th>
-                                <th>Razón</th>
                                 <th>Fecha creación</th>
-                                <th>Fecha aprobación/rechazo</th>
                                 <th>Ciudad</th>
                                 <th>Campus</th>
                                 <th>Edificio</th>
-                                <th>Estancia Nombre</th>
                                 <th>Planta</th>
+                                <th>Espacio ID</th>
+                                <th>Espacio</th>
+                                <th>Name</th>
+                                <th>Email usuario</th>
+                                <th>Fecha última actualización</th>
+                                <th>Razón de rechazo</th>
                             </tr>
                         </thead>
                     </table>
@@ -183,76 +187,155 @@
         </div>
     </div>
 
-    <div class="modal fade" id="request-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal fade" id="edit-photo-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="request-modal-title">Aceptar petición</h4>
+                    <h4 class="modal-title" id="edit-photo-modal-title">Editar datos de imagen</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal">
+                        <div class="form-group">
+                            <label for="city" class="col-sm-2 control-label">Ciudad</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-city></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="campus" class="col-sm-2 control-label">Campus</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-campus></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="building" class="col-sm-2 control-label">Edificio</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-building></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="floor" class="col-sm-2 control-label">Planta</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-floor></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="roomName" class="col-sm-2 control-label">Espacio</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-roomName></select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="status" class="col-sm-2 control-label">Estado</label>
+                            <div class="col-sm-10">
+                                <select class="form-control" id=edit-photo-status></select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="edit-photo-reason-form-group" style="display: none">
+                            <label for="reason" class="col-sm-2 control-label">Razón</label>
+                            <div class="col-sm-10">
+                                <textarea class="form-control" id=edit-photo-reason></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" style="display:none">
+                            <input type="text" class="form-control" id="edit-photo-name">
+                        </div>
+                        <div class="form-group" style="text-align: center">
+                            <button type="button" class="btn btn-default" id="preview-edit-photo-btn"
+                                    data-toggle="popover">Ver foto</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="edit-photo-btn">Guardar</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="delete-photo-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delete-photo-modal-title">Eliminar imagen</h4>
                 </div>
                 <div class="modal-body">
                     <div class="panel panel-default">
-                        <div class="panel-body" id="request-modal-panel">
-                            ¿Está seguro de eliminar el punto de interés con los siguientes datos?
+                        <div class="panel-body" id="delete-photo-modal-panel">
+                            ¿Está seguro de eliminar la imagen seleccionada?
                         </div>
                         <form class="form-horizontal">
                             <div class="form-group">
                                 <label for="city" class="col-sm-2 control-label">Ciudad</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="request-city" disabled>
+                                    <input type="text" class="form-control" id="delete-photo-city" disabled>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="campus" class="col-sm-2 control-label">Campus</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="request-campus" disabled>
+                                    <input type="text" class="form-control" id="delete-photo-campus" disabled>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="building" class="col-sm-2 control-label">Edificio</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="request-building" disabled>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="room" class="col-sm-2 control-label">Estancia</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="request-room" disabled>
+                                    <input type="text" class="form-control" id="delete-photo-building" disabled>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="floor" class="col-sm-2 control-label">Planta</label>
                                 <div class="col-sm-10">
-                                    <input type="number" class="form-control" id="request-floor" disabled>
+                                    <input type="text" class="form-control" id="delete-photo-floor" disabled>
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="category" class="col-sm-2 control-label">Categoría</label>
+                                <label for="roomName" class="col-sm-2 control-label">Espacio</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" id="request-category" disabled>
+                                    <input type="text" class="form-control" id="delete-photo-roomName" disabled>
                                 </div>
                             </div>
-                            <div class="form-group" id='form-request-comment'>
-                                <label for="comment" class="col-sm-2 control-label">Comentarios</label>
+                            <div class="form-group">
+                                <label for="address" class="col-sm-2 control-label">Estado</label>
                                 <div class="col-sm-10">
-                                    <textarea class="form-control" id="request-comment" disabled></textarea>
+                                    <input type="text" class="form-control" id="delete-photo-status" disabled>
                                 </div>
                             </div>
-                            <div class="form-group" id='form-request-reason'>
-                                <label for="reason" class="col-sm-2 control-label">Razón</label>
-                                <div class="col-sm-10">
-                                    <textarea class="form-control" id="request-reason" disabled></textarea>
-                                </div>
+                            <div class="form-group" style="display:none">
+                                <input type="text" class="form-control" id="delete-photo-name">
+                            </div>
+                            <div class="form-group" style="text-align: center">
+                                <button type="button" class="btn btn-default" id="preview-delete-photo-btn">Ver foto</button>
                             </div>
                         </form>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="request-btn">Aceptar</button>
+                    <button type="button" class="btn btn-primary" id="delete-photo-btn">Eliminar</button>
                     <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
                 </div>
             </div>
         </div>
+    </div>
+
+    <div class="modal fade" id="image-preview-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+            <h4 class="modal-title" id="myModalLabel">Previa de imagen</h4>
+          </div>
+          <div class="modal-body">
+            <img src="" id="image-preview" style="width: 400px; height: 264px;" >
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+          </div>
+        </div>
+      </div>
     </div>
 </div>
 

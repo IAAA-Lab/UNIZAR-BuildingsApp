@@ -46,10 +46,10 @@ $(function() {
             submitHandler: function(form){
                 console.log("Upload photo option 1 form: VALID");
                 var formData = new FormData();
-                formData.append('name', $('input[name=id_espacio_opt1]')[0].value + '_' + Date.now() + '.jpg');
+                formData.append('name', $('input[name=id_espacio_opt1]')[0].value.trim() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt1]')[0].files[0]);
                 formData.append('mode', 'admin');
-                formData.append('email', null);
+                formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
                 console.log("formData", formData);
                 $('body').mask("Loading...");
                 $.ajax({
@@ -97,14 +97,9 @@ $(function() {
     var searchCampus = function(){
         var city = formOpt2CitySelect.val();
         $('body').mask("Loading...");
-        $.ajax({
-            url : getConstants('API_URL') + '/busquedas/campus?ciudad='+city,
-            type: 'GET',
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function(data, textStatus, jqXHR)
-            {
-                console.log("Success getting campus",data,textStatus, jqXHR);
+        getCampus(
+            city,
+            function(data){
                 formOpt2CampusSelect.prop('disabled',false);
                 formOpt2CampusSelect.empty();
                 data.forEach(function(campus){
@@ -113,9 +108,7 @@ $(function() {
                 $('body').unmask();
                 searchBuildings();
             },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log("Create getting campus", jqXHR, errorThrown);
+            function(jqXHR, textStatus, errorThrown){
                 $('#admin-upload-photo-error-text').text(jqXHR.responseText);
                 $('#admin-upload-photo-error').show();
                 window.scrollTo(0,0);
@@ -124,21 +117,15 @@ $(function() {
                     if ($('#admin-upload-photo-error').is(":visible"))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
-            }
-        });
+            });
     };
 
     var searchBuildings = function(){
         var campus = formOpt2CampusSelect.val();
         $('body').mask("Loading...");
-        $.ajax({
-            url : getConstants('API_URL') + '/busquedas/edificio?campus='+campus,
-            type: 'GET',
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function(data, textStatus, jqXHR)
-            {
-                console.log("Success getting buildings",data,textStatus, jqXHR);
+        getBuildings(
+            campus,
+            function(data){
                 formOpt2BuildingSelect.prop('disabled',false);
                 formOpt2BuildingSelect.empty();
                 buildings = data;
@@ -148,9 +135,7 @@ $(function() {
                 $('body').unmask();
                 searchFloors();
             },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log("Errpr getting buildings", jqXHR, errorThrown);
+            function(jqXHR, textStatus, errorThrown){
                 $('#admin-upload-photo-error-text').text(jqXHR.responseText);
                 $('#admin-upload-photo-error').show();
                 window.scrollTo(0,0);
@@ -159,8 +144,7 @@ $(function() {
                     if ($('#admin-upload-photo-error').is(":visible"))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
-            }
-        });
+            });
     };
 
     var searchFloors = function(){
@@ -182,14 +166,9 @@ $(function() {
     var searchRooms = function(){
         var floor = formOpt2FloorSelect.val();
         $('body').mask("Loading...");
-        $.ajax({
-            url : getConstants('API_URL') + '/estancias/getAllEstancias?estancia='+selectedBuilding + floor,
-            type: 'GET',
-            contentType: 'application/json',
-            dataType: 'json',
-            success: function(data, textStatus, jqXHR)
-            {
-                console.log("Success getting rooms",data,textStatus, jqXHR);
+        getRooms(
+            selectedBuilding + floor,
+            function(data){
                 formOpt2RoomSelect.prop('disabled',false);
                 formOpt2RoomSelect.empty();
                 data.forEach(function(room){
@@ -198,9 +177,7 @@ $(function() {
                 $('#upload-image-form-opt2').find('input[type=file]').prop('disabled',false);
                 $('body').unmask();
             },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log("Error getting rooms", jqXHR, errorThrown);
+            function(jqXHR, textStatus, errorThrown){
                 $('#admin-upload-photo-error-text').text(jqXHR.responseText);
                 $('#admin-upload-photo-error').show();
                 window.scrollTo(0,0);
@@ -209,8 +186,7 @@ $(function() {
                     if ($('#admin-upload-photo-error').is(":visible"))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
-            }
-        });
+            });
     };
 
     formOpt2CitySelect.change(function(){
@@ -241,28 +217,21 @@ $(function() {
                 formData.append('name', $('select[name=id_espacio_opt2]').val() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt2]')[0].files[0]);
                 formData.append('mode', 'admin');
-                formData.append('email', null);
+                formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
+                
                 console.log("formData", formData);
                 $('body').mask("Loading...");
-                $.ajax({
-                    url : getConstants("API_URL") + "/photos/upload/",
-                    type: "POST",
-                    data : formData,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-                    success: function(data, textStatus, jqXHR)
-                    {
-                        console.log("Create user success",data,textStatus, jqXHR);
+
+                uploadPhoto(
+                    formData,
+                    function(data){
                         $('#admin-upload-photo-success-text').text('La imagen se ha enviado con éxito.');
                         $('#admin-upload-photo-success').show();
                         window.scrollTo(0,0);
                         cleanForm('#upload-image-form-opt2');
                         $('body').unmask();
                     },
-                    error: function (jqXHR, textStatus, errorThrown)
-                    {
-                        console.log("Create user error", jqXHR, errorThrown);
+                    function(jqXHR, textStatus, errorThrown){
                         $('body').unmask();
                         $('#admin-upload-photo-error-text').text(jqXHR.responseText);
                         $('#admin-upload-photo-error').show();
@@ -271,8 +240,7 @@ $(function() {
                             if ($('#admin-upload-photo-error').is(":visible"))
                                 $('#admin-upload-photo-error').hide();
                         }, 30000);
-                    }
-                });
+                    });
             },
             rules: {
                 city: "required",

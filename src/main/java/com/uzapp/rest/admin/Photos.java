@@ -18,6 +18,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.BufferedOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -55,103 +58,211 @@ public class Photos {
 	@Autowired
 	private ServletContext context;
 
-		/**
-		* Create Photo request object from photo name
-		*/
-    private Photo createRequestObject(String name, String email, String mode, Connection connection) throws SQLException
-    {
-      logger.info("Creating photo request from photo name");
+	/**
+	* Create Photo request object from photo name
+	*/
+  private Photo createRequestObject(String name, String email, String mode, Connection connection) throws SQLException
+  {
+    logger.info("Creating photo request from photo name");
 
-      String[] photoNameParts = name.split("_");
-      String room = photoNameParts[0];
-      String[] roomParts = room.split("\\.");
-      String floor = roomParts[roomParts.length-2];
+    String[] photoNameParts = name.split("_");
+    String room = photoNameParts[0];
+    String[] roomParts = room.split("\\.");
+    String floor = roomParts[roomParts.length-2];
 
-      String status = "";
-      if (mode.equals("admin")) status = "Approved";
-      else status = "Pending";
+    String status = "";
+    if (mode.equals("admin")) status = "Approved";
+    else status = "Pending";
 
-      EstanciasRestController estanciasRestController = new EstanciasRestController();
-      Photo photo = null;
-      ResultSet info = estanciasRestController.getInfoEstancia(connection, room);
-      if (info.next()){
-				photo = new Photo(LocalDateTime.now(), 
-											name, 
-											info.getString("ciudad"),
-											info.getString("campus"),
-											info.getString("edificio"),
-											info.getString("ID_ESPACIO"),
-											info.getString("ID_CENTRO"),
-											floor,
-											status,
-											null);
-			}
-			return photo;
-    }
+    EstanciasRestController estanciasRestController = new EstanciasRestController();
+    Photo photo = null;
+    logger.info("Room passed: " + room);
+    ResultSet info = estanciasRestController.getInfoEstancia(connection, room);
+    if (info.next()){
+			photo = new Photo(LocalDateTime.now(), 
+										name, 
+										info.getString("ciudad"),
+										info.getString("campus"),
+										info.getString("edificio"),
+										info.getString("ID_ESPACIO"),
+										info.getString("ID_CENTRO"),
+										floor,
+										status,
+										email);
+		}
+		return photo;
+  }
 
-    /**
-    *	Insert photo request object into the database
-    */
-    private ResponseEntity<?> insertPhotoRequest(Photo photo, Connection connection)
-    {
-    	try {
+  /**
+  *	Insert photo request object into the database
+  */
+  private ResponseEntity<?> insertPhotoRequest(Photo photo, Connection connection)
+  {
+  	try {
 
-  			Gson gson = new Gson();
+			Gson gson = new Gson();
 
-        String query = "INSERT INTO photos(name,city,campus,building,floor,room_id,room_name,created,email,status) values (?,?,?,?,?,?,?,?,?,?)";
-        PreparedStatement preparedStmt = connection.prepareStatement(query);
+      String query = "INSERT INTO photos(name,city,campus,building,floor,room_id,room_name,created,email,status,updated) values (?,?,?,?,?,?,?,?,?,?,?)";
+      PreparedStatement preparedStmt = connection.prepareStatement(query);
 
-        preparedStmt.setString(1, photo.getName());
-        preparedStmt.setString(2, photo.getCity());
-        preparedStmt.setString(3, photo.getCampus());
-        preparedStmt.setString(4, photo.getBuilding());
-        preparedStmt.setString(5, photo.getFloor());
-        preparedStmt.setString(6, photo.getRoomId());
-        preparedStmt.setString(7, photo.getRoomName());
-        preparedStmt.setTimestamp(8, Timestamp.from(photo.getCreated().toInstant(ZoneOffset.ofHours(0))));
-        preparedStmt.setString(9, photo.getEmail());
-        preparedStmt.setString(10, photo.getStatus());
-        int rowsInserted =preparedStmt.executeUpdate();
+      Timestamp created = Timestamp.from(photo.getCreated().toInstant(ZoneOffset.ofHours(2)));
+      Timestamp updated = Timestamp.from(photo.getCreated().toInstant(ZoneOffset.ofHours(2)));
 
-        if (rowsInserted > 0) {
-            return new ResponseEntity<>(gson.toJson(photo), HttpStatus.OK);
-        }
-        else {
-            return new ResponseEntity<>("Error creating Photo request", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-      } catch (SQLException e) {
-          e.printStackTrace();
-          return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+      preparedStmt.setString(1, photo.getName());
+      preparedStmt.setString(2, photo.getCity());
+      preparedStmt.setString(3, photo.getCampus());
+      preparedStmt.setString(4, photo.getBuilding());
+      preparedStmt.setString(5, photo.getFloor());
+      preparedStmt.setString(6, photo.getRoomId());
+      preparedStmt.setString(7, photo.getRoomName());
+      preparedStmt.setTimestamp(8, created);
+      preparedStmt.setString(9, photo.getEmail());
+      preparedStmt.setString(10, photo.getStatus());
+      preparedStmt.setTimestamp(11, updated);
+      int rowsInserted =preparedStmt.executeUpdate();
+
+      if (rowsInserted > 0) {
+          return new ResponseEntity<>(gson.toJson(photo), HttpStatus.OK);
       }
+      else {
+          return new ResponseEntity<>("Error creating Photo request", HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
 
+  /**
+	 * Returns all the photos data given a status
+	 */
+	private ResultSet getRoomPhotosByStatus(Connection connection, String roomId, String status) throws Exception
+	{
+		logger.info("GET photos for room " + roomId + " and status " + status);
+
+		String query = "SELECT name FROM photos where room_id='"+roomId+"' and status='"+status+"'";
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+		logger.info("Query: " + query);
+
+		ResultSet rs = preparedStmt.executeQuery();
+		return rs;
+	}
+
+	//Update photo name on disk
+  private boolean changePhotoName(String oldName, String newName) throws Exception
+  {
+    logger.info("Servicio: changePhotoName");
+
+		String appPath = context.getRealPath("");
+		String fullPathOrig = appPath + photosPath + File.separator + oldName;
+		logger.info("File orig path", fullPathOrig);
+
+		Path source = Paths.get(fullPathOrig);
+		Files.move(source, source.resolveSibling(newName));
+
+		return true;
+  }
+
+  /**
+	 * Returns all the photos data given a status
+	 */
+	private int updatePhotoData(Photo photo) throws Exception
+	{
+		logger.info("UPDATE photo data for photo with ID " + photo.getId());
+
+		Connection connection = ConnectionManager.getConnection();
+
+		String queryUpdate = "UPDATE photos ";
+    queryUpdate += "SET  name=?, city=?, campus=?, building=?, floor=?, room_id=?, room_name=?, status=?, reason=?, updated=?, email=?";
+    queryUpdate += "WHERE id=?";
+    PreparedStatement preparedStmt = connection.prepareStatement(queryUpdate);
+
+    preparedStmt.setString(1, photo.getName());
+    preparedStmt.setString(2, photo.getCity());
+    preparedStmt.setString(3, photo.getCampus());
+    preparedStmt.setString(4, photo.getBuilding());
+    preparedStmt.setString(5, photo.getFloor());
+    preparedStmt.setString(6, photo.getRoomId());
+    preparedStmt.setString(7, photo.getRoomName());
+    preparedStmt.setString(8, photo.getStatus());
+    preparedStmt.setString(9, photo.getReason());
+    preparedStmt.setTimestamp(10, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
+    preparedStmt.setString(11, photo.getEmail());
+    preparedStmt.setInt(12, photo.getId());
+    
+    int rowsUpdated =preparedStmt.executeUpdate();
+    return rowsUpdated;
+	} 
 
 	/**
 	 * Returns all the photos names given a room ID
 	 */
 	@RequestMapping(
-					value = "/{roomId}", 
+					value = "/approved/{roomId}", 
 					method = RequestMethod.GET)
-	public ResponseEntity<?> count(@PathVariable("roomId") String roomId)
+	public ResponseEntity<?> getRoomApprovedPhotos(@PathVariable("roomId") String roomId)
 	{
 		try {
 			logger.info("GET photos for room " + roomId);
 
 			Connection connection = ConnectionManager.getConnection();
 
+			ResultSet rs = getRoomPhotosByStatus(connection, roomId, "Approved");
 			ArrayList<String> images = new ArrayList<String>();
-
-			String query = "SELECT name FROM photos where room_id='"+roomId+"' and status='Approved'";
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
-			logger.info("Query: " + query);
-
-			ResultSet rs = preparedStmt.executeQuery();
-			List<String> result = new ArrayList<String>();
 			while (rs.next()){
 				images.add(rs.getString("name"));
 			}
 
+			connection.close();
 			return new ResponseEntity<>(images, HttpStatus.OK);
+		}
+		catch (Exception e){
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Returns all the photos names given a room ID
+	 */
+	@RequestMapping(
+					value = "/", 
+					method = RequestMethod.GET)
+	public ResponseEntity<?> getAllPhotos()
+	{
+		try {
+			logger.info("GET all photos data");
+
+			Connection connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
+			ArrayList<String> images = new ArrayList<String>();
+
+			String query = "SELECT * FROM photos";
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			logger.info("Query: " + query);
+
+			ResultSet rs = preparedStmt.executeQuery();
+
+			List<Photo> result = new ArrayList<Photo>();
+			while (rs.next()){
+          result.add(new Photo(
+                  rs.getInt("id"),
+                  rs.getTimestamp("created").toLocalDateTime(),
+                  rs.getString("name"),
+                  rs.getString("city"),
+                  rs.getString("campus"),
+                  rs.getString("building"),
+                  rs.getString("room_id"),
+                  rs.getString("room_name"),
+                  rs.getString("floor"),
+                  rs.getString("status"),
+                  rs.getString("email"),
+                  rs.getTimestamp("updated").toLocalDateTime()));
+      }
+
+      connection.close();
+			return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 		}
 		catch (Exception e){
 			e.printStackTrace();
@@ -171,8 +282,8 @@ public class Photos {
 																						@RequestParam("file") MultipartFile file)
 	{
 		if (!file.isEmpty()) {
-			try {
-
+			try 
+			{
 				String[] photoNameParts = name.split("_");
 				String roomId = photoNameParts[0];
 
@@ -211,6 +322,7 @@ public class Photos {
 					return response;
 				}
 				else {
+					connection.close();
 					return new ResponseEntity<>("Photo upload failed because data for room with ID " + roomId + " wasn't found", HttpStatus.INTERNAL_SERVER_ERROR);
 				}
 			}
@@ -222,6 +334,105 @@ public class Photos {
 			return new ResponseEntity<>("Photo upload failed because file " + name + " was empty", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+
+  //API: Update Photo data
+  @RequestMapping(
+          value = "/",
+          method = RequestMethod.PUT)
+  public ResponseEntity<?> update(@RequestBody Photo photo){
+    logger.info("Servicio: update photo");
+    Connection connection = ConnectionManager.getConnection();
+    try 
+    {
+    	String querySelect = "SELECT name,room_id FROM photos WHERE id="+photo.getId();
+			PreparedStatement preparedStmt = connection.prepareStatement(querySelect);
+			ResultSet rs = preparedStmt.executeQuery();
+			String oldRoomId = null;
+			String oldName = null;
+			while (rs.next()) {
+				oldRoomId = rs.getString("room_id");
+				oldName = rs.getString("name");
+			}
+
+			int rowsUpdated = 0;
+			String newName = photo.getName();
+			boolean changeName = (oldRoomId != null && !oldRoomId.equals(photo.getRoomId()));
+			
+			if (changeName){
+				changePhotoName(oldName, newName);
+				rowsUpdated = updatePhotoData(photo);
+			}
+			else {
+				rowsUpdated = updatePhotoData(photo);
+			}
+
+      if (rowsUpdated > 0) {
+        return new ResponseEntity<>("Success updating photo data with ID: " + photo.getId(), HttpStatus.OK);
+      }
+      else {
+      	if (changeName) {
+      		changePhotoName(newName, oldName);
+      	}
+        return new ResponseEntity<>("Error updating photo data with ID: " + photo.getId(), HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  // Delete Photo by {id}
+  @RequestMapping(
+          value = "/{id}",
+          method = RequestMethod.DELETE)
+  public ResponseEntity<?> deletePhoto(@PathVariable("id") int id)
+  {
+    logger.info("Servicio: delete photo");
+    Connection connection = ConnectionManager.getConnection();
+
+    try {
+    	//Retrieve photo name
+    	String querySelect = "SELECT name FROM photos where id="+id;
+			PreparedStatement preparedStmt = connection.prepareStatement(querySelect);
+			logger.info("Query: " + querySelect);
+
+			String name = null;
+			ResultSet rs = preparedStmt.executeQuery();
+			while (rs.next()){
+				name = rs.getString("name");
+			}
+
+			//Delete photo from disk
+			String appPath = context.getRealPath("");
+			String fullPathFile = appPath + photosPath + File.separator + name;
+			logger.info("File path to delete", fullPathFile);
+
+			File fileToDelete = new File(fullPathFile);
+			if (fileToDelete.delete())
+			{
+				//Delete photo data from database
+				String queryDelete = "DELETE FROM photos WHERE id=?";
+	      preparedStmt = connection.prepareStatement(queryDelete);
+	      preparedStmt.setInt(1, id);
+	      int rowsDeleted = preparedStmt.executeUpdate();
+
+	      connection.close();
+	      if (rowsDeleted > 0) {
+	        return new ResponseEntity<>("Success deleting photo "+id+" data from database", HttpStatus.OK);
+	      }
+	      else {
+	        return new ResponseEntity<>("Error deleting photo "+id+" data from database", HttpStatus.INTERNAL_SERVER_ERROR);
+	      }
+			}
+			else {
+				connection.close();
+				return new ResponseEntity<>("Error deleting image from disk", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+    } catch (SQLException e) {
+      e.printStackTrace();
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   @RequestMapping(
         value = "/**",

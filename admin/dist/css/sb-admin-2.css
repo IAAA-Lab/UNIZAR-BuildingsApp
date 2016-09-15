@@ -402,19 +402,23 @@ table.dataTable tbody tr.selected {
     background-color: lightblue !important;
     color: black !important;
 }
-#delete-poi-modal .panel-default,
-#request-modal .panel-default {
+.dataTable_wrapper .dtr-title:after {
+    content: ":";
+}
+
+#delete-poi-modal .panel-default, #request-modal .panel-default,
+#delete-photo-modal .panel-default {
     padding: 10px !important;
 }
 
 #admin-poi-explanation, #admin-poi-requests-explanation,
-#admin-upload-photo-explanation {
+#admin-upload-photo-explanation, #admin-photos-explanation {
     text-align: justify;
     font-size: 15px;
     color: black;
 }
 #admin-poi-explanation ul, #admin-poi-requests-explanation ul,
-#admin-upload-photo-explanation ol {
+#admin-upload-photo-explanation ol, #admin-photos-explanation ul {
     margin-top: 5px !important;
     margin-bottom: 15px !important;
 }
@@ -427,4 +431,8 @@ table.dataTable tbody tr.selected {
 }
 #dataTable_wrapper .th-text {
     margin-left: 15px !important;
+}
+
+#image-preview-modal .modal-body {
+    text-align: center;
 }

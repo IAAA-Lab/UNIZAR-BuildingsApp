@@ -15,6 +15,7 @@ public class Photo {
     private String floor;
     private String status;
     private String email;
+    private String reason;
     private LocalDateTime updated;
 
     public Photo() {}
@@ -33,6 +34,22 @@ public class Photo {
         this.status=status;
         this.email=email;
         this.updated=updated;
+    }
+    
+    public Photo(int id, String name, String city, String campus, String building, String floor,
+                String roomId, String roomName, String status, String email, String reason, LocalDateTime updated){
+        this.id=id;
+        this.name=name;
+        this.city=city;
+        this.campus=campus;
+        this.building=building;
+        this.roomId=roomId;
+        this.roomName=roomName;
+        this.floor=floor;
+        this.status=status;
+        this.email=email;
+        this.updated=updated;
+        this.reason=reason;
     }
 
     public Photo(LocalDateTime created, String name, String city, String campus, String building, 
@@ -94,6 +111,9 @@ public class Photo {
 
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getReason() { return this.reason; }
+    public void setReason(String reason) { this.reason = reason; }
 
     public LocalDateTime getUpdated() { return this.updated; }
     public void setUpdated(LocalDateTime updated) { this.updated = updated; }
