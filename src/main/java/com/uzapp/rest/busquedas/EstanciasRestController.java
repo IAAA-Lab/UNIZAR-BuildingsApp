@@ -39,7 +39,7 @@ public class EstanciasRestController {
 		String queryFrom = "FROM \"TB_ESPACIOS\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
 		queryFrom += "\"TB_EDIFICIOS\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
 
-		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = '"+roomId+"' AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
+		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = '"+roomId.trim()+"' AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
 		queryWhere +=  "AND \"TBED\".\"CAMPUS\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
 
 		String query = querySelect + queryFrom + queryWhere;
