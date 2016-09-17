@@ -30,8 +30,10 @@ public class EstanciasRestController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(EstanciasRestController.class);
 	
-	public ResultSet getInfoEstancia(Connection connection, String roomId) throws SQLException 
+	public ResultSet getRoomInfo(Connection connection, String roomId) throws SQLException 
 	{
+		logger.info("Method: getRoomInfo()");
+
 		String querySelect = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\", \"TBES\".\"ID_CENTRO\", ";
 		querySelect += "\"TBED\".\"EDIFICIO\" AS \"edificio\", \"TBED\".\"DIRECCION\" AS \"dir\", ";
 		querySelect += "\"TBCI\".\"CIUDADES\" AS \"ciudad\", \"TBCC\".\"CAMPUS\" AS \"campus\" ";
@@ -39,32 +41,34 @@ public class EstanciasRestController {
 		String queryFrom = "FROM \"TB_ESPACIOS\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
 		queryFrom += "\"TB_EDIFICIOS\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
 
-		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = '"+roomId.trim()+"' AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
+		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = ? AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
 		queryWhere +=  "AND \"TBED\".\"CAMPUS\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
 
 		String query = querySelect + queryFrom + queryWhere;
 	
-		ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+		PreparedStatement preparedStmt = connection.prepareStatement(query);
+		preparedStmt.setString(1, roomId.trim());
+		ResultSet res = preparedStmt.executeQuery();
 
-		return respuesta;
+		return res;
 	}
 
 	@RequestMapping(
 			value = "/id_estancia", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> infoEstancia(@RequestParam("estancia") String estancia)
+	public ResponseEntity<?> roomInfo(@RequestParam("estancia") String estancia)
 	{
-		logger.info("Servicio: id_estancia()");
+		logger.info("Service: roomInfo()");
 		Connection connection = null;
-		Espacios resultado = null;
+		Espacios infoResult = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			ResultSet respuesta = getInfoEstancia(connection, estancia);
+			ResultSet respuesta = getRoomInfo(connection, estancia);
 			if (respuesta.next()){
-				resultado = new Espacios(
+				infoResult = new Espacios(
 												respuesta.getString("ID_ESPACIO"),
 												respuesta.getString("ID_CENTRO"),
 												respuesta.getString("edificio"),
@@ -73,9 +77,9 @@ public class EstanciasRestController {
 												respuesta.getString("campus"));
 			}
 
-			System.out.println("resultado"+gson.toJson(resultado));
+			System.out.println("Room info result: "+gson.toJson(infoResult));
 			connection.close();
-			return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);	
+			return new ResponseEntity<>(gson.toJson(infoResult), HttpStatus.OK);	
 		}
 		catch (SQLException e) {
         e.printStackTrace();
@@ -91,26 +95,28 @@ public class EstanciasRestController {
 			value = "/getEstancia", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> getEstancia(@RequestParam("estancia") String estancia)
+	public ResponseEntity<?> getRoomDetails(@RequestParam("estancia") String estancia)
 	{
-		logger.info("Servicio: getEstancia()");
+		logger.info("Service: getRoomDetails()");
 		Connection connection = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"A\".\"ID_ESPACIO\" ,\"A\".\"ID_CENTRO\", \"B\".\"TIPO_DE_USO\", round(\"A\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
-			query += "FROM \"TB_ESPACIOS\" \"A\",\"TB_TIPO_DE_USO\" \"B\"  ";
-			query += "WHERE \"A\".\"TIPO_DE_USO\" = \"B\".ID AND \"A\".\"ID_ESPACIO\" = '"+estancia+"'";
+			String query = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\" ,\"TBES\".\"ID_CENTRO\", \"TBUSO\".\"TIPO_DE_USO\", round(\"TBES\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
+			query += "FROM \"TB_ESPACIOS\" \"TBES\",\"TB_TIPO_DE_USO\" \"TBUSO\"  ";
+			query += "WHERE \"TBES\".\"TIPO_DE_USO\" = \"TBUSO\".ID AND \"TBES\".\"ID_ESPACIO\" = ?";
 
-			Espacios resultado;
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+			Espacios result;
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, estancia);
+			ResultSet res = preparedStmt.executeQuery();
 
-			if (respuesta.next()){
-				resultado=new Espacios(respuesta.getString("ID_ESPACIO"),respuesta.getString("ID_CENTRO"),respuesta.getString("TIPO_DE_USO"),respuesta.getString("SUPERFICIE"));
-				System.out.println("resultado"+gson.toJson(resultado));
+			if (res.next()){
+				result=new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO"),res.getString("TIPO_DE_USO"),res.getString("SUPERFICIE"));
+				System.out.println("Room details result: "+gson.toJson(result));
 				connection.close();
-      	return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
+      	return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 			}
 			else {
 				connection.close();
@@ -130,9 +136,9 @@ public class EstanciasRestController {
 			value = "/getAllEstancias", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> getAllEstancias(@RequestParam("estancia") String espacio)
+	public ResponseEntity<?> getAllRooms(@RequestParam("estancia") String espacio)
 	{
-		logger.info("Servicio: getAllEstancias()");
+		logger.info("Service: getAllRooms()");
 		Connection connection = null;
 		try {
 			connection = ConnectionManager.getConnection();
@@ -140,18 +146,21 @@ public class EstanciasRestController {
 
 			String query = "SELECT DISTINCT \"ID_ESPACIO\" ,\"ID_CENTRO\" ";
 			query += "FROM \"TB_ESPACIOS\" ";
-			query += "WHERE \"ID_ESPACIO\" LIKE \'"+espacio+"%\' ORDER BY \"ID_CENTRO\" ASC";
+			query += "WHERE \"ID_ESPACIO\" LIKE ? ORDER BY \"ID_CENTRO\" ASC";
 
-			List<Espacios> resultado = new ArrayList<Espacios>();
-		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+			List<Espacios> roomsResult = new ArrayList<Espacios>();
+			
+			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, espacio+"%");
+			System.out.println(preparedStmt);
+			ResultSet res = preparedStmt.executeQuery();
 
-			while (respuesta.next()){
-				resultado.add(new Espacios(respuesta.getString("ID_ESPACIO"),respuesta.getString("ID_CENTRO")));
+			while (res.next()){
+				roomsResult.add(new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO")));
 			}
 			
 			connection.close();
-      return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
+      return new ResponseEntity<>(gson.toJson(roomsResult), HttpStatus.OK);
 		} 
 		catch (SQLException e) {
         e.printStackTrace();
@@ -169,19 +178,18 @@ public class EstanciasRestController {
 			produces = "application/json")
 	public ResponseEntity<?> getCampusValues()
 	{
-		logger.info("Servicio: getCampusValues()");
+		logger.info("Service: getCampusValues()");
 		Connection connection = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
-			
-			String query = "SELECT \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\"";
 
+			String query = "SELECT \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\"";
 			System.out.println(query);
 
 			List<String> result = new ArrayList<String>();
-
 			ResultSet res = connection.prepareStatement(query).executeQuery();
+
 			while (res.next()){
 				result.add(res.getString("CAMPUS"));
 			}

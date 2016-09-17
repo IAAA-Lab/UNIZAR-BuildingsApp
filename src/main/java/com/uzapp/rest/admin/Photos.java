@@ -77,7 +77,7 @@ public class Photos {
     EstanciasRestController estanciasRestController = new EstanciasRestController();
     Photo photo = null;
     logger.info("Room passed: " + room);
-    ResultSet info = estanciasRestController.getInfoEstancia(connection, room);
+    ResultSet info = estanciasRestController.getRoomInfo(connection, room);
     if (info.next()){
 			photo = new Photo(LocalDateTime.now(), 
 										name, 
