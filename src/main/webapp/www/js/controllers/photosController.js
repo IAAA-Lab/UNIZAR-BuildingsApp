@@ -25,8 +25,10 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                 maxHeight = $scope.dimensions.height,
                 ratio = Math.min(maxWidth / width, maxHeight / height);
 
-            var imageWidthHeight = 'width="' + width*ratio + '" height="' + height*ratio + '"';
-            return imageWidthHeight;
+            return {
+                width: width*ratio,
+                height: height*ratio
+            };
         }
 
         angular.element($window).bind('resize', function(){
@@ -50,7 +52,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         var tempImage = new Image();
         tempImage.src = APP_CONSTANTS.URI_Photos + firstPhoto;
         tempImage.onload = function() {
-            var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+            var resizedImage = $scope.resizeImage(tempImage.width, tempImage.height),
+                imageWidthHeight = 'width="' + resizedImage.width + '" height="' + resizedImage.height + '"';
 
             $("#roomImage").html('<img src="' + APP_CONSTANTS.URI_Photos + firstPhoto + '"'+imageWidthHeight+'></img>');
             $("#photosData").html('<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>');
@@ -65,7 +68,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             var tempImage = new Image();
             tempImage.src = imagePath;
             tempImage.onload = function() {
-                var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+                var resizedImage = $scope.resizeImage(tempImage.width, tempImage.height),
+                    imageWidthHeight = 'width="' + resizedImage.width + '" height="' + resizedImage.height + '"';
 
                 var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
                 var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
@@ -87,7 +91,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             var tempImage = new Image();
             tempImage.src = imagePath;
             tempImage.onload = function() {
-                var imageWidthHeight = $scope.resizeImage(tempImage.width, tempImage.height);
+                var resizedImage = $scope.resizeImage(tempImage.width, tempImage.height),
+                    imageWidthHeight = 'width="' + resizedImage.width + '" height="' + resizedImage.height + '"';
                 
                 var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
                 var imageData = '<strong>Foto ' + $rootScope.photoIndex + ' de ' + numPhotos + '</strong>';
@@ -163,7 +168,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         //Open camera or gallery to select a photo
         $scope.selectPicture = function(email, popup, mode) {
 
-            var destinationType = (mode == 'CAMERA') ? Camera.DestinationType.FILE_URL : Camera.DestinationType.FILE_URI;
+            var destinationType = (mode == 'CAMERA') ? Camera.DestinationType.FILE_URL : Camera.DestinationType.FILE_URL;
             var sourceType = (mode == 'CAMERA') ? Camera.PictureSourceType.CAMERA : Camera.PictureSourceType.PHOTOLIBRARY;
             var options = {
                 quality: 20,
