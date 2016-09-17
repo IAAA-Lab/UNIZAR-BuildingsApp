@@ -24,7 +24,9 @@ import java.util.List;
 public class POIs {
     private static final Logger logger = LoggerFactory.getLogger(POI.class);
 
-    //Returns POI object from query result
+    /**
+    * Returns POI object from query result
+    */
     private ResponseEntity<?> setPOIdata(ResultSet rs) {
         try {
             POI poi = null;
@@ -55,47 +57,57 @@ public class POIs {
         }
     }
 
-    //Get POI by ID
-    private ResponseEntity<?> getPOI(Connection conn, int id){
+    /**
+    * Get POI by ID
+    */
+    private ResponseEntity<?> getPOI(Connection connection, int id){
         logger.info("Method getPOI", id);
+        PreparedStatement preparedStmt = null;
         try {
             String query = "";
-            PreparedStatement preparedStmt;
             query = "SELECT * FROM pois WHERE id=?";
-            preparedStmt = conn.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
             preparedStmt.setInt(1, id);
 
             ResultSet rs = preparedStmt.executeQuery();
             ResponseEntity<?> response = setPOIdata(rs);
 
-            conn.close();
             return response;
 
         } catch (SQLException e) {
             e.printStackTrace();
-			if (conn != null) {
-                try { conn.close(); }
+			if (connection != null) {
+                try { connection.close(); }
                 catch(SQLException excep) { excep.printStackTrace(); }
             }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+        }
     }
 
-    //API: Get all POI
+    /**
+    * API: Get all POI
+    */
     @RequestMapping(
             value = "/", 
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getAllPOIs()
     {
-        logger.info("Servicio: getAllPOIs()");
+        logger.info("Service: getAllPOIs()");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
             String query = "SELECT * FROM pois";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POI> result = new ArrayList<POI>();
@@ -117,34 +129,38 @@ public class POIs {
                         rs.getString("email"),
                         new java.util.Date(rs.getTimestamp("updated").getTime())));
             }
-
-            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    //API: Get POI by {id}
+    /**
+    * API: Get POI by {id}
+    */
     @RequestMapping(
             value = "/{id}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getInfoPOI(@PathVariable("id") int id)
     {
-        logger.info("Servicio: getInfoPOI()");
+        logger.info("Service: getInfoPOI()");
         Connection connection = ConnectionManager.getConnection();
         ResponseEntity<?> result = getPOI(connection, id);
         return result;
     }
 
-    //API: Get all POI by {building} and {floor}
+    /**
+    * API: Get all POI by {building} and {floor}
+    */
     @RequestMapping(
             value = "/{building}/{floor}", 
             method = RequestMethod.GET,
@@ -153,15 +169,16 @@ public class POIs {
         @PathVariable("building") String building, 
         @PathVariable("floor") int floor)
     {
-        logger.info("Servicio: getFloorPOIS()");
+        logger.info("Service: getFloorPOIS()");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
             String query = "SELECT * FROM pois WHERE estancia_id LIKE \'"+building+"%\' AND planta="+floor+" AND approved=true";
             System.out.println("Query: " + query);
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POI> result = new ArrayList<POI>();
@@ -181,34 +198,37 @@ public class POIs {
                         rs.getDouble("lng"),
                         rs.getString("email")));
             }
-
-            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    //API: Create a request for create a POI
+    /**
+    * API: Create a request for create a POI
+    */
     @RequestMapping(
             value = "/",
             method = RequestMethod.POST)
     public ResponseEntity<?> create(@RequestBody POI poi)
     {
-        logger.info("Servicio: create poi");
+        logger.info("Service: create poi");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
             String query = "INSERT INTO pois(ciudad,campus,edificio,estancia_id,estancia_nombre,planta,categoria,comment,dir,lat,lng,approved,email,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, poi.getCity());
             preparedStmt.setString(2, poi.getCampus());
@@ -226,37 +246,42 @@ public class POIs {
             preparedStmt.setTimestamp(14, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
-            connection.close();
             if (rowsInserted > 0) {
                 return new ResponseEntity<>(gson.toJson(poi), HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>("Error creating POI", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    //API: Update POI data
+    /**
+    * API: Update POI data
+    */
     @RequestMapping(
             value = "/",
             method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody POI poi){
-        logger.info("Servicio: update poi");
+        logger.info("Service: update poi");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             connection = ConnectionManager.getConnection();
 
             String query = "UPDATE pois ";
             query += "SET  ciudad=?, campus=?, edificio=?, planta=?, categoria=?, comment=?, dir=?, approved=?, updated=?";
             query += "WHERE id=?";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, poi.getCity());
             preparedStmt.setString(2, poi.getCampus());
@@ -272,37 +297,40 @@ public class POIs {
 
             if (rowsInserted > 0) {
                 ResponseEntity<?> result = getPOI(connection, poi.getId());
-                connection.close();
                 return result;
             }
             else {
-                connection.close();
                 return new ResponseEntity<>("Error updating POI", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    // Delete POI by {id}
+    /**
+    * API: Delete POI by {id}
+    */
     @RequestMapping(
             value = "/{id}",
             method = RequestMethod.DELETE)
     public ResponseEntity<?> deletePOI(@PathVariable("id") int id)
     {
-        logger.info("Servicio: deletePOI");
+        logger.info("Service: deletePOI");
         Connection connection = null;
-
+        PreparedStatement preparedStmt = null;
         try {
             connection = ConnectionManager.getConnection();
 
             String query = "DELETE FROM pois WHERE id=?";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setInt(1, id);
             int rowsDeleted =preparedStmt.executeUpdate();
@@ -312,40 +340,43 @@ public class POIs {
                 preparedStmt = connection.prepareStatement(query);
                 preparedStmt.setInt(1, id);
                 rowsDeleted =preparedStmt.executeUpdate();
-
-                connection.close();
                 return new ResponseEntity<>("Success deleting POI with id " +  id, HttpStatus.OK);
             }
             else {
-                connection.close();
                 return new ResponseEntity<>("Error deleting POI", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    // Get all pending POI requests
+    /**
+    * API: Get all pending POI requests
+    */
     @RequestMapping(
             value = "/request/pending", 
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getAllPendingPOIRequests()
     {
-        logger.info("Servicio: getAllPendingPOIRequests()");
+        logger.info("Service: getAllPendingPOIRequests()");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
             String query = "SELECT r.*, p.ciudad, p.campus, p.edificio, p.estancia_nombre, p.planta, p.categoria as categoria_poi, p.comment as comment_poi ";
             query += "FROM request AS r INNER JOIN pois AS p ON r.poi=p.id WHERE r.status='pending'";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             ResultSet rs = preparedStmt.executeQuery();
             List<POIRequest> result = new ArrayList<POIRequest>();
@@ -389,34 +420,37 @@ public class POIs {
                         new java.util.Date(rs.getTimestamp("action_date").getTime())));
                 }
             }
-
-            connection.close();
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    // Create a request for modify or delete a POI
+    /**
+    * API: Create a request for modify or delete a POI
+    */
     @RequestMapping(
             value = "/request",
             method = RequestMethod.POST)
     public ResponseEntity<?> request(@RequestBody POIRequest poiRequest)
     {
-        logger.info("Servicio: request");
+        logger.info("Service: request");
         Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
             String query = "INSERT INTO request(type,poi,category,comment,reason,status,email,request_date,action_date) values (?,?,?,?,?,?,?,?,?)";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setString(1, poiRequest.getType());
             preparedStmt.setInt(2, poiRequest.getPOI());
@@ -429,24 +463,28 @@ public class POIs {
             preparedStmt.setTimestamp(9, new java.sql.Timestamp(new java.util.Date().getTime()));
             int rowsInserted =preparedStmt.executeUpdate();
 
-            connection.close();
             if (rowsInserted > 0) {
                 return new ResponseEntity<>(gson.toJson(poiRequest), HttpStatus.OK);
             }
             else {
                 return new ResponseEntity<>("Error creating POI request", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    // Create a POI edition Request object
+    /**
+    * Create a POI edition Request object
+    */
     private POIRequest getPOIRequestEditionData(ResultSet rs) throws SQLException {
         POIRequest poiRequest = null;
         try {
@@ -470,9 +508,11 @@ public class POIs {
         }
     }
 
-    //Approve a request for edit a POI
+    /**
+    * Approve a request for edit a POI
+    */
     private ResponseEntity<?> approveEditionRequest(int id) {
-        logger.info("Servicio: approveEditionRequest()");
+        logger.info("Service: approveEditionRequest()");
 
         Connection connection = null;
         PreparedStatement preparedStmtSelect = null;
@@ -547,7 +587,9 @@ public class POIs {
         }
     }
 
-    // Create a delete POI Request object
+    /**
+    * Create a delete POI Request object
+    */
     private POIRequest getPOIRequestDeleteData(ResultSet rs) throws SQLException {
         POIRequest poiRequest = null;
         try {
@@ -570,9 +612,11 @@ public class POIs {
         }
     }
 
-    // Approve a request for deleting a POI
+    /**
+    * Approve a request for deleting a POI
+    */
     private ResponseEntity<?> approveDeleteRequest(int id) {
-        logger.info("Servicio: approveDeleteRequest()");
+        logger.info("Service: approveDeleteRequest()");
         
         Connection connection = null;
         PreparedStatement preparedStmtSelect = null;
@@ -642,13 +686,19 @@ public class POIs {
         }
     }
 
-    //Reject an edition/delete Request
+    /**
+    * Reject an edition/delete Request
+    */
     private ResponseEntity<?> rejectRequest(int id) {
-        logger.info("Servicio: rejectRequest()");
-        Connection connection = ConnectionManager.getConnection();
-        try {
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        try
+        {
+            logger.info("Service: rejectRequest()");
+            connection = ConnectionManager.getConnection();
+
             String query = "UPDATE request SET status='rejected', action_date=? WHERE id=?";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
 
             preparedStmt.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
             preparedStmt.setInt(2, id);
@@ -661,17 +711,22 @@ public class POIs {
             else {
                 return new ResponseEntity<>("Error rejecting POI request", HttpStatus.INTERNAL_SERVER_ERROR);
             }
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
-			if (connection != null) {
-                try { connection.close(); }
-                catch(SQLException excep) { excep.printStackTrace(); }
-            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
-    // Approve or reject a request for edit/delete a POI
+    /**
+     * API: Approve or reject a request for edit/delete a POI
+     */
     @RequestMapping(
             value = "/request/{requestId}/{verb}/{action}",
             method = RequestMethod.PUT)
@@ -680,7 +735,7 @@ public class POIs {
         @PathVariable("verb") String verb,
         @PathVariable("action") String action)
     {
-        logger.info("Servicio: approveOrRejectRequest()");
+        logger.info("Service: approveOrRejectRequest()");
         ResponseEntity<?> result = null;
         switch (verb) {
             case "approve": {

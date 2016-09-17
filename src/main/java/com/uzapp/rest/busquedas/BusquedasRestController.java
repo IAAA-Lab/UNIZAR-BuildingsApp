@@ -52,16 +52,15 @@ public class BusquedasRestController {
 				resultado.add(new Espacios(respuesta.getString("ID_ESPACIO")));
 			}
 			System.out.println("resultado"+gson.toJson(resultado));
-			connection.close();
       return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -73,6 +72,7 @@ public class BusquedasRestController {
 	{
 		logger.info("Service: getCityCampus()");
 		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
@@ -84,7 +84,7 @@ public class BusquedasRestController {
 
 			List<Campus> campus = new ArrayList<Campus>();
 		
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setInt(1, Integer.parseInt(ciudad));
 			ResultSet res = preparedStmt.executeQuery();
 
@@ -93,16 +93,17 @@ public class BusquedasRestController {
 			}
 
 			System.out.println("Campus result: "+gson.toJson(campus));
-			connection.close();
       return new ResponseEntity<>(gson.toJson(campus), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
 	      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -114,6 +115,7 @@ public class BusquedasRestController {
 	{
 		logger.info("Service: getCampusBuildings()");
 		Connection connection = null;
+		PreparedStatement  preparedStmt = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
@@ -125,7 +127,7 @@ public class BusquedasRestController {
 
 			List<Edificio> buildings = new ArrayList<Edificio>();
 		
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setInt(1, Integer.parseInt(campus));
 			ResultSet res = preparedStmt.executeQuery();
 
@@ -136,16 +138,17 @@ public class BusquedasRestController {
 			}
 
 			System.out.println("Buildings result"+gson.toJson(buildings));
-			connection.close();
       return new ResponseEntity<>(gson.toJson(buildings), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -157,6 +160,7 @@ public class BusquedasRestController {
 	{
 		logger.info("Service: getBuildingInfo()");
 		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
@@ -168,7 +172,7 @@ public class BusquedasRestController {
 
 			List<Edificio> result = new ArrayList<Edificio>();
 		
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, edificio);
 			ResultSet res = preparedStmt.executeQuery();
 
@@ -179,28 +183,29 @@ public class BusquedasRestController {
 			}
 
 			System.out.println("Building info result: "+gson.toJson(result));
-			connection.close();
       return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
 	private static List<String> getBuildingFloors(Connection connection,String idEdificio)
 	{
 		List<String> buildingFloors = new ArrayList<String>();
-		
+		PreparedStatement preparedStmt = null;
 		try {
 			String query = "SELECT DISTINCT SUBSTRING(\"ID_UTC\",1,2) AS \"floors\" ";
 			query += "FROM \"TB_ESPACIOS\" WHERE \"ID_EDIFICIO\" = ? ORDER BY \"floors\" ASC";
 		
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, idEdificio);
 			ResultSet res = preparedStmt.executeQuery();
 
@@ -210,6 +215,10 @@ public class BusquedasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 		return buildingFloors;
 	}

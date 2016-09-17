@@ -78,16 +78,15 @@ public class EstanciasRestController {
 			}
 
 			System.out.println("Room info result: "+gson.toJson(infoResult));
-			connection.close();
 			return new ResponseEntity<>(gson.toJson(infoResult), HttpStatus.OK);	
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -99,6 +98,7 @@ public class EstanciasRestController {
 	{
 		logger.info("Service: getRoomDetails()");
 		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
@@ -108,27 +108,27 @@ public class EstanciasRestController {
 			query += "WHERE \"TBES\".\"TIPO_DE_USO\" = \"TBUSO\".ID AND \"TBES\".\"ID_ESPACIO\" = ?";
 
 			Espacios result;
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, estancia);
 			ResultSet res = preparedStmt.executeQuery();
 
 			if (res.next()){
 				result=new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO"),res.getString("TIPO_DE_USO"),res.getString("SUPERFICIE"));
 				System.out.println("Room details result: "+gson.toJson(result));
-				connection.close();
       	return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 			}
 			else {
-				connection.close();
 				return new ResponseEntity<>("", HttpStatus.OK);
 			}
 		} catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -140,6 +140,7 @@ public class EstanciasRestController {
 	{
 		logger.info("Service: getAllRooms()");
 		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
@@ -150,7 +151,7 @@ public class EstanciasRestController {
 
 			List<Espacios> roomsResult = new ArrayList<Espacios>();
 			
-			PreparedStatement preparedStmt = connection.prepareStatement(query);
+			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, espacio+"%");
 			System.out.println(preparedStmt);
 			ResultSet res = preparedStmt.executeQuery();
@@ -159,16 +160,17 @@ public class EstanciasRestController {
 				roomsResult.add(new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO")));
 			}
 			
-			connection.close();
       return new ResponseEntity<>(gson.toJson(roomsResult), HttpStatus.OK);
 		} 
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 
@@ -199,11 +201,11 @@ public class EstanciasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
-        if (connection != null) {
-        	try { connection.close(); }
-        	catch(SQLException excep) { excep.printStackTrace(); }
-        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 }
