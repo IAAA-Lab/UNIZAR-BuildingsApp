@@ -8,6 +8,8 @@ $(function() {
         }
     };
 
+    if ($('.dropdown-user').is(":visible")) $('.dropdown-user').css('display','none');
+
     var editBtn = $('#edit-btn');
     var saveBtn = $('#save-btn');
     var cancelBtn = $('#cancel-btn');
