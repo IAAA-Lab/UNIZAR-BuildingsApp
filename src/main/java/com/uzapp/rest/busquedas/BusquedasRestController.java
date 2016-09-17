@@ -37,11 +37,11 @@ public class BusquedasRestController {
 	public ResponseEntity<?> codigoEspacios()
 	{
 		logger.info("Servicio: codigoEspacios()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_ESPACIO\" FROM \"TB_ESPACIOS\" ORDER BY \"ID_ESPACIO\" ASC";
 
 			List<Espacios> resultado = new ArrayList<Espacios>();
@@ -57,6 +57,10 @@ public class BusquedasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -68,11 +72,11 @@ public class BusquedasRestController {
 	public ResponseEntity<?> campus(@RequestParam("ciudad") String ciudad)
 	{
 		logger.info("Servicio: campus()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID\" , \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\" ";
 			query += "WHERE \"CIUDAD\" = "+ciudad+" ORDER BY \"CAMPUS\" ASC";
 
@@ -91,7 +95,11 @@ public class BusquedasRestController {
       return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
 		}
 		catch (SQLException e) {
-	      e.printStackTrace();
+        e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
 	      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -103,11 +111,11 @@ public class BusquedasRestController {
 	public ResponseEntity<?> edificio(@RequestParam("campus") String campus)
 	{
 		logger.info("Servicio: edificio()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
 			query += "FROM \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = "+campus +" ORDER BY \"EDIFICIO\" ASC";
 
@@ -128,6 +136,10 @@ public class BusquedasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -139,11 +151,11 @@ public class BusquedasRestController {
 	public ResponseEntity<?> infoEdificio(@RequestParam("edificio") String edificio)
 	{
 		logger.info("Servicio: edificio()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
 			query += "FROM \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = '"+edificio+"'";
 
@@ -164,6 +176,10 @@ public class BusquedasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

@@ -65,6 +65,10 @@ public class Users {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            if (conn != null) {
+                try { conn.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -74,9 +78,10 @@ public class Users {
             method = RequestMethod.POST)
     public ResponseEntity<?> create(@RequestBody User user){
         logger.info("Servicio: create user", user);
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "INSERT INTO users(username,password,email,name,surnames,birthDate,role) values (?,?,?,?,?,?,?)";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
@@ -98,6 +103,10 @@ public class Users {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -107,9 +116,10 @@ public class Users {
             method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody User user){
         logger.info("Servicio: login user");
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "SELECT * FROM users WHERE username=? AND password=?";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
@@ -127,6 +137,10 @@ public class Users {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -136,9 +150,9 @@ public class Users {
             method = RequestMethod.PUT)
     public ResponseEntity<?> edit(@RequestBody User user){
         logger.info("Servicio: edit user");
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         try {
+            connection = ConnectionManager.getConnection();
             String password = user.getPassword();
             String query = "";
             if (password == null) {
@@ -176,6 +190,10 @@ public class Users {
 
         } catch (SQLException e) {
             e.printStackTrace();
+            if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

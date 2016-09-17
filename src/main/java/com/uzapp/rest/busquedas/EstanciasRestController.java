@@ -56,12 +56,12 @@ public class EstanciasRestController {
 	public ResponseEntity<?> infoEstancia(@RequestParam("estancia") String estancia)
 	{
 		logger.info("Servicio: id_estancia()");
-		Connection connection = ConnectionManager.getConnection();
-		
-		Gson gson = new Gson();
+		Connection connection = null;
 		Espacios resultado = null;
-
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			ResultSet respuesta = getInfoEstancia(connection, estancia);
 			if (respuesta.next()){
 				resultado = new Espacios(
@@ -75,10 +75,14 @@ public class EstanciasRestController {
 
 			System.out.println("resultado"+gson.toJson(resultado));
 			connection.close();
-			return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
-			
-		} catch (SQLException e) {
+			return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);	
+		}
+		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -90,11 +94,11 @@ public class EstanciasRestController {
 	public ResponseEntity<?> getEstancia(@RequestParam("estancia") String estancia)
 	{
 		logger.info("Servicio: getEstancia()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"A\".\"ID_ESPACIO\" ,\"A\".\"ID_CENTRO\", \"B\".\"TIPO_DE_USO\", round(\"A\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
 			query += "FROM \"TB_ESPACIOS\" \"A\",\"TB_TIPO_DE_USO\" \"B\"  ";
 			query += "WHERE \"A\".\"TIPO_DE_USO\" = \"B\".ID AND \"A\".\"ID_ESPACIO\" = '"+estancia+"'";
@@ -112,9 +116,12 @@ public class EstanciasRestController {
 				connection.close();
 				return new ResponseEntity<>("", HttpStatus.OK);
 			}
-			
 		} catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -126,11 +133,11 @@ public class EstanciasRestController {
 	public ResponseEntity<?> getAllEstancias(@RequestParam("estancia") String espacio)
 	{
 		logger.info("Servicio: getAllEstancias()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_ESPACIO\" ,\"ID_CENTRO\" ";
 			query += "FROM \"TB_ESPACIOS\" ";
 			query += "WHERE \"ID_ESPACIO\" LIKE \'"+espacio+"%\' ORDER BY \"ID_CENTRO\" ASC";
@@ -148,6 +155,10 @@ public class EstanciasRestController {
 		} 
 		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -159,11 +170,11 @@ public class EstanciasRestController {
 	public ResponseEntity<?> getCampusValues()
 	{
 		logger.info("Servicio: getCampusValues()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+			
 			String query = "SELECT \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\"";
 
 			System.out.println(query);
@@ -180,6 +191,10 @@ public class EstanciasRestController {
 		}
 		catch (SQLException e) {
         e.printStackTrace();
+        if (connection != null) {
+        	try { connection.close(); }
+        	catch(SQLException excep) { excep.printStackTrace(); }
+        }
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}

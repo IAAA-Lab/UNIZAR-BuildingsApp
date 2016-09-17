@@ -202,10 +202,11 @@ public class Photos {
 					method = RequestMethod.GET)
 	public ResponseEntity<?> getRoomApprovedPhotos(@PathVariable("roomId") String roomId)
 	{
+		Connection connection = null;
 		try {
 			logger.info("GET photos for room " + roomId);
 
-			Connection connection = ConnectionManager.getConnection();
+			connection = ConnectionManager.getConnection();
 
 			ResultSet rs = getRoomPhotosByStatus(connection, roomId, "Approved");
 			ArrayList<String> images = new ArrayList<String>();
@@ -218,6 +219,10 @@ public class Photos {
 		}
 		catch (Exception e){
 			e.printStackTrace();
+			if (connection != null) {
+          try { connection.close(); }
+          catch(SQLException excep) { excep.printStackTrace(); }
+      }
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -230,10 +235,10 @@ public class Photos {
 					method = RequestMethod.GET)
 	public ResponseEntity<?> getAllPhotos()
 	{
+		Connection connection = null;
 		try {
 			logger.info("GET all photos data");
-
-			Connection connection = ConnectionManager.getConnection();
+			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
 			ArrayList<String> images = new ArrayList<String>();
@@ -266,6 +271,10 @@ public class Photos {
 		}
 		catch (Exception e){
 			e.printStackTrace();
+			if (connection != null) {
+          try { connection.close(); }
+          catch(SQLException excep) { excep.printStackTrace(); }
+      }
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
@@ -282,12 +291,13 @@ public class Photos {
 																						@RequestParam("file") MultipartFile file)
 	{
 		if (!file.isEmpty()) {
+			Connection connection = null;
 			try 
 			{
+				connection = ConnectionManager.getConnection();
 				String[] photoNameParts = name.split("_");
 				String roomId = photoNameParts[0];
 
-				Connection connection = ConnectionManager.getConnection();
 				Photo photoRequest = createRequestObject(name, email, mode, connection);
 
 				if (photoRequest != null) {
@@ -328,6 +338,10 @@ public class Photos {
 			}
 			catch (Exception e) {
 				e.printStackTrace();
+				if (connection != null) {
+	          try { connection.close(); }
+	          catch(SQLException excep) { excep.printStackTrace(); }
+	      }
 				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
 		} else {
@@ -339,11 +353,14 @@ public class Photos {
   @RequestMapping(
           value = "/",
           method = RequestMethod.PUT)
-  public ResponseEntity<?> update(@RequestBody Photo photo){
-    logger.info("Servicio: update photo");
-    Connection connection = ConnectionManager.getConnection();
+  public ResponseEntity<?> update(@RequestBody Photo photo)
+  {
+  	Connection connection = null;
     try 
     {
+    	logger.info("Servicio: update photo");
+    	connection = ConnectionManager.getConnection();
+
     	String querySelect = "SELECT name,room_id FROM photos WHERE id="+photo.getId();
 			PreparedStatement preparedStmt = connection.prepareStatement(querySelect);
 			ResultSet rs = preparedStmt.executeQuery();
@@ -377,6 +394,10 @@ public class Photos {
       }
     } catch (Exception e) {
       e.printStackTrace();
+			if (connection != null) {
+          try { connection.close(); }
+          catch(SQLException excep) { excep.printStackTrace(); }
+      }
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -387,10 +408,11 @@ public class Photos {
           method = RequestMethod.DELETE)
   public ResponseEntity<?> deletePhoto(@PathVariable("id") int id)
   {
-    logger.info("Servicio: delete photo");
-    Connection connection = ConnectionManager.getConnection();
-
+  	Connection connection = null;
     try {
+    	logger.info("Servicio: delete photo");
+    	connection = ConnectionManager.getConnection();
+
     	//Retrieve photo name
     	String querySelect = "SELECT name FROM photos where id="+id;
 			PreparedStatement preparedStmt = connection.prepareStatement(querySelect);
@@ -430,6 +452,10 @@ public class Photos {
 			}
     } catch (SQLException e) {
       e.printStackTrace();
+			if (connection != null) {
+          try { connection.close(); }
+          catch(SQLException excep) { excep.printStackTrace(); }
+      }
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }

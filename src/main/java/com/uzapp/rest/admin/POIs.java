@@ -73,6 +73,10 @@ public class POIs {
 
         } catch (SQLException e) {
             e.printStackTrace();
+			if (conn != null) {
+                try { conn.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -85,9 +89,11 @@ public class POIs {
     public ResponseEntity<?> getAllPOIs()
     {
         logger.info("Servicio: getAllPOIs()");
-        Gson gson = new Gson();
-        Connection connection = ConnectionManager.getConnection();
+        Connection connection = null;
         try {
+            Gson gson = new Gson();
+            connection = ConnectionManager.getConnection();
+
             String query = "SELECT * FROM pois";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
@@ -117,6 +123,10 @@ public class POIs {
 
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -144,9 +154,11 @@ public class POIs {
         @PathVariable("floor") int floor)
     {
         logger.info("Servicio: getFloorPOIS()");
-        Gson gson = new Gson();
-        Connection connection = ConnectionManager.getConnection();
+        Connection connection = null;
         try {
+            Gson gson = new Gson();
+            connection = ConnectionManager.getConnection();
+
             String query = "SELECT * FROM pois WHERE estancia_id LIKE \'"+building+"%\' AND planta="+floor+" AND approved=true";
             System.out.println("Query: " + query);
             PreparedStatement preparedStmt = connection.prepareStatement(query);
@@ -175,6 +187,10 @@ public class POIs {
 
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -186,10 +202,11 @@ public class POIs {
     public ResponseEntity<?> create(@RequestBody POI poi)
     {
         logger.info("Servicio: create poi");
-        Gson gson = new Gson();
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         try {
+            Gson gson = new Gson();
+            connection = ConnectionManager.getConnection();
+
             String query = "INSERT INTO pois(ciudad,campus,edificio,estancia_id,estancia_nombre,planta,categoria,comment,dir,lat,lng,approved,email,updated) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
@@ -218,6 +235,10 @@ public class POIs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -228,8 +249,10 @@ public class POIs {
             method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody POI poi){
         logger.info("Servicio: update poi");
-        Connection connection = ConnectionManager.getConnection();
+        Connection connection = null;
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "UPDATE pois ";
             query += "SET  ciudad=?, campus=?, edificio=?, planta=?, categoria=?, comment=?, dir=?, approved=?, updated=?";
             query += "WHERE id=?";
@@ -258,6 +281,10 @@ public class POIs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -269,9 +296,11 @@ public class POIs {
     public ResponseEntity<?> deletePOI(@PathVariable("id") int id)
     {
         logger.info("Servicio: deletePOI");
-        Connection connection = ConnectionManager.getConnection();
+        Connection connection = null;
 
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "DELETE FROM pois WHERE id=?";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
@@ -293,6 +322,10 @@ public class POIs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -305,9 +338,11 @@ public class POIs {
     public ResponseEntity<?> getAllPendingPOIRequests()
     {
         logger.info("Servicio: getAllPendingPOIRequests()");
-        Gson gson = new Gson();
-        Connection connection = ConnectionManager.getConnection();
+        Connection connection = null;
         try {
+            Gson gson = new Gson();
+            connection = ConnectionManager.getConnection();
+
             String query = "SELECT r.*, p.ciudad, p.campus, p.edificio, p.estancia_nombre, p.planta, p.categoria as categoria_poi, p.comment as comment_poi ";
             query += "FROM request AS r INNER JOIN pois AS p ON r.poi=p.id WHERE r.status='pending'";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
@@ -360,6 +395,10 @@ public class POIs {
 
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -371,10 +410,11 @@ public class POIs {
     public ResponseEntity<?> request(@RequestBody POIRequest poiRequest)
     {
         logger.info("Servicio: request");
-        Gson gson = new Gson();
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         try {
+            Gson gson = new Gson();
+            connection = ConnectionManager.getConnection();
+
             String query = "INSERT INTO request(type,poi,category,comment,reason,status,email,request_date,action_date) values (?,?,?,?,?,?,?,?,?)";
             PreparedStatement preparedStmt = connection.prepareStatement(query);
 
@@ -398,6 +438,10 @@ public class POIs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -430,14 +474,14 @@ public class POIs {
     private ResponseEntity<?> approveEditionRequest(int id) {
         logger.info("Servicio: approveEditionRequest()");
 
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         PreparedStatement preparedStmtSelect = null;
         PreparedStatement preparedStmtUpdatePOI = null;
         PreparedStatement preparedStmtUpdateRequest = null;
         String error = null;
 
         try {
+            connection = ConnectionManager.getConnection();
             //Recover request data
             String querySelect = "SELECT * FROM request WHERE id=?";
             preparedStmtSelect = connection.prepareStatement(querySelect);
@@ -530,14 +574,14 @@ public class POIs {
     private ResponseEntity<?> approveDeleteRequest(int id) {
         logger.info("Servicio: approveDeleteRequest()");
         
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
         PreparedStatement preparedStmtSelect = null;
         PreparedStatement preparedStmtDelete = null;
         PreparedStatement preparedStmtUpdate = null;
         String error = null;
 
         try {
+            connection = ConnectionManager.getConnection();
             //Recover request data
             String querySelect = "SELECT * FROM request WHERE id=?";
             preparedStmtSelect = connection.prepareStatement(querySelect);
@@ -619,6 +663,10 @@ public class POIs {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+			if (connection != null) {
+                try { connection.close(); }
+                catch(SQLException excep) { excep.printStackTrace(); }
+            }
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
