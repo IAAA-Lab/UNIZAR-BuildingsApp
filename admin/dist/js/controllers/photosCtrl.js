@@ -254,8 +254,18 @@ $(function() {
                     action: function ( e, dt, node, config ) {
                         if ($('#dataTable-photos').DataTable().rows({ selected: true })[0].length == 1) {
                             var photoData = $('#dataTable-photos').DataTable().rows({ selected: true }).data()[0];
-                            $('#image-preview-modal').modal('show');
-                            $('#image-preview').attr('src', getConstants('PHOTOS_BASE_URL') + photoData.name);
+                            var imagePath = getConstants('PHOTOS_BASE_URL') + photoData.name;
+                            var tempImage = new Image();
+                            tempImage.src = imagePath;
+                            tempImage.onload = function() {
+                                console.log("tempImage ", tempImage.width, tempImage.height);
+                                var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                                console.log("resizedImage", resizedImage);
+                                $('#image-preview-modal').modal('show');
+                                $('#image-preview').css('width', resizedImage.width);
+                                $('#image-preview').css('height',resizedImage.height);
+                                $('#image-preview').attr('src', imagePath);
+                            }
                         }
                     }
                 },
@@ -412,13 +422,40 @@ $(function() {
             });
     });
 
+    var resizeImage = function(width, height) {
+        var maxWidth = getConstants('preview_sizes').maxWidth,
+            maxHeight = getConstants('preview_sizes').maxHeight,
+            ratio = Math.min(maxWidth / width, maxHeight / height);
+
+        return {
+            width: width*ratio,
+            height: height*ratio
+        };
+    }
+
     $("#preview-edit-photo-btn").on("click", function() {
-       $('#image-preview-modal').modal('show');
-       $('#image-preview').attr('src', getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val());
+        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val();
+        var tempImage = new Image();
+        tempImage.src = imagePath;
+        tempImage.onload = function() {
+            var resizedImage = resizeImage(tempImage.width, tempImage.height);
+            $('#image-preview-modal').modal('show');
+            $('#image-preview').css('width', resizedImage.width);
+            $('#image-preview').css('height',resizedImage.height);
+            $('#image-preview').attr('src', imagePath);
+        }
     });
 
     $("#preview-delete-photo-btn").on("click", function() {
-       $('#image-preview-modal').modal('show');
-       $('#image-preview').attr('src', getConstants('PHOTOS_BASE_URL') + $('#delete-photo-name').val());
+        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val();
+        var tempImage = new Image();
+        tempImage.src = imagePath;
+        tempImage.onload = function() {
+            var resizedImage = resizeImage(tempImage.width, tempImage.height);
+            $('#image-preview-modal').modal('show');
+            $('#image-preview').css('width', resizedImage.width);
+            $('#image-preview').css('height',resizedImage.height);
+            $('#image-preview').attr('src', imagePath);
+        }
     });
 });

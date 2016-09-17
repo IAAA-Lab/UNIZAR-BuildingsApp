@@ -12,6 +12,11 @@ var constants;
 if (window.location.hostname === 'localhost') constants = constants_dev;
 else constants = constants_prod;
 
+constants.preview_sizes = {
+    maxWidth: 720,
+    maxHeight: 380
+};
+
 constants.categories = [
         { label: 'Secretaría', value: 'secretaria'},
         { label: 'Baños', value: 'bathroom'},
