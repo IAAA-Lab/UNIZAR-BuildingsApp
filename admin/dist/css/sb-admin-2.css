@@ -379,6 +379,26 @@ table.dataTable thead .sorting:after {
     pointer-events: none;
 }
 
+/* HOME PAGE */
+#admin-home-intro h4 {
+    font-weight: bold;
+}
+#admin-home-intro p, #admin-home-intro li {
+    font-size: 16px;
+}
+#admin-home-intro li {
+    padding: 5px 0px;
+}
+#admin-home-intro .section-title {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: 10px;
+    padding-top: 20px;
+}
+#admin-home-intro .section-resume {
+    margin-left: 20px;
+}
+
 /* EDIT USER PAGE */
 #edit-user-panel {
     margin-top: 20px;
@@ -412,7 +432,8 @@ table.dataTable tbody tr.selected {
 }
 
 #admin-poi-explanation, #admin-poi-requests-explanation,
-#admin-upload-photo-explanation, #admin-photos-explanation {
+#admin-upload-photo-explanation, #admin-photos-explanation,
+#admin-home-intro {
     text-align: justify;
     font-size: 15px;
     color: black;
