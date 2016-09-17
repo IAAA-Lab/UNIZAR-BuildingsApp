@@ -8,19 +8,17 @@ $(function() {
         }
     };
 
-    /*var firstLoad = true;
-
-    $('body').ready( function () {
-        console.log("Hash", window.location.hash);
-        if (window.location.hash.length > 0 && firstLoad) {
+    $(document).ready(function(){
+        var children = $('#page-wrapper').children(),
+            hash = window.location.hash;
+        if (typeof(children.lenght) == 'undefined' && hash.length > 0) {
             $('body').mask('Loading...');
-            var target = window.location.hash + '.html';
+            var target = hash.substr(1,hash.length-1) + '.html';
             console.log("Go to: ", target);
-            firstLoad = false;
             $('#page-wrapper').empty();
             $('#page-wrapper').load(target,{},function(){ $('body').unmask(); });
         }
-    });*/
+    });
 
     $('.dropdown-toggle').click(function(e){
         var dropdown_user = $('.dropdown-user');
