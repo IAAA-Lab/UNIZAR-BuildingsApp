@@ -15,11 +15,9 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             $ionicLoading.show({ template: 'Cargando...'});
             infoService.getEspacios().then(
                 function (data) {
+                    console.log("Success on busquedaEspacios()", data);
                     $rootScope.codigoEspacios = data;
                     $ionicLoading.hide();
-                    if (data.length == 0){
-                        $rootScope.resultadoCodigoEspacioVacio = true;
-                    }
                 },
                 function(err){
                     console.log("Error on busquedaEspacios", err);
@@ -38,15 +36,12 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             $ionicLoading.show({ template: 'Cargando...'});
             infoService.getCampus(ciudad).then(
                 function (data) {
+                    console.log("selectCampus(): Success on select " + ciudad + " campus", data);
                     $rootScope.Campus = data;
                     $ionicLoading.hide();
-                    console.log(data);
-                    if (data.length == 0){
-                        $rootScope.resultadoCampusVacio = true;
-                    }
                 },
                 function(err){
-                    console.log("Error on selectCampus", err);
+                    console.log("selectCampus(): Error on select " + ciudad + " campus", err);
                     $ionicLoading.hide();
                     var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
                     errorMsg += 'los campus de la ciudad</div>';
@@ -60,15 +55,12 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             $ionicLoading.show({ template: 'Cargando...'});
             infoService.getEdificio(campus).then(
                 function (data) {
+                    console.log("selectEdificio(): Success on select " + campus + " buildings", data);
                     $rootScope.Edificio = data;
                     $ionicLoading.hide();
-                    console.log(data);
-                    if (data.length == 0){
-                        $rootScope.resultadoEdificioVacio = true;
-                    }
                 },
                 function(err){
-                    console.log("Error on selectEdificio", err);
+                    console.log("selectEdificio(): Error on search " + campus + " buildings", err);
                     $ionicLoading.hide();
                     var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
                     errorMsg += 'los edificios del campus</div>';
@@ -92,15 +84,12 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             $ionicLoading.show({ template: 'Cargando...'});
             infoService.getAllEstancias($rootScope.EdificioEscogido+planta).then(
                 function (data) {
+                    console.log("selectEstancia(): Success on select floor rooms", data);
                     $rootScope.Estancias = data;
                     $ionicLoading.hide();
-                    console.log(data);
-                    if (data.length == 0){
-                        $rootScope.resultadoEstanciasVacio = true;
-                    }
                 },
                 function(err){
-                    console.log("Error on selectEstancia", err);
+                    console.log("selectEstancia(): Error on select floor rooms", err);
                     $ionicLoading.hide();
                     var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
                     errorMsg += 'los espacios de la planta</div>';
@@ -113,12 +102,14 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
         $scope.busqueda = function() {
             if(($("#selectCiudad option:selected").text().trim() == "")||($("#selectCampus option:selected").text().trim() == "")||
                 ($("#selectEdificio option:selected").text().trim() == "")|| ($("#selectPlanta option:selected").text().trim() == "")||
-                ($("#selectEstancia option:selected").text().trim() == "")){//Comprobar que no haya ningún select vacio
-                alert($scope.translation.ALERT_SELECT);
+                ($("#selectEstancia option:selected").text().trim() == "")) {
+                var errorMsg = '<div class="text-center">Por favor, rellene<br>';
+                errorMsg += 'el formulario completo</div>';
+                $scope.showInfoPopup('¡Aviso!', errorMsg);
             }
             else{
                 localStorage.estancia = $("#selectEstancia option:selected").val().trim();
-                $window.location = "#/app/estancia";
+                $window.location = "#/app/roomDetails";
             }
         };
     });

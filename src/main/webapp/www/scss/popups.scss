@@ -1,0 +1,23 @@
+/* IONIC POPUPS */
+
+#confirm-create-poi-popup, #confirm-edit-poi-popup, 
+#confirm-delete-poi-popup, #confirm-upload-photo-popup {
+  
+  input[type="checkbox"] {
+    width: 10% !important;
+  }
+
+  p {
+  	text-align: justify;
+  }
+
+  .checkbox-inline label {
+  	vertical-align: top;
+  }
+}
+
+.popup {
+	p {
+		text-align: justify;
+	}
+}

@@ -7,7 +7,7 @@
 var UZCampusWebMapApp = angular.module(
             'UZCampusWebMapApp',
             //['ionic', 'starter.controllers', 'starter.services', 'angularSlideables','ngResource','ngRoute']
-            ['ionic', 'angularSlideables','ngResource','ngRoute']
+            ['ionic', 'angularSlideables','ngResource','ngRoute','ngCordova']
     );
 
 UZCampusWebMapApp.run(function($ionicPlatform) {
@@ -22,7 +22,6 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
             // StatusBar.styleDefault();
         }
       });
-
     })
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/:type/:ciudad', {
@@ -99,21 +98,21 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
                   }
               }
           })
-          .state('app.estancia', {
-              url: "/estancia",
+          .state('app.roomDetails', {
+              url: "/roomDetails",
               views: {
                   'menuContent':{
-                      templateUrl: "templates/estancia.html",
-                      controller: 'EstanciaCtrl'
+                      templateUrl: "templates/roomDetails.html",
+                      controller: 'RoomDetailsCtrl'
                   }
               }
           })
-          .state('app.foto', {
-              url: "/foto",
+          .state('app.photos', {
+              url: "/photos",
               views: {
                   'menuContent':{
-                      templateUrl: "templates/foto.html",
-                      controller: 'FotoCtrl'
+                      templateUrl: "templates/photos.html",
+                      controller: 'PhotosCtrl'
                   }
               }
           })

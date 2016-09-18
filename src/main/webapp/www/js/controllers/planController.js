@@ -4,18 +4,9 @@
 
 UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $ionicLoading, $ionicPopup, geoService, infoService, poisService, sharedProperties, APP_CONSTANTS) {
 
-    function isValidEmailAddress(emailAddress) {
-        var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
-        return pattern.test(emailAddress);
-    };
-
     //This code will be executed every time the controller view is loaded
     $scope.$on('$ionicView.beforeEnter', function(){
-
         geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
-
-        //if (typeof(sharedProperties.getPlano()) !== 'undefined')
-            //geoService.updatePOIs(sharedProperties, poisService);
     });
 
     $scope.pois = APP_CONSTANTS.pois;
@@ -39,11 +30,6 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
         console.log("Modal " + modal.modalEl.id + " hide");
     });
 
-    /*$scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-      $scope.modalCreatePOI.remove();
-      $scope.modalEditPOI.remove();
-    });*/
-
     //Open the modal for add a POI and load data in the modal form
     $scope.openCreatePOIModal = function(e) {
         $ionicLoading.show({template: 'Cargando...'});
@@ -54,7 +40,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
         infoService.getInfoEstancia(id).then(
             function (data) {
-                if (data.length === 0) $ionicLoading.hide();
+                if (data.length === 0 || data == null) $ionicLoading.hide();
                 else {
                     $scope.existsCity = (data.ciudad != null && typeof data.ciudad !== 'undefined') ? true : false;
                     $scope.existsCampus = (data.campus != null && typeof data.campus !== 'undefined') ? true : false;
@@ -95,7 +81,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     $scope.confirmCreatePOI = function(data) {
 
         var confirmCreatePOIpopup = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmCreatePOI.html',
+            templateUrl: 'templates/popups/confirmCreatePOI.html',
             title: 'Confirmar creación de POI',
             scope: $scope,
             buttons: [
@@ -106,7 +92,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         e.preventDefault();
                         var emailChecked = $('#confirm-create-poi-popup input[type="checkbox"]').is(':checked'),
                             email = $($('#confirm-create-poi-popup input')[1]).val(),
-                            emailValid = isValidEmailAddress(email);
+                            emailValid = infoService.isValidEmailAddress(email);
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
                             $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
@@ -195,7 +181,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.confirmEditPOI = function(data) {
         var confirmEditPOIpopup = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmEditPOI.html',
+            templateUrl: 'templates/popups/confirmEditPOI.html',
             title: 'Confirmar modificación',
             scope: $scope,
             buttons: [
@@ -206,7 +192,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         e.preventDefault();
                         var emailChecked = $('#confirm-edit-poi-popup input[type="checkbox"]').is(':checked'),
                             email = $($('#confirm-edit-poi-popup input')[1]).val(),
-                            emailValid = isValidEmailAddress(email);
+                            emailValid = infoService.isValidEmailAddress(email);
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
                             $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
@@ -256,7 +242,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.confirmDeletePOI = function(data) {
         var confirmDeletePOI = $ionicPopup.show({
-            templateUrl: 'templates/pois/confirmDeletePOI.html',
+            templateUrl: 'templates/popups/confirmDeletePOI.html',
             title: 'Confirmar modificación',
             scope: $scope,
             buttons: [
@@ -267,7 +253,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         e.preventDefault();
                         var emailChecked = $('#confirm-edit-poi-popup input[type="checkbox"]').is(':checked'),
                             email = $($('#confirm-delete-poi-popup input')[1]).val(),
-                            emailValid = isValidEmailAddress(email),
+                            emailValid = infoService.isValidEmailAddress(email),
                             reason = $('#confirm-delete-poi-popup textarea').val();
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
