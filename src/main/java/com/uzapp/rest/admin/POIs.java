@@ -1,10 +1,14 @@
 package com.uzapp.rest.admin;
 
+import com.uzapp.dominio.POI;
+import com.uzapp.dominio.POIRequest;
+
 import com.uzapp.bd.ConnectionManager;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +17,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
-import com.uzapp.dominio.POI;
-import com.uzapp.dominio.POIRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -47,7 +51,7 @@ public class POIs {
                         rs.getDouble("lng"),
                         rs.getBoolean("approved"),
                         rs.getString("email"),
-                        new java.util.Date(rs.getTimestamp("updated").getTime()));
+                        rs.getTimestamp("updated").toLocalDateTime());
             }
             return new ResponseEntity<>("{\"data\":"+gson.toJson(poi)+"}", HttpStatus.OK);
 
@@ -127,7 +131,7 @@ public class POIs {
                         rs.getDouble("lng"),
                         rs.getBoolean("approved"),
                         rs.getString("email"),
-                        new java.util.Date(rs.getTimestamp("updated").getTime())));
+                        rs.getTimestamp("updated").toLocalDateTime()));
             }
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
         }
@@ -243,7 +247,7 @@ public class POIs {
             preparedStmt.setDouble(11, poi.getLongitude());
             preparedStmt.setBoolean(12, false);
             preparedStmt.setString(13, poi.getEmail());
-            preparedStmt.setTimestamp(14, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setTimestamp(14, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             int rowsInserted =preparedStmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -291,8 +295,8 @@ public class POIs {
             preparedStmt.setString(6, poi.getComments());
             preparedStmt.setString(7, poi.getAddress());
             preparedStmt.setBoolean(8, poi.getApproved());
-            preparedStmt.setInt(9, poi.getId());
-            preparedStmt.setTimestamp(10, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setTimestamp(9, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
+            preparedStmt.setInt(10, poi.getId());
             int rowsInserted =preparedStmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -397,8 +401,8 @@ public class POIs {
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
                         rs.getInt("planta"),
-                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
-                        new java.util.Date(rs.getTimestamp("action_date").getTime())));
+                        rs.getTimestamp("request_date").toLocalDateTime(),
+                        rs.getTimestamp("action_date").toLocalDateTime()));
                 }
                 //If es an {delete} request, get original category and comment
                 else {
@@ -416,8 +420,8 @@ public class POIs {
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
                         rs.getInt("planta"),
-                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
-                        new java.util.Date(rs.getTimestamp("action_date").getTime())));
+                        rs.getTimestamp("request_date").toLocalDateTime(),
+                        rs.getTimestamp("action_date").toLocalDateTime()));
                 }
             }
             return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
@@ -459,8 +463,8 @@ public class POIs {
             preparedStmt.setString(5, poiRequest.getReason());
             preparedStmt.setString(6, "pending");
             preparedStmt.setString(7, poiRequest.getEmail());
-            preparedStmt.setTimestamp(8, new java.sql.Timestamp(new java.util.Date().getTime()));
-            preparedStmt.setTimestamp(9, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setTimestamp(8, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
+            preparedStmt.setTimestamp(9, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             int rowsInserted =preparedStmt.executeUpdate();
 
             if (rowsInserted > 0) {
@@ -497,8 +501,8 @@ public class POIs {
                         rs.getString("comment"),
                         rs.getString("status"),
                         rs.getString("email"),
-                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
-                        new java.util.Date(rs.getTimestamp("action_date").getTime()));
+                        rs.getTimestamp("request_date").toLocalDateTime(),
+                        rs.getTimestamp("action_date").toLocalDateTime());
             }
             return poiRequest;
         } 
@@ -538,13 +542,13 @@ public class POIs {
             preparedStmtUpdatePOI = connection.prepareStatement(queryUpdatePois);
             preparedStmtUpdatePOI.setString(1, poiRequest.getComment());
             preparedStmtUpdatePOI.setString(2, poiRequest.getCategory());
-            preparedStmtUpdatePOI.setTimestamp(3, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdatePOI.setTimestamp(3, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             preparedStmtUpdatePOI.setInt(4, poiRequest.getPOI());
             
             //Update status of the request
             String queryUpdateRequest = "UPDATE request SET status='approved', action_date=? WHERE id=?";
             preparedStmtUpdateRequest = connection.prepareStatement(queryUpdateRequest);
-            preparedStmtUpdateRequest.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdateRequest.setTimestamp(1, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             preparedStmtUpdateRequest.setInt(2, id);
 
             //Execute queries
@@ -601,8 +605,8 @@ public class POIs {
                         rs.getString("status"),
                         rs.getString("email"),
                         rs.getString("reason"),
-                        new java.util.Date(rs.getTimestamp("request_date").getTime()),
-                        new java.util.Date(rs.getTimestamp("action_date").getTime()));
+                        rs.getTimestamp("request_date").toLocalDateTime(),
+                        rs.getTimestamp("action_date").toLocalDateTime());
             }
             return poiRequest;
         } 
@@ -644,7 +648,7 @@ public class POIs {
             //Update status of the request
             String queryUpdate = "UPDATE request SET status='approved', action_date=? WHERE id=?";
             preparedStmtUpdate = connection.prepareStatement(queryUpdate);
-            preparedStmtUpdate.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmtUpdate.setTimestamp(1, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             preparedStmtUpdate.setInt(2, id);
 
             //Execute queries
@@ -700,7 +704,7 @@ public class POIs {
             String query = "UPDATE request SET status='rejected', action_date=? WHERE id=?";
             preparedStmt = connection.prepareStatement(query);
 
-            preparedStmt.setTimestamp(1, new java.sql.Timestamp(new java.util.Date().getTime()));
+            preparedStmt.setTimestamp(1, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             preparedStmt.setInt(2, id);
             int rowsInserted =preparedStmt.executeUpdate();
 

@@ -1,5 +1,5 @@
 package com.uzapp.dominio;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class POIRequest {
 
@@ -18,13 +18,13 @@ public class POIRequest {
     private String room;
     private int floor;
 
-    private Date requestDate;
-    private Date actionDate;
+    private LocalDateTime requestDate;
+    private LocalDateTime actionDate;
 
     public POIRequest() {}
 
     public POIRequest(int id, String type, int poi, String category, String comment, String status, 
-        String email, Date requestDate, Date actionDate){
+        String email, LocalDateTime requestDate, LocalDateTime actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
@@ -55,7 +55,7 @@ public class POIRequest {
     }
 
     public POIRequest(int id, String type, int poi, String status, String email,
-        String reason, Date requestDate, Date actionDate){
+        String reason, LocalDateTime requestDate, LocalDateTime actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
@@ -67,7 +67,7 @@ public class POIRequest {
     }
 
     public POIRequest(int id, String type, int poi, String category, String comment, String reason, String email, 
-        String status, String city, String campus, String building, String room, int floor, Date requestDate, Date actionDate){
+        String status, String city, String campus, String building, String room, int floor, LocalDateTime requestDate, LocalDateTime actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;
@@ -109,9 +109,9 @@ public class POIRequest {
     public String getEmail() { return this.email; }
     public void setEmail(String email) { this.email = email; }
 
-    public Date getRequestDate() { return this.requestDate; }
-    public void setRequestDate(Date requestDate) { this.requestDate = requestDate; }
+    public LocalDateTime getRequestDate() { return this.requestDate; }
+    public void setRequestDate(LocalDateTime requestDate) { this.requestDate = requestDate; }
 
-    public Date getActionDate() { return this.actionDate; }
-    public void setActionDate(Date actionDate) { this.actionDate = actionDate; }
+    public LocalDateTime getActionDate() { return this.actionDate; }
+    public void setActionDate(LocalDateTime actionDate) { this.actionDate = actionDate; }
 }

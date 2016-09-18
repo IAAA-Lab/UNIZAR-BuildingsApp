@@ -120,7 +120,7 @@ public class Photos {
       preparedStmt.setString(9, photo.getEmail());
       preparedStmt.setString(10, photo.getStatus());
       preparedStmt.setTimestamp(11, updated);
-      int rowsInserted =preparedStmt.executeUpdate();
+      int rowsInserted = preparedStmt.executeUpdate();
 
       if (rowsInserted > 0) {
           return new ResponseEntity<>(gson.toJson(photo), HttpStatus.OK);
