@@ -6,11 +6,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     //This code will be executed every time the controller view is loaded
     $scope.$on('$ionicView.beforeEnter', function(){
-
         geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
-
-        //if (typeof(sharedProperties.getPlano()) !== 'undefined')
-            //geoService.updatePOIs(sharedProperties, poisService);
     });
 
     $scope.pois = APP_CONSTANTS.pois;
@@ -34,11 +30,6 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
         console.log("Modal " + modal.modalEl.id + " hide");
     });
 
-    /*$scope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams){
-      $scope.modalCreatePOI.remove();
-      $scope.modalEditPOI.remove();
-    });*/
-
     //Open the modal for add a POI and load data in the modal form
     $scope.openCreatePOIModal = function(e) {
         $ionicLoading.show({template: 'Cargando...'});
@@ -49,7 +40,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
         infoService.getInfoEstancia(id).then(
             function (data) {
-                if (data.length === 0) $ionicLoading.hide();
+                if (data.length === 0 || data == null) $ionicLoading.hide();
                 else {
                     $scope.existsCity = (data.ciudad != null && typeof data.ciudad !== 'undefined') ? true : false;
                     $scope.existsCampus = (data.campus != null && typeof data.campus !== 'undefined') ? true : false;
