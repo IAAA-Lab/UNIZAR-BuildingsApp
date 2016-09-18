@@ -246,6 +246,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         sharedProperties.setPlano(plano);
                     }
                 });
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log("Error getting plan of " + edificio, jqXHR, errorThrown);
+                var errorMsg = '<div class="text-center">No se dispone del plano<br>';
+                errorMsg += 'de la planta seleccionada</div>';
+                showInfoPopup('¡Error!', errorMsg);
+                window.location = "#/app/map";
             }
         });
 
