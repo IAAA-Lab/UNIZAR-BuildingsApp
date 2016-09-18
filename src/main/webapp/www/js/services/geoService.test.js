@@ -284,7 +284,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 plano.setView([coordenadas[1],coordenadas[0]],20);
                 addLegendToPlan = false;
             } else {
-                plano = new L.map('plan',{maxZoom:25}).setView([coordenadas[1],coordenadas[0]],20);
+                var planOptions = {
+                    center: L.latLng(coordenadas[1], coordenadas[0]),
+                    zoom: 20,
+                    maxZoom: 21,
+                    minZoom: 19,
+                    maxBounds: L.geoJson(data).getBounds()
+                };
+                plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
             }
 
             L.geoJson(data, {
