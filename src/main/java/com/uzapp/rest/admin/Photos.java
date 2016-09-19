@@ -443,7 +443,7 @@ public class Photos {
 
 			//Delete photo from disk
 			String appPath = context.getRealPath("");
-			String fullPathFile = appPath + photosPath + File.separator + name;
+			String fullPathFile = appPath + File.separator + photosPath + File.separator + name;
 			logger.info("File path to delete", fullPathFile);
 
 			File fileToDelete = new File(fullPathFile);
