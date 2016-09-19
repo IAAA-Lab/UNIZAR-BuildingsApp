@@ -5,7 +5,6 @@ bower_components
 node_modules
 plugins
 platforms
-resources
 
 # ---------- Java 
 *.class
