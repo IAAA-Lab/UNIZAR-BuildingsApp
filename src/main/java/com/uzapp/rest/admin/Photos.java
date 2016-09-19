@@ -151,7 +151,6 @@ public class Photos {
 		logger.info("Query: " + query);
 
 		ResultSet rs = preparedStmt.executeQuery();
-		preparedStmt.close();
 		return rs;
 	}
 
