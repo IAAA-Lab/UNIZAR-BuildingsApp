@@ -49,7 +49,11 @@ $(function() {
                 formData.append('name', $('input[name=id_espacio_opt1]')[0].value.trim() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt1]')[0].files[0]);
                 formData.append('mode', 'admin');
-                formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
+                if (sessionStorage.getItem('userData') == null || typeof(sessionStorage.getItem('userData'))=='unefined') {
+                    formData.append('email',null);
+                } else {
+                    formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
+                }
                 console.log("formData", formData);
                 $('body').mask("Loading...");
                 $.ajax({
@@ -217,11 +221,13 @@ $(function() {
                 formData.append('name', $('select[name=id_espacio_opt2]').val() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt2]')[0].files[0]);
                 formData.append('mode', 'admin');
-                formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
-                
+                if (sessionStorage.getItem('userData') == null || typeof(sessionStorage.getItem('userData'))=='unefined') {
+                    formData.append('email',null);
+                } else {
+                    formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
+                }
                 console.log("formData", formData);
                 $('body').mask("Loading...");
-
                 uploadPhoto(
                     formData,
                     function(data){
