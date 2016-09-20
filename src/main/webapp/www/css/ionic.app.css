@@ -9331,15 +9331,18 @@ img[usemap] {
 
 /* IONIC POPUPS */
 #confirm-create-poi-popup input[type="checkbox"], #confirm-edit-poi-popup input[type="checkbox"],
-#confirm-delete-poi-popup input[type="checkbox"], #confirm-upload-photo-popup input[type="checkbox"] {
+#confirm-delete-poi-popup input[type="checkbox"], #confirm-upload-photo-popup input[type="checkbox"],
+#confirm-upload-photo2-popup input[type="checkbox"] {
   width: 10% !important; }
 
 #confirm-create-poi-popup p, #confirm-edit-poi-popup p,
-#confirm-delete-poi-popup p, #confirm-upload-photo-popup p {
+#confirm-delete-poi-popup p, #confirm-upload-photo-popup p,
+#confirm-upload-photo2-popup p {
   text-align: justify; }
 
 #confirm-create-poi-popup .checkbox-inline label, #confirm-edit-poi-popup .checkbox-inline label,
-#confirm-delete-poi-popup .checkbox-inline label, #confirm-upload-photo-popup .checkbox-inline label {
+#confirm-delete-poi-popup .checkbox-inline label, #confirm-upload-photo-popup .checkbox-inline label,
+#confirm-upload-photo2-popup .checkbox-inline label {
   vertical-align: top; }
 
 .popup p {

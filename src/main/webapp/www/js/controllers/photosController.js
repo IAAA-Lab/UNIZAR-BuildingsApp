@@ -106,10 +106,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         };
 
         //Function to check is email has been checked and is a valid one
-        function checkEmail() {
-            var emailChecked = $('#confirm-upload-photo-popup input[type="checkbox"]').is(':checked'),
-                email = $($('#confirm-upload-photo-popup input')[1]).val(),
-                emailValid = infoService.isValidEmailAddress(email);
+        function checkEmail(emailChecked, email) {
+            var emailValid = infoService.isValidEmailAddress(email);
 
             if (!emailChecked) {
                 return 1;
@@ -127,42 +125,74 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
         $scope.addPhoto = function(data) {
 
             $scope.hideNoPhotosText = true;
-
-            var addPhotoPopup = $ionicPopup.show({
-                templateUrl: 'templates/popups/confirmUploadPhoto.html',
-                title: 'Subir foto',
-                scope: $scope,
-                buttons: [
-                    {
-                        text: '<i class="fa fa-camera" aria-hidden="true"></i>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            e.preventDefault();
-                            var email = checkEmail();
-                            if (email != 0) {
-                                if (email == 1) email = '';
-                                $scope.selectPicture(email, addPhotoPopup, 'CAMERA');
+            if (typeof(Camera) !== 'undefined') {
+                var addPhotoPopup = $ionicPopup.show({
+                    templateUrl: 'templates/popups/confirmUploadPhoto.html',
+                    title: 'Subir foto',
+                    scope: $scope,
+                    buttons: [
+                        {
+                            text: '<i class="fa fa-camera" aria-hidden="true"></i>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                e.preventDefault();
+                                var emailChecked = $('#confirm-upload-photo-popup input[type="checkbox"]').is(':checked'),
+                                    emailValue = $($('#confirm-upload-photo-popup input')[1]).val();
+                                var email = checkEmail(emailChecked, emailValue);
+                                if (email != 0) {
+                                    if (email == 1) email = '';
+                                    $scope.selectPicture(email, addPhotoPopup, 'CAMERA');
+                                }
                             }
-                        }
-                    },
-                    {
-                        text: '<i class="fa fa-folder-open-o" aria-hidden="true"></i>',
-                        type: 'button-positive',
-                        onTap: function(e) {
-                            e.preventDefault();
-                            var email = checkEmail();
-                            if (email != 0) {
-                                if (email == 1) email = '';
-                                $scope.selectPicture(email, addPhotoPopup, 'PHOTOLIBRARY');
+                        },
+                        {
+                            text: '<i class="fa fa-folder-open-o" aria-hidden="true"></i>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                e.preventDefault();
+                                var emailChecked = $('#confirm-upload-photo-popup input[type="checkbox"]').is(':checked'),
+                                    emailValue = $($('#confirm-upload-photo-popup input')[1]).val();
+                                var email = checkEmail(emailChecked, emailValue);
+                                if (email != 0) {
+                                    if (email == 1) email = '';
+                                    $scope.selectPicture(email, addPhotoPopup, 'PHOTOLIBRARY');
+                                }
                             }
+                        },
+                        { 
+                            text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
+                            type: 'button-assertive'
                         }
-                    },
-                    { 
-                        text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
-                        type: 'button-assertive'
-                    }
-                ]
-            });
+                    ]
+                });
+            }
+            else {
+                var addPhotoPopup = $ionicPopup.show({
+                    templateUrl: 'templates/popups/confirmUploadPhoto2.html',
+                    title: 'No hay fotos',
+                    scope: $scope,
+                    buttons: [
+                        {
+                            text: '<i class="fa fa-upload" aria-hidden="true"></i>',
+                            type: 'button-positive',
+                            onTap: function(e) {
+                                e.preventDefault();
+                                var emailChecked = $('#confirm-upload-photo2-popup input[type="checkbox"]').is(':checked'),
+                                    emailValue = $($('#confirm-upload-photo2-popup input')[1]).val();
+                                var email = checkEmail(emailChecked, emailValue);
+                                if (email != 0) {
+                                    if (email == 1) email = '';
+                                    $scope.uploadPictureFromInput(email,addPhotoPopup);
+                                }
+                            }
+                        },
+                        { 
+                            text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
+                            type: 'button-assertive'
+                        }
+                    ]
+                });
+            }
         };
 
         //Open camera or gallery to select a photo
@@ -196,7 +226,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         //Upload picture to server
         $scope.uploadPicture = function(email, popup) {
-            $ionicLoading.show({template: 'Sto inviando la foto...'});
+            $ionicLoading.show({template: 'Enviando la foto...'});
             var fileURL = $scope.picURL;
             var options = new FileUploadOptions();
             options.fileKey = 'file';
@@ -236,6 +266,61 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                     $ionicLoading.show({template: 'Error al enviar la imagen', duration:1500});
                 }, options, true);
         };
+
+        //Upload picture to server
+        $scope.uploadPictureFromInput = function(email, popup) {
+            $ionicLoading.show({template: 'Enviando la foto...'});
+            var file = $('input[name=imageUpload]')[0].files[0];
+
+            if (typeof(file) == 'undefined') {
+                $ionicLoading.show({ template: 'Por favor seleccione una imagen', duration: 1500});
+            }
+            else if (file.type.indexOf("image") == -1) {
+                $ionicLoading.show({ template: 'Por favor seleccione una imagen válida', duration: 1500});
+            }
+            else if (file.size > 1048576) {
+                //TODO: [DGP] Delete condition when bug fixed on server side
+                $ionicLoading.show({ template: 'El tamaño máximo permitido es de 1MB', duration: 1500});
+            }
+            else {
+                var formData = new FormData();
+                formData.append('file', file);
+                formData.append('name', [localStorage.estancia, new Date().getTime()].join('_') + '.jpg');
+                formData.append('email', email);
+                formData.append('mode', 'user');
+                console.log("formData", formData);
+                $.ajax({
+                    url :  APP_CONSTANTS.URI_API + 'photos/upload/',
+                    type: "POST",
+                    data : formData,
+                    contentType: false,
+                    cache: false,
+                    processData: false,
+                    success: function(data, textStatus, jqXHR)
+                    {
+                        console.log("Success uploading photo to server", arguments);
+                        popup.close();
+                        $ionicLoading.hide();
+                        var alertPopup = $ionicPopup.alert({
+                            title: 'Foto subida con éxito',
+                            template: '<p>La imagen se ha enviado con éxito. Recuerde que primero deberá ser aprobada por un administrador</p>'
+                        });
+                        alertPopup.then(function(res){
+                            if ($('.popup-container').length > 0) {
+                                $('.popup-container').remove();
+                            }
+                        });
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        console.log("Error uploading photo to server", arguments);
+                        $ionicLoading.hide();
+                        $ionicLoading.show({template: 'Error al enviar la imagen', duration:1500});
+                    }
+                });     
+            }
+        };
+
 
         /*$scope.volver = function() {
             $window.history.back();
