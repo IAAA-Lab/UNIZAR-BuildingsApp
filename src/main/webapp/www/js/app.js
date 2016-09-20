@@ -14,7 +14,7 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
       $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        if (cordova && cordova.plugins.Keyboard) {
+        if (typeof(cordova) != 'undefined' && cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
       });
