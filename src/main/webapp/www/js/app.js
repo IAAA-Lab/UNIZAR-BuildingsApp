@@ -7,22 +7,17 @@
 var UZCampusWebMapApp = angular.module(
             'UZCampusWebMapApp',
             //['ionic', 'starter.controllers', 'starter.services', 'angularSlideables','ngResource','ngRoute']
-            ['ionic', 'angularSlideables','ngResource','ngRoute']
+            ['ionic', 'angularSlideables','ngResource','ngRoute','ngCordova']
     );
 
 UZCampusWebMapApp.run(function($ionicPlatform) {
       $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-        if (window.cordova && window.cordova.plugins.Keyboard) {
+        if (typeof(cordova) != 'undefined' && cordova.plugins.Keyboard) {
             cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
         }
-        if (window.StatusBar) {
-            // org.apache.cordova.statusbar required
-            // StatusBar.styleDefault();
-        }
       });
-
     })
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/:type/:ciudad', {
@@ -99,21 +94,21 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
                   }
               }
           })
-          .state('app.estancia', {
-              url: "/estancia",
+          .state('app.roomDetails', {
+              url: "/roomDetails",
               views: {
                   'menuContent':{
-                      templateUrl: "templates/estancia.html",
-                      controller: 'EstanciaCtrl'
+                      templateUrl: "templates/roomDetails.html",
+                      controller: 'RoomDetailsCtrl'
                   }
               }
           })
-          .state('app.foto', {
-              url: "/foto",
+          .state('app.photos', {
+              url: "/photos",
               views: {
                   'menuContent':{
-                      templateUrl: "templates/foto.html",
-                      controller: 'FotoCtrl'
+                      templateUrl: "templates/photos.html",
+                      controller: 'PhotosCtrl'
                   }
               }
           })

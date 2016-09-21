@@ -356,7 +356,7 @@ table.dataTable thead .sorting:after {
 
 
 /* GENERAL */
-.form-control[disabled] {
+.form-control[disabled], .btn[disabled] {
     cursor: default !important;
 }
 .form-error {
@@ -370,10 +370,33 @@ table.dataTable thead .sorting:after {
 .page-header {
     color: #337ab7 !important;
 }
+.panel-heading {
+    font-weight: bold;
+}
 
 /* DISABLED LINKS */
 .disabled-link {
     pointer-events: none;
+}
+
+/* HOME PAGE */
+#admin-home-intro h4 {
+    font-weight: bold;
+}
+#admin-home-intro p, #admin-home-intro li {
+    font-size: 16px;
+}
+#admin-home-intro li {
+    padding: 5px 0px;
+}
+#admin-home-intro .section-title {
+    font-weight: bold;
+    text-decoration: underline;
+    margin-left: 10px;
+    padding-top: 20px;
+}
+#admin-home-intro .section-resume {
+    margin-left: 20px;
 }
 
 /* EDIT USER PAGE */
@@ -399,19 +422,29 @@ table.dataTable tbody tr.selected {
     background-color: lightblue !important;
     color: black !important;
 }
-#delete-poi-modal .panel-default,
-#request-modal .panel-default {
+.dataTable_wrapper .dtr-title:after {
+    content: ":";
+}
+
+#delete-poi-modal .panel-default, #request-modal .panel-default,
+#delete-photo-modal .panel-default {
     padding: 10px !important;
 }
 
-#admin-poi-explanation, #admin-poi-requests-explanation{
+#admin-poi-explanation, #admin-poi-requests-explanation,
+#admin-upload-photo-explanation, #admin-photos-explanation,
+#admin-home-intro {
     text-align: justify;
     font-size: 15px;
     color: black;
 }
-#admin-poi-explanation ul, #admin-poi-requests-explanation ul {
+#admin-poi-explanation ul, #admin-poi-requests-explanation ul,
+#admin-upload-photo-explanation ol, #admin-photos-explanation ul {
     margin-top: 5px !important;
     margin-bottom: 15px !important;
+}
+#admin-upload-photo-explanation ol li {
+    line-height: 20px;
 }
 #dataTable_wrapper .checkbox-inline {
     vertical-align: top !important;
@@ -419,4 +452,8 @@ table.dataTable tbody tr.selected {
 }
 #dataTable_wrapper .th-text {
     margin-left: 15px !important;
+}
+
+#image-preview-modal .modal-body {
+    text-align: center;
 }

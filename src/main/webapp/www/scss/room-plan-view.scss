@@ -1,0 +1,66 @@
+#plan {
+  
+  /* GENERAL */
+  width: 98%;
+  height: 97%;
+  border-style: solid;
+  border-width: 1px;
+  margin-left:1%;
+  margin-right:1%;
+  margin-top:1%;
+  margin-bottom:2%;
+
+
+  /* MARKERS */
+  .list-group-item {
+    margin-bottom: 8px !important;
+  }
+  .info-btn-div, .edit-btn-div {
+    text-align: center;
+  }
+
+  .leaflet-popup {
+    min-width: 150px !important;
+  }
+  .leaflet-popup-content {
+    margin: 10px 10px !important;
+    line-height: 1.8 !important;
+  }
+  .text-center {
+    margin-bottom: 20px !important;
+  }
+  .button-edit-poi {
+    width: 80px;
+    margin-left: 10px;
+  }
+
+  /* LEGEND */
+  .legend {
+		padding: 10px;
+    background-color: white;
+    border: 1px black solid;
+    border-radius: 15px;
+    float: right;
+    overflow-y: auto !important;
+    max-height: 350px;
+  }
+
+  .legend-button {
+  	border-radius: 15px;
+	  height: 40px;
+	  width: 40px;
+	  margin-bottom: 10px;
+	  float: right;
+  }
+
+  [class^="flaticon-"]:before, [class*=" flaticon-"]:before, [class^="flaticon-"]:after, [class*=" flaticon-"]:after {
+    margin-right: 10px;
+    line-height: 1.5;
+	}
+
+	.button-small.icon:before, .button-small.icon-left:before, .button-small.icon-right:before {
+    font-size: 30px !important;
+    line-height: 20px !important;
+	}
+
+}

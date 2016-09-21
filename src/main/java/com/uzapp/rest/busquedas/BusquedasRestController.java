@@ -37,11 +37,11 @@ public class BusquedasRestController {
 	public ResponseEntity<?> codigoEspacios()
 	{
 		logger.info("Servicio: codigoEspacios()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		Connection connection = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_ESPACIO\" FROM \"TB_ESPACIOS\" ORDER BY \"ID_ESPACIO\" ASC";
 
 			List<Espacios> resultado = new ArrayList<Espacios>();
@@ -52,12 +52,15 @@ public class BusquedasRestController {
 				resultado.add(new Espacios(respuesta.getString("ID_ESPACIO")));
 			}
 			System.out.println("resultado"+gson.toJson(resultado));
-			connection.close();
       return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -65,34 +68,42 @@ public class BusquedasRestController {
 			value = "/campus", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> campus(@RequestParam("ciudad") String ciudad)
+	public ResponseEntity<?> getCityCampus(@RequestParam("ciudad") String ciudad)
 	{
-		logger.info("Servicio: campus()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		logger.info("Service: getCityCampus()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID\" , \"CAMPUS\" FROM \"TB_CODIGOS_DE_CAMPUS\" ";
-			query += "WHERE \"CIUDAD\" = "+ciudad+" ORDER BY \"CAMPUS\" ASC";
+			query += "WHERE \"CIUDAD\" = ? ORDER BY \"CAMPUS\" ASC";
 
 			System.out.println(query);
 
-			List<Campus> resultado = new ArrayList<Campus>();
+			List<Campus> campus = new ArrayList<Campus>();
 		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, Integer.parseInt(ciudad));
+			ResultSet res = preparedStmt.executeQuery();
 
-			while (respuesta.next()){
-				resultado.add(new Campus(respuesta.getInt("ID"),respuesta.getString("CAMPUS")));
+			while (res.next()){
+				campus.add(new Campus(res.getInt("ID"),res.getString("CAMPUS")));
 			}
 
-			System.out.println("resultado"+gson.toJson(resultado));
-			connection.close();
-      return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
+			System.out.println("Campus result: "+gson.toJson(campus));
+      return new ResponseEntity<>(gson.toJson(campus), HttpStatus.OK);
 		}
 		catch (SQLException e) {
-	      e.printStackTrace();
+        e.printStackTrace();
 	      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -100,35 +111,44 @@ public class BusquedasRestController {
 			value = "/edificio", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> edificio(@RequestParam("campus") String campus)
+	public ResponseEntity<?> getCampusBuildings(@RequestParam("campus") String campus)
 	{
-		logger.info("Servicio: edificio()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		logger.info("Service: getCampusBuildings()");
+		Connection connection = null;
+		PreparedStatement  preparedStmt = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
-			query += "FROM \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = "+campus +" ORDER BY \"EDIFICIO\" ASC";
+			query += "FROM \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = ? ORDER BY \"EDIFICIO\" ASC";
 
 			System.out.println(query);
 
-			List<Edificio> resultado = new ArrayList<Edificio>();
+			List<Edificio> buildings = new ArrayList<Edificio>();
 		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setInt(1, Integer.parseInt(campus));
+			ResultSet res = preparedStmt.executeQuery();
 
-			while (respuesta.next()){
-				String idEdificio= respuesta.getString("ID_EDIFICIO");
-				resultado.add(new Edificio(idEdificio,respuesta.getString("EDIFICIO"),respuesta.getString("DIRECCION"),obtenerPlantasEdificio(connection,idEdificio)));
+			while (res.next()){
+				String idEdificio= res.getString("ID_EDIFICIO");
+				List<String> buildingFloors = getBuildingFloors(connection,idEdificio);
+				buildings.add(new Edificio(idEdificio,res.getString("EDIFICIO"),res.getString("DIRECCION"),buildingFloors));
 			}
 
-			System.out.println("resultado"+gson.toJson(resultado));
-			connection.close();
-      return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
+			System.out.println("Buildings result"+gson.toJson(buildings));
+      return new ResponseEntity<>(gson.toJson(buildings), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 	
@@ -136,54 +156,70 @@ public class BusquedasRestController {
 			value = "/infoedificio", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> infoEdificio(@RequestParam("edificio") String edificio)
+	public ResponseEntity<?> getBuildingInfo(@RequestParam("edificio") String edificio)
 	{
-		logger.info("Servicio: edificio()");
-
-		Connection connection = ConnectionManager.getConnection();
-		Gson gson = new Gson();
-
+		logger.info("Service: getBuildingInfo()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
 		try {
+			connection = ConnectionManager.getConnection();
+			Gson gson = new Gson();
+
 			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
-			query += "FROM \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = '"+edificio+"'";
+			query += "FROM \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = ?";
 
 			System.out.println(query);
 
-			List<Edificio> resultado = new ArrayList<Edificio>();
+			List<Edificio> result = new ArrayList<Edificio>();
 		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, edificio);
+			ResultSet res = preparedStmt.executeQuery();
 
-			while (respuesta.next()){
-				String idEdificio= respuesta.getString("ID_EDIFICIO");
-				resultado.add(new Edificio(idEdificio,respuesta.getString("EDIFICIO"),respuesta.getString("DIRECCION"),obtenerPlantasEdificio(connection,idEdificio)));
+			while (res.next()){
+				String idEdificio= res.getString("ID_EDIFICIO");
+				List<String> buildingFloors = getBuildingFloors(connection,idEdificio);
+				result.add(new Edificio(idEdificio,res.getString("EDIFICIO"),res.getString("DIRECCION"),buildingFloors));
 			}
 
-			System.out.println("resultado"+gson.toJson(resultado));
-			connection.close();
-      return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
+			System.out.println("Building info result: "+gson.toJson(result));
+      return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
 	}
 	
-	private static List<String> obtenerPlantasEdificio(Connection connection,String idEdificio)
+	private static List<String> getBuildingFloors(Connection connection,String idEdificio)
 	{
-		List<String> plantas = new ArrayList<String>();
-		
+		List<String> buildingFloors = new ArrayList<String>();
+		PreparedStatement preparedStmt = null;
 		try {
-			String query = "SELECT DISTINCT SUBSTRING(\"ID_UTC\",1,2) AS \"Pisos\" ";
-			query += "FROM \"TB_ESPACIOS\" WHERE \"ID_EDIFICIO\" = '" + idEdificio +"' ORDER BY \"Pisos\" ASC";
+			String query = "SELECT DISTINCT SUBSTRING(\"ID_UTC\",1,2) AS \"floors\" ";
+			query += "FROM \"TB_ESPACIOS\" WHERE \"ID_EDIFICIO\" = ? ORDER BY \"floors\" ASC";
 		
-			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
-			while (respuesta.next()){
-				plantas.add(respuesta.getString("Pisos"));
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, idEdificio);
+			ResultSet res = preparedStmt.executeQuery();
+
+			while (res.next()){
+				buildingFloors.add(res.getString("floors"));
 			}
 		}
 		catch (SQLException e) {
         e.printStackTrace();
 		}
-		return plantas;
+		finally {
+			try { if (preparedStmt != null) preparedStmt.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+		return buildingFloors;
 	}
 }

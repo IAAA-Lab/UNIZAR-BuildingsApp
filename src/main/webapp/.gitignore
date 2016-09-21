@@ -3,6 +3,8 @@
 
 bower_components
 node_modules
+plugins
+platforms
 
 # ---------- Java 
 *.class

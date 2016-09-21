@@ -13,5 +13,16 @@
     "bower": "^1.7.9",
     "gulp-util": "^3.0.7",
     "shelljs": "^0.7.0"
-  }
+  },
+  "cordovaPlugins": [
+    "cordova-plugin-file-transfer",
+    "cordova-plugin-camera",
+    "cordova-plugin-imagepicker",
+    "cordova-plugin-whitelist",
+    "ionic-plugin-keyboard",
+    "cordova-plugin-android-permissions@0.10.0"
+  ],
+  "cordovaPlatforms": [
+    "android"
+  ]
 }

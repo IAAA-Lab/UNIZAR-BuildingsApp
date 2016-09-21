@@ -8,6 +8,8 @@ $(function() {
         }
     };
 
+    if ($('.dropdown-user').is(":visible")) $('.dropdown-user').css('display','none');
+
     var editBtn = $('#edit-btn');
     var saveBtn = $('#save-btn');
     var cancelBtn = $('#cancel-btn');
@@ -18,7 +20,7 @@ $(function() {
     cancelBtn.hide();
 
     var userData = JSON.parse(sessionStorage.getItem('userData'));
-    console.log(userData);
+    console.log("userData", userData);
     $.each(userData, function(key,val){
         $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
     });
