@@ -231,20 +231,16 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             crossDomain: true,
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function(data) {
-                handleJson(data, sharedProperties, poisService, createModal, function(plano, addLegendToPlan){
-                    if (addLegendToPlan) {
-                        addLegend(plano, function(){
-                            // Define legend behaviour
-                            $('.legend').hide();
-                            $('.legend-button').click(function(){
-                                if ($('.legend').is(":visible")) $('.legend').hide(500);
-                                else $('.legend').show(500);
-                            });
-                            sharedProperties.setPlano(plano);
+                handleJson(data, sharedProperties, poisService, createModal, function(plano){
+                    addLegend(plano, function(){
+                        // Define legend behaviour
+                        $('.legend').hide();
+                        $('.legend-button').click(function(){
+                            if ($('.legend').is(":visible")) $('.legend').hide(500);
+                            else $('.legend').show(500);
                         });
-                    } else {
                         sharedProperties.setPlano(plano);
-                    }
+                    });
                 });
             },
             error: function (jqXHR, textStatus, errorThrown)
@@ -261,26 +257,21 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             console.log("Data",data);
 
             var plano = sharedProperties.getPlano(),
-                coordenadas = data.features[0].geometry.coordinates[0][0][0],
-                addLegendToPlan = true;
+                coordenadas = data.features[0].geometry.coordinates[0][0][0];
 
-            //Remove previous layer if exists
+            //Remove previous plan if exists
             if(!(typeof plano == 'undefined')) {
-                plano.eachLayer(function (layer) {
-                    plano.removeLayer(layer);
-                });
-                plano.setView([coordenadas[1],coordenadas[0]],20);
-                addLegendToPlan = false;
-            } else {
-                var planOptions = {
-                    center: L.latLng(coordenadas[1], coordenadas[0]),
-                    zoom: 20,
-                    maxZoom: 21,
-                    minZoom: 19,
-                    maxBounds: L.geoJson(data).getBounds()
-                };
-                plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
+                plano.remove();
             }
+
+            var planOptions = {
+                center: L.latLng(coordenadas[1], coordenadas[0]),
+                zoom: 20,
+                maxZoom: 21,
+                minZoom: 19,
+                maxBounds: L.geoJson(data).getBounds()
+            };
+            plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
 
             L.geoJson(data, {
                 style: function (feature) {
@@ -297,7 +288,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
             updatePOIs(plano, sharedProperties);
 
-            callback(plano, addLegendToPlan);
+            callback(plano);
         }
 
         //Funcion que gestiona cada una de las capas de GeoJSON

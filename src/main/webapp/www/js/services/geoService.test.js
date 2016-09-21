@@ -242,6 +242,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                             if ($('.legend').is(":visible")) $('.legend').hide(500);
                             else $('.legend').show(500);
                         });
+                        sharedProperties.setPlano(plano);
                     });
                 });
             }
@@ -276,23 +277,19 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 coordenadas = data.features[0].geometry.coordinates[0][0][0],
                 addLegendToPlan = true;
 
-            //Remove previous layer if exists
+            //Remove previous plan if exists
             if(!(typeof plano == 'undefined')) {
-                plano.eachLayer(function (layer) {
-                    plano.removeLayer(layer);
-                });
-                plano.setView([coordenadas[1],coordenadas[0]],20);
-                addLegendToPlan = false;
-            } else {
-                var planOptions = {
-                    center: L.latLng(coordenadas[1], coordenadas[0]),
-                    zoom: 20,
-                    maxZoom: 21,
-                    minZoom: 19,
-                    maxBounds: L.geoJson(data).getBounds()
-                };
-                plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
+                plano.remove();
             }
+
+            var planOptions = {
+                center: L.latLng(coordenadas[1], coordenadas[0]),
+                zoom: 20,
+                maxZoom: 21,
+                minZoom: 19,
+                maxBounds: L.geoJson(data).getBounds()
+            };
+            plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
 
             L.geoJson(data, {
                 style: function (feature) {
