@@ -1,0 +1,99 @@
+<!-- Controllers && Services -->
+<script src="../dist/js/controllers/photosCtrl.js"></script>
+<script src="../dist/js/services/infoService.js"></script>
+<script src="../dist/js/controllers/uploadPhotoCtrl.js"></script>
+
+
+<div class="alert alert-success alert-dismissible" role="alert" id="admin-upload-photo-success">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span id="admin-upload-photo-success-text"></span>
+</div>
+
+<div class="alert alert-danger alert-dismissible" role="alert" id="admin-upload-photo-error">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span id="admin-upload-photo-error-text"></span>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Añadir imágenes</h2>
+    </div>
+</div>
+<div class="row" id="admin-upload-photo-explanation">
+    <div class="col-lg-8">
+        A través del formulario se pueden añadir fotos nuevas para una espacio en concreto. Hay dos opciones para elegir el espacio:
+        <ol>
+            <li>Introducir directamente el ID del espacio (ej: CSF.1097.00.120)</li>
+            <li>Elegir el espacio a través de la búsqueda por ciudad, campus, edificio y planta</li>
+        </ol>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary" id="edit-user-panel">
+            <div class="panel-heading">
+                Opción 1
+            </div>
+            <div class="panel-body">
+                <form id="upload-image-form-opt1">
+                    <div class="form-group">
+                        <div><label>ID Espacio *</label></div>
+                        <div><input type="text" name="id_espacio_opt1" class="form-control"></div>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen *</label>
+                        <input type="file" name="image_opt1" class="form-control">
+                    </div>
+                    <div style="text-align: center">
+                        <button id="upload-btn-opt1" type="submit" class="btn btn-success" accept="image/png, image/jpeg, image/gif">Subir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="panel panel-primary" id="edit-user-panel">
+            <div class="panel-heading">
+                Opción 2
+            </div>
+            <div class="panel-body">
+                <form id="upload-image-form-opt2">
+                    <div class="form-group">
+                        <label>Ciudad *</label>
+                        <select name="city" class="form-control">
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Campus *</label>
+                        <select name="campus" class="form-control" disabled>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Edificio *</label>
+                        <select name="building" class="form-control" disabled>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Planta *</label>
+                        <select name="floor" class="form-control" disabled>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Espacio *</label>
+                        <select name="id_espacio_opt2" class="form-control" disabled>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Imagen *</label>
+                        <input type="file" name="image_opt2" accept="image/png, image/jpeg, image/gif" class="form-control" disabled>
+                    </div>
+                    <div style="text-align: center">
+                        <button id="upload-btn-opt2" type="submit" class="btn btn-success">Subir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

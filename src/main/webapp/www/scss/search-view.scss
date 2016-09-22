@@ -1,13 +1,14 @@
 #search-view {
   .item-select select {
     font-size: 16px !important;
-    width: 200px !important;
+    width: 100%;
+    direction: ltr;
   }
   .item-select option {
     font-size: 16px !important;
   }
   .input-label {
-
+    font-weight: bold;
   }
   .button.button-positive {
     width: 60% !important;

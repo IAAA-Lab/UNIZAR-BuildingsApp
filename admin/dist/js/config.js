@@ -1,14 +1,21 @@
 var constants_dev = {
-    "API_URL":"http://localhost:8080"
+    "API_URL":"http://localhost:8080",
+    "PHOTOS_BASE_URL":"http://localhost:8080/www/images/photos/"
 };
 
 var constants_prod = {
-    "API_URL":"production_api_url"
+    "API_URL":"PROD_API_URL",
+    "PHOTOS_BASE_URL":"PROD_API_URL/www/images/photos/"
 };
 
 var constants;
 if (window.location.hostname === 'localhost') constants = constants_dev;
 else constants = constants_prod;
+
+constants.preview_sizes = {
+    maxWidth: 720,
+    maxHeight: 380
+};
 
 constants.categories = [
         { label: 'Secretaría', value: 'secretaria'},
@@ -47,6 +54,12 @@ constants.POIfields = [
         { name: 'Comentario', value: 'comments' },
         { name: 'Latitud', value: 'latitude' },
         { name: 'Longitud', value: 'longitude' }
+    ];
+
+constants.photo_status = [
+        { label: 'Pendiente', value: 'Pending', id: 1},
+        { label: 'Aprobada', value: 'Approved', id: 2},
+        { label: 'Rechazada', value: 'Rejected', id: 3}
     ];
 
 function getConstants(key){

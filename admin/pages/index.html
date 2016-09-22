@@ -41,13 +41,26 @@
     <!-- Cookies plugin -->
     <script src="../js/js.cookie.js"></script>
 
+    <!-- Translate script -->
+    <script src="../dist/js/translate.js"></script>
+
     <!-- Masking plugin -->
     <link href="../css/jquery.loadmask.css" rel="stylesheet">
     <script src="../js/jquery.loadmask.min.js"></script>
 
-    <!-- Controller -->
+    <!-- Form validation plugin -->
+    <script src="../js/jquery.validate.min.js"></script>
+    <script src="../js/additional-methods.min.js"></script>
+
+    <!-- Datatables plugin -->
+    <link href="../css/datatables.css" rel="stylesheet">
+    <script src="../js/datatables.js"></script>
+
+    <!-- Controllers && Services -->
     <script src="../dist/js/config.js"></script>
     <script src="../dist/js/controllers/dashboardController.js"></script>
+    <script src="../dist/js/controllers/photosCtrl.js"></script>
+    <script src="../dist/js/services/infoService.js"></script>
 
 </head>
 
@@ -75,8 +88,8 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a href="editUser.html" id="user-profile-link"><i class="fa fa-user fa-fw"></i> Perfil usuario</a></li>
-                        <li><a href="createUser.html" id="user-create-link"><i class="fa fa-group fa-fw"></i> Crear usuario</a></li>
+                        <li><a class='go-to' href="editUser.html" id="user-profile-link"><i class="fa fa-user fa-fw"></i> Perfil usuario</a></li>
+                        <li><a class='go-to' href="createUser.html" id="user-create-link"><i class="fa fa-group fa-fw"></i> Crear usuario</a></li>
                         <li class="divider"></li>
                         <li><a href="#" id="logout-link"><i class="fa fa-sign-out fa-fw"></i> Salir</a></li>
                     </ul>
@@ -90,30 +103,38 @@
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
                         <li>
-                            <a href="index.html"><i class="fa fa-home fa-fw"></i> Home</a>
+                            <a class="go-to" href="home.html"><i class="fa fa-home fa-fw"></i> Home</a>
                         </li>
                         <li>
-                            <a href="#" class="disabled-link"><i class="fa fa-file-text-o fa-fw"></i> Informes</a>
+                            <a href="reports.html" class="got-to disabled-link"><i class="fa fa-file-text-o fa-fw"></i> Informes <span style="color: red">(Coming soon!)</span></a>
                         </li>
                         <li>
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> Administración<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="#" class="disabled-link">Planos</a>
+                                    <a href="#" class="disabled-link"><i class="fa fa-map-marker fa-fw"></i> Planos <span style="color: red">(Coming soon!)</span></a>
                                 </li>
                                 <li>
                                     <a href="#"><i class="fa fa-bullseye fa-fw"></i> Puntos de interés<span class="fa arrow"></span></a>
                                     <ul class="nav nav-third-level">
                                         <li>
-                                            <a href="adminPOIs.html">Listado completo</a>
+                                            <a class="go-to" href="adminPOIs.html">Listado completo</a>
                                         </li>
                                         <li>
-                                            <a href="adminPOIRequests.html">Peticiones pendientes</a>
+                                            <a class="go-to" href="adminPOIRequests.html">Peticiones pendientes</a>
                                         </li>
                                     </ul>
                                 </li>
                                 <li>
-                                    <a href="#" class="disabled-link">Fotos</a>
+                                    <a href="#"><i class="fa fa-picture-o fa-fw"></i> Fotos<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-third-level">
+                                        <li>
+                                            <a class="go-to" href="photosList.html">Listado fotos</a>
+                                        </li>
+                                        <li>
+                                            <a class="go-to" href="uploadPhoto.html">Añadir fotos</a>
+                                        </li>
+                                    </ul>
                                 </li>
                             </ul>
                         </li>
@@ -122,10 +143,42 @@
             </div>
         </nav>
 
+        <!-- This is where subtemplates are loaded  -->
         <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h2 class="page-header">¡Bienvenido a la página de administración!</h2>
+                </div>
+            </div>
+            <div class="row" id="admin-home-intro">
+                <div class="col-lg-12">
+                    <p><h4>Bienvenido a la página web de administrador de la aplicación móvil <em>UZ Campus</em></h4></p>
+                    <p>En esta página, a través de las opciones del menu lateral, usted como administrador tendrá acceso a:</p>
+                    <p class='section-title'>Informes<p>
+                    <p class='section-resume'></p>
+                    <p class='section-title'>Administración de Planos<p>
+                    <p class='section-resume'>Introducir fichero .shp para la adición de nuevos planos de edificios a la aplicación o para la actualización de datos de planos ya existentes.</p>
+                    <p class='section-title'>Administración de Puntos de Interés<p>
+                    <p class='section-resume'>Administración de las peticiones de creación, edición y eliminación de Puntos de Interés (POI) que los usuarios realicen desde la aplicación, así como de los propios Puntos de Interés.
+                    El administrado podrá:
+                    <ul>
+                    <li>Editar Puntos de Interés</li>
+                    <li>Eliminar Puntos de Interés</li>
+                    <li>Aprobar o rechazar peticiones de creación, edición y elimnación sobre un Punto de Interés</li>
+                    </ul>
+                    </p>
+                    <p class='section-title'>Administración de Imágenes<p>
+                    <p class='section-resume'>El administrador podrá:
+                    <ul>
+                    <li>Subir imágenes para una estancia</li>
+                    <li>Editar los datos relacionados a una imagen</li>
+                    <li>Aprobar o rechazar imágenes subidas por los usuarios de la aplicación</li>
+                    </ul>
+                    </p>
+                </div>
+            </div>
         </div>
     </div>
-    <!-- /#wrapper -->
 
 </body>
 

@@ -41,31 +41,33 @@ public class Users {
         }
     }
 
-    private ResponseEntity<?> getUserData(Connection conn, int id, String username){
+    private ResponseEntity<?> getUserData(Connection connection, int id, String username){
         logger.info("Method getUserData", id, username);
         try {
             String query = "";
             PreparedStatement preparedStmt;
             if (id != -1) {
                 query = "SELECT * FROM users WHERE id=?";
-                preparedStmt = conn.prepareStatement(query);
+                preparedStmt = connection.prepareStatement(query);
                 preparedStmt.setInt(1, id);
             }
             else {
                 query = "SELECT * FROM users WHERE username=?";
-                preparedStmt = conn.prepareStatement(query);
+                preparedStmt = connection.prepareStatement(query);
                 preparedStmt.setString(1, username);
             }
 
             ResultSet rs = preparedStmt.executeQuery();
             ResponseEntity<?> response = setUserData(rs);
-
-            conn.close();
             return response;
-
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
@@ -74,11 +76,13 @@ public class Users {
             method = RequestMethod.POST)
     public ResponseEntity<?> create(@RequestBody User user){
         logger.info("Servicio: create user", user);
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "INSERT INTO users(username,password,email,name,surnames,birthDate,role) values (?,?,?,?,?,?,?)";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
             preparedStmt.setString(2, user.getPassword());
             preparedStmt.setString(3, user.getEmail());
@@ -93,12 +97,17 @@ public class Users {
                 return result;
             }
             else {
-                connection.close();
                 return new ResponseEntity<>("Error creating user", HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
@@ -107,27 +116,35 @@ public class Users {
             method = RequestMethod.POST)
     public ResponseEntity<?> login(@RequestBody User user){
         logger.info("Servicio: login user");
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
+            connection = ConnectionManager.getConnection();
+
             String query = "SELECT * FROM users WHERE username=? AND password=?";
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
             preparedStmt.setString(2, user.getPassword());
             ResultSet rs = preparedStmt.executeQuery();
 
             ResponseEntity<?> response = setUserData(rs);
-            connection.close();
 
-            if (response.getBody() == null)
+            if (response.getBody() == null) {
                 return new ResponseEntity<>("Username/password invalids, user not found", HttpStatus.NOT_FOUND);
-            else
+            }
+            else {
                 return response;
-
-
-        } catch (SQLException e) {
+            }
+        }
+        catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 
@@ -136,9 +153,10 @@ public class Users {
             method = RequestMethod.PUT)
     public ResponseEntity<?> edit(@RequestBody User user){
         logger.info("Servicio: edit user");
-        Connection connection = ConnectionManager.getConnection();
-
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
         try {
+            connection = ConnectionManager.getConnection();
             String password = user.getPassword();
             String query = "";
             if (password == null) {
@@ -149,7 +167,7 @@ public class Users {
 
             System.out.print("password: " + password);
 
-            PreparedStatement preparedStmt = connection.prepareStatement(query);
+            preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
             preparedStmt.setString(2, user.getEmail());
             preparedStmt.setString(3, user.getName());
@@ -170,13 +188,18 @@ public class Users {
                 return new ResponseEntity<>(result, HttpStatus.OK);
             }
             else {
-                connection.close();
                 return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
 
         } catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
         }
     }
 

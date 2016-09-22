@@ -9082,12 +9082,11 @@ a.button {
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
 
-/* Empty. Add your own CSS if you like */
 html, body {
   height: 100%;
   width: 100%; }
 
-/* MENU LATERAL */
+/* SIDE MENU */
 .mymenu {
   color: #ffffff;
   background: -webkit-linear-gradient(left, #002040, #304A64);
@@ -9136,7 +9135,7 @@ html, body {
 #menu-list {
   margin-top: 40px; }
 
-/* Splash */
+/* SPLASH */
 #splash-wrapper {
   width: 100%;
   margin: 0 auto;
@@ -9151,45 +9150,11 @@ html, body {
 #loading-div {
   margin-top: 50px; }
 
-#mapa {
-  /*height: 600px;*/
-  width: 98%;
-  height: 97%;
-  border-style: solid;
-  border-width: 1px;
-  margin-left: 1%;
-  margin-right: 1%;
-  margin-top: 1%;
-  margin-bottom: 2%; }
-
-#plan {
-  /*height: 600px;*/
-  width: 98%;
-  height: 97%;
-  border-style: solid;
-  border-width: 1px;
-  margin-left: 1%;
-  margin-right: 1%;
-  margin-top: 1%;
-  margin-bottom: 2%; }
-
-#texto-popup {
-  text-align: center; }
-
-/* Pagina Inicio */
-.logo-wrapper {
-  /*border-style: solid;
-  border-width: 1px;
-  margin-left:30%;
-  margin-right:30%;*/ }
-
+/* HOME PAGE */
 IMG.displayed {
   display: block;
   margin-left: auto;
   margin-right: auto; }
-
-#boton {
-  float: right; }
 
 img[usemap] {
   border: none;
@@ -9199,90 +9164,56 @@ img[usemap] {
 
 #img-logo {
   height: 10%;
-  width: 20%;
-  margin-top: 1%;
-  margin-bot: 1%;
-  margin-right: 40%;
-  margin-left: 40%; }
-
-#mapimage, #fotoEstancia, #datosFotos {
-  text-align: center;
-  margin-top: 1%; }
-
-#botónVerMapa {
-  width: 20%;
-  margin-top: 0px;
-  margin-left: 20%; }
-
-.estancia {
-  border-style: solid;
-  border-width: 1px;
-  height: 50%;
-  width: 80%;
+  width: 30%;
   margin-top: 5%;
-  margin-right: 10%;
-  margin-left: 10%;
-  margin-bot: 45%; }
+  margin-right: 40%;
+  margin-left: 35%; }
 
-#botonFotos, #botonSiguiente, #botonAnterior {
-  height: 8%;
-  width: 20%;
-  float: right;
-  /*margin-top: 3%;
-  margin-left:75%;
-  margin-right:10%;*/ }
+#aragonMapImg {
+  text-align: center;
+  margin-top: 10%;
+  margin-left: 10%; }
 
-#botonVolverEstancia, #botonVolverFoto {
-  height: 8%;
-  width: 20%;
-  float: left;
-  /*margin-top: 3%;
-  margin-left:10%;
-  margin-right:75%;*/ }
-
-.botones {
-  /*display:inline;*/
-  width: 80%;
-  margin-top: 3%;
-  margin-left: 10%;
-  margin-right: 10%; }
-
-.my-popup .popup {
-  width: 200px; }
-
-.my-popup .item {
-  height: 30px; }
-
-.my-popup .popup-body {
-  height: 50px; }
-
-#estancia-view .item-input {
+#room-details-view .item-input {
   white-space: normal !important;
   font-weight: 500 !important; }
 
-#estancia-view .item-input input {
+#room-details-view .item-input input {
   text-align: right !important; }
 
-#estancia-view input[disabled] {
+#room-details-view input[disabled] {
   background-color: transparent !important; }
 
-#estancia-view button.button-full {
+#room-details-view button.button-full {
   width: 60% !important;
   margin-left: 20% !important; }
 
 #search-view .item-select select {
   font-size: 16px !important;
-  width: 200px !important; }
+  width: 100%;
+  direction: ltr; }
 
 #search-view .item-select option {
   font-size: 16px !important; }
+
+#search-view .input-label {
+  font-weight: bold; }
 
 #search-view .button.button-positive {
   width: 60% !important;
   margin-left: 20% !important; }
 
 #mapa {
-  /* Markers */ }
+  /* GENERAL */
+  width: 98%;
+  height: 97%;
+  border-style: solid;
+  border-width: 1px;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  /* MARKERS */ }
   #mapa .leaflet-popup-content {
     margin: 10px 10px !important;
     line-height: 1.8 !important; }
@@ -9297,8 +9228,17 @@ img[usemap] {
     width: 320px !important; }
 
 #plan {
-  /* Markers */
-  /* Legend */ }
+  /* GENERAL */
+  width: 98%;
+  height: 97%;
+  border-style: solid;
+  border-width: 1px;
+  margin-left: 1%;
+  margin-right: 1%;
+  margin-top: 1%;
+  margin-bottom: 2%;
+  /* MARKERS */
+  /* LEGEND */ }
   #plan .list-group-item {
     margin-bottom: 8px !important; }
   #plan .info-btn-div, #plan .edit-btn-div {
@@ -9334,6 +9274,31 @@ img[usemap] {
     font-size: 30px !important;
     line-height: 20px !important; }
 
+#photos-view #roomImage {
+  text-align: center; }
+
+#photos-view #photosData {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 5px; }
+
+#photos-view #btnPrevPhoto {
+  margin-top: 10px; }
+
+#photos-view #btnPrevPhoto, #photos-view #btnNextPhoto {
+  height: 8%;
+  width: 20%;
+  float: right;
+  border-width: 0px; }
+
+#photos-view #btnAddPhoto {
+  width: 100px;
+  height: 8%;
+  float: right; }
+
+#photos-view .botones {
+  width: 80%; }
+
 /* IONIC MODALS FOR POINTS OF INTEREST */
 #add-poi-modal .item-select select, #edit-poi-modal .item-select select, #filter-poi-modal .item-select select {
   font-size: 16px;
@@ -9364,6 +9329,21 @@ img[usemap] {
   color: red;
   font-size: 13px; }
 
-/* IONIC MODALS FOR CONFIRM EDIT OR CREATE A POI */
-#confirm-create-poi-popup input[type="checkbox"], #confirm-edit-poi-popup input[type="checkbox"], #confirm-delete-poi-popup input[type="checkbox"] {
+/* IONIC POPUPS */
+#confirm-create-poi-popup input[type="checkbox"], #confirm-edit-poi-popup input[type="checkbox"],
+#confirm-delete-poi-popup input[type="checkbox"], #confirm-upload-photo-popup input[type="checkbox"],
+#confirm-upload-photo2-popup input[type="checkbox"] {
   width: 10% !important; }
+
+#confirm-create-poi-popup p, #confirm-edit-poi-popup p,
+#confirm-delete-poi-popup p, #confirm-upload-photo-popup p,
+#confirm-upload-photo2-popup p {
+  text-align: justify; }
+
+#confirm-create-poi-popup .checkbox-inline label, #confirm-edit-poi-popup .checkbox-inline label,
+#confirm-delete-poi-popup .checkbox-inline label, #confirm-upload-photo-popup .checkbox-inline label,
+#confirm-upload-photo2-popup .checkbox-inline label {
+  vertical-align: top; }
+
+.popup p {
+  text-align: justify; }

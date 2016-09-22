@@ -174,7 +174,8 @@ $(function() {
                 sendData[key] = poiData[key];
         }
 
-        sendData['approved'] = $('#edit-poi-approved').is(":checked");
+        sendData.approved = $('#edit-poi-approved').is(":checked");
+        delete sendData.updated;
 
         $.ajax({
             url : getConstants("API_URL") + "/pois/",
@@ -208,6 +209,7 @@ $(function() {
         $('body').mask("Enviando...");
 
         var poiData = $('#dataTable-pois').DataTable().rows({ selected: true }).data()[0];
+        delete poiData.updated;
 
         $.ajax({
             url : getConstants("API_URL") + "/pois/"+poiData.id+"/",

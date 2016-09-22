@@ -1,0 +1,26 @@
+<div id="confirm-upload-photo2-popup">
+	<p ng-hide="hideNoPhotosText">
+		No se encontraron fotos para la estancia seleccionada<br>
+		¿Quiere añadir una nueva foto?
+	</p>
+	<div class="list">
+		<label class="item item-input">
+	  	<form id="imageUploadForm" action="" method="POST" enctype="multipart/form-data">
+	    	<input type="file" name="imageUpload" id="imageUpload">
+	    </form>
+	  </label>
+	</div>
+	<p>
+		La imagen subida deberá ser aprobada por un administrador.
+		Si desea recibir notificación de dicha aprobación o rechazo, 
+		marque la casilla e introduzca una dirección de email:
+	</p>
+	<div class="list">
+		<label class="checkbox-inline">
+				<input type="checkbox" value="" ng-model="emailChecked"><label>Recibir notificación</label>
+		</label>
+	  <label class="item item-input">
+	    <input type="email" ng-model="email">
+	  </label>
+	</div>
+</div>

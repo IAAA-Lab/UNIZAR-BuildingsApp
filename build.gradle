@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
     }
 }
 
@@ -26,7 +26,7 @@ war {
     archiveName = 'mapa.war'
     destinationDir = file('warFiles')
     baseName = 'UZapp'
-    version = '1.0'
+    version = '1.5'
     from('src/main/resources') {
         include 'config.properties'
     }
@@ -40,27 +40,24 @@ tasks.withType(JavaCompile) {
     options.encoding = "iso-8859-1"
 }
 
-/*configurations.all {//para ser compatible con tomcat7, sacado de http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-use-tomcat-7
+configurations.all {//para ser compatible con tomcat7, sacado de http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-use-tomcat-7
     resolutionStrategy {
         eachDependency {
             if (it.requested.group == 'org.apache.tomcat.embed') {
-                it.useVersion '7.0.59'
+                it.useVersion '7.0.52'
             }
         }
     }
-}*/
+}
 dependencies {
-    compile 'org.springframework:spring-core:4.2.6.RELEASE'
-    compile 'org.springframework:spring-web:4.2.6.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter:1.3.5.RELEASE'
-    compile 'org.springframework.boot:spring-boot-starter-web:1.3.5.RELEASE'
+    compile 'org.springframework.boot:spring-boot-starter-web'
     compile "com.google.code.gson:gson:2.3"
-    compile 'org.apache.tomcat:tomcat-jdbc:7.0.54'
+    compile 'org.apache.tomcat:tomcat-jdbc:7.0.52'
     compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
-    compile 'commons-logging:commons-logging:1.1.1'
     compile group: 'com.sun.mail', name: 'javax.mail', version: '1.5.5'
-    testCompile("junit:junit")
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat:1.3.5.RELEASE'
+    compile group: 'commons-io', name: 'commons-io', version: '2.5'
+    compile group: 'commons-fileupload', name: 'commons-fileupload', version: '1.3.2'
+    testCompile 'junit:junit'
 }
 
 task wrapper(type: Wrapper) {
