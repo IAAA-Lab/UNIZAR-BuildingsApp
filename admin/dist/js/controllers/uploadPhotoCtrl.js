@@ -56,14 +56,9 @@ $(function() {
                 }
                 console.log("formData", formData);
                 $('body').mask("Loading...");
-                $.ajax({
-                    url : getConstants("API_URL") + "/photos/upload/",
-                    type: "POST",
-                    data : formData,
-                    contentType: false,
-                    cache: false,
-                    processData: false,
-                    success: function(data, textStatus, jqXHR)
+                uploadPhoto(
+                    formData,
+                    function(data, textStatus, jqXHR)
                     {
                         console.log("Create user success",data,textStatus, jqXHR);
                         $('#admin-upload-photo-success-text').text('La imagen se ha enviado con éxito.');
@@ -71,8 +66,7 @@ $(function() {
                         window.scrollTo(0,0);
                         cleanForm('#upload-image-form-opt1');
                         $('body').unmask();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
+                    },function (jqXHR, textStatus, errorThrown)
                     {
                         console.log("Create user error", jqXHR, errorThrown);
                         $('body').unmask();
@@ -83,8 +77,7 @@ $(function() {
                             if ($('#admin-upload-photo-error').is(":visible"))
                                 $('#admin-upload-photo-error').hide();
                         }, 30000);
-                    }
-                });
+                    });
             },
             rules: {
                 id_espacio_opt1: "required",
