@@ -25,7 +25,7 @@ $(function() {
                     regexp.lastIndex = 0;
                 return this.optional(element) || regexp.test(value);
             },
-            "Contraseña poco segura"
+            "ContraseÃ±a poco segura"
         );
 
         var validator = $( "#create-user-form" ).validate({
@@ -40,21 +40,16 @@ $(function() {
                     if (attr !== 'repeatPassword') userData[attr] = $(this).val();
                 });
                 $('body').mask("Loading...");
-                $.ajax({
-                    url : getConstants("API_URL") + "/users/create",
-                    type: "POST",
-                    data : JSON.stringify(userData),
-                    contentType: 'application/json',
-                    success: function(data, textStatus, jqXHR)
+                createUser(JSON.stringify(userData),
+                    function(data, textStatus, jqXHR)
                     {
                         console.log("Create user success",data,textStatus, jqXHR);
-                        $('#create-user-success-text').text('El usuario '+data.username+' ha sido creado con éxito.');
+                        $('#create-user-success-text').text('El usuario '+data.username+' ha sido creado con Ã©xito.');
                         $('#create-user-success').show();
                         window.scrollTo(0,0);
                         validator.resetForm();
                         $('body').unmask();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
+                    },function (jqXHR, textStatus, errorThrown)
                     {
                         console.log("Create user error", jqXHR, errorThrown);
                         $('body').unmask();
@@ -64,8 +59,7 @@ $(function() {
                             if ($('#create-user-error').is(":visible"))
                                 $('#create-user-error').hide();
                         }, 30000);
-                    }
-                });
+                    });
             },
             rules: {
                 username: "required",

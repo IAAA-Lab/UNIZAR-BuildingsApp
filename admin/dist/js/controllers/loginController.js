@@ -24,19 +24,15 @@ $(function() {
 
         var formData = JSON.stringify({username: $('#login-username').val(),password: $('#login-pwd').val()});
 
-        $.ajax({
-	    url : getConstants("API_URL") + "/users/login",
-            type: "POST",
-            data : formData,
-            contentType: 'application/json',
-            success: function(data, textStatus, jqXHR)
+        login(formData,
+            function(data, textStatus, jqXHR)
             {
                 console.log("Login success",data,textStatus, jqXHR);
                 Cookies.set('session-admin-cookie', $.md5(data.username, data.id));
                 sessionStorage.setItem('userData', JSON.stringify(data));
                 window.location.href = "index.html";
             },
-            error: function (jqXHR, textStatus, errorThrown)
+            function (jqXHR, textStatus, errorThrown)
             {
                 console.log("Login error", jqXHR, errorThrown);
                 $('body').unmask();
@@ -46,7 +42,6 @@ $(function() {
                     if ($('#login-error').is(":visible"))
                         $('#login-error').hide();
                 }, 30000);
-            }
-        });
+            });
     });
 });

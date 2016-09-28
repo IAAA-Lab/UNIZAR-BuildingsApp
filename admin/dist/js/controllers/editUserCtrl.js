@@ -43,7 +43,7 @@ $(function() {
                     regexp.lastIndex = 0;
                 return this.optional(element) || regexp.test(value);
             },
-            "Contraseña poco segura"
+            "Contrase? poco segura"
         );
 
         var validator = $( "#edit-user-form" ).validate({
@@ -66,16 +66,12 @@ $(function() {
                 });
                 console.log(userNewData);
                 $('body').mask("Loading...");
-                $.ajax({
-                    url : getConstants("API_URL") + "/users/edit",
-                    type: "PUT",
-                    data : JSON.stringify(userNewData),
-                    contentType: 'application/json',
-                    success: function(data, textStatus, jqXHR)
+                editUser(JSON.stringify(userNewData),
+                    function(data, textStatus, jqXHR)
                     {
                         console.log("Edit user success",data,textStatus, jqXHR);
                         sessionStorage.setItem('userData', JSON.stringify(data.body));
-                        $('#edit-user-success-text').text('El usuario '+data.body.username+' ha sido modificado con éxito.');
+                        $('#edit-user-success-text').text('El usuario '+data.body.username+' ha sido modificado con ?ito.');
                         $('#edit-user-success').show();
                         window.scrollTo(0,0);
                         saveBtn.hide();
@@ -83,8 +79,7 @@ $(function() {
                         editBtn.show();
                         $('#edit-user-panel').find('.form-control').prop('disabled', true);
                         $('body').unmask();
-                    },
-                    error: function (jqXHR, textStatus, errorThrown)
+                    },function (jqXHR, textStatus, errorThrown)
                     {
                         console.log("Edit user error", jqXHR, errorThrown);
                         $('body').unmask();
@@ -94,8 +89,7 @@ $(function() {
                             if ($('#edit-user-error').is(":visible"))
                                 $('#edit-user-error').hide();
                         }, 30000);
-                    }
-                });
+                    })
             },
             rules: {
                 username: "required",
