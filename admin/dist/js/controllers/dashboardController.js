@@ -1,4 +1,6 @@
 $(function() {
+    
+    //Check for cookies
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
             if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
@@ -8,6 +10,7 @@ $(function() {
         }
     };
 
+    //Load page pending on window location hash
     $(document).ready(function(){
         var children = $('#page-wrapper').children(),
             hash = window.location.hash;
@@ -20,6 +23,7 @@ $(function() {
         }
     });
 
+    //User menu behaviour
     $('.dropdown-toggle').click(function(e){
         var dropdown_user = $('.dropdown-user');
         console.log("Dropdown user visible", dropdown_user.is(":visible"));
@@ -30,6 +34,7 @@ $(function() {
         }
     });
 
+    //Logout action
     $('#logout-link').click(function(e){
         e.preventDefault();
         $('body').mask('Loading...');
@@ -38,6 +43,7 @@ $(function() {
         window.location.href = 'login.html';
     });
 
+    //Transition between pages
     $('.go-to').click(function(e){
         $('body').mask('Loading...');
         var target = $(this).attr('href');
