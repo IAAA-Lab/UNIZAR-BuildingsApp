@@ -177,19 +177,15 @@ $(function() {
         sendData.approved = $('#edit-poi-approved').is(":checked");
         delete sendData.updated;
 
-        $.ajax({
-            url : getConstants("API_URL") + "/pois/",
-            type: "PUT",
-            data : JSON.stringify(sendData),
-            contentType: 'application/json',
-            success: function(data, textStatus, jqXHR)
+        editPOI(
+            JSON.stringify(sendData),
+            function(data, textStatus, jqXHR)
             {
                 console.log("Modify poi", data);
                 $('#dataTable-pois').DataTable().ajax.reload();
                 $('#edit-poi-modal .close').click();
                 $('body').unmask();
-            },
-            error: function (jqXHR, textStatus, errorThrown)
+            },function (jqXHR, textStatus, errorThrown)
             {
                 console.log("Modify poi error", jqXHR, errorThrown);
                 $('body').unmask();
@@ -200,8 +196,7 @@ $(function() {
                     if ($('#admin-pois-error').is(":visible"))
                         $('#admin-pois-error').hide();
                 }, 30000);
-            }
-        });
+            });
     });
 
     //Define action on click 'Eliminar' button for delete a POI
@@ -211,18 +206,15 @@ $(function() {
         var poiData = $('#dataTable-pois').DataTable().rows({ selected: true }).data()[0];
         delete poiData.updated;
 
-        $.ajax({
-            url : getConstants("API_URL") + "/pois/"+poiData.id+"/",
-            type: "DELETE",
-            contentType: 'application/json',
-            success: function(data, textStatus, jqXHR)
+        deletePOI(
+            poiData.id,
+            function(data, textStatus, jqXHR)
             {
                 console.log("Delete poi",data,textStatus, jqXHR);
                 $('#dataTable-pois').DataTable().ajax.reload();
                 $('#delete-poi-modal .close').click();
                 $('body').unmask();
-            },
-            error: function (jqXHR, textStatus, errorThrown)
+            },function (jqXHR, textStatus, errorThrown)
             {
                 console.log("Delete poi error", jqXHR, errorThrown);
                 $('body').unmask();
@@ -233,7 +225,6 @@ $(function() {
                     if ($('#admin-pois-error').is(":visible"))
                         $('#admin-pois-error').hide();
                 }, 30000);
-            }
-        });
+            });
     });
 });

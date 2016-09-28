@@ -147,11 +147,10 @@ $(function() {
 
         var operation = $('#request-btn').text() === 'Aprobar' ? 'approve' : 'reject';
 
-        $.ajax({
-            url : getConstants("API_URL") + "/pois/request/"+requestData.id+"/"+operation+"/"+requestData.type+"/",
-            type: 'PUT',
-            contentType: 'application/json',
-            success: function(data, textStatus, jqXHR)
+        approveRejectPOI(
+            requestData,
+            operation,
+            function(data, textStatus, jqXHR)
             {
                 console.log("Success request for "+requestData.type+" poi",data);
                 $('#dataTable-requests').DataTable().ajax.reload();
@@ -164,8 +163,7 @@ $(function() {
                     if ($('#admin-requests-success').is(":visible"))
                         $('#admin-requests-success').hide();
                 }, 30000);
-            },
-            error: function (jqXHR, textStatus, errorThrown)
+            },function (jqXHR, textStatus, errorThrown)
             {
                 console.log("Error on request for "+requestData.type+" poi error", jqXHR, errorThrown);
                 $('body').unmask();
@@ -179,7 +177,6 @@ $(function() {
                     if ($('#admin-requests-error').is(":visible"))
                         $('#admin-requests-error').hide();
                 }, 30000);
-            }
-        });
+            });
     });
 });
