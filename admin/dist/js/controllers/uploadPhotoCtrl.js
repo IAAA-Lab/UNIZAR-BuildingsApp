@@ -41,10 +41,10 @@ $(function() {
 
         var validatorForm1 = formOpt1.validate({
             invalidHandler: function(event, validator) {
-                console.log("Upload photo option 1 form: INVALID");
+                console.log('Upload photo option 1 form: INVALID');
             },
             submitHandler: function(form){
-                console.log("Upload photo option 1 form: VALID");
+                console.log('Upload photo option 1 form: VALID');
                 var formData = new FormData();
                 formData.append('name', $('input[name=id_espacio_opt1]')[0].value.trim() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt1]')[0].files[0]);
@@ -54,13 +54,13 @@ $(function() {
                 } else {
                     formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
                 }
-                console.log("formData", formData);
-                $('body').mask("Loading...");
+                console.log('formData', formData);
+                $('body').mask('Loading...');
                 uploadPhoto(
                     formData,
                     function(data, textStatus, jqXHR)
                     {
-                        console.log("Create user success",data,textStatus, jqXHR);
+                        console.log('Create user success',data,textStatus, jqXHR);
                         $('#admin-upload-photo-success-text').text('La imagen se ha enviado con éxito.');
                         $('#admin-upload-photo-success').show();
                         window.scrollTo(0,0);
@@ -68,32 +68,32 @@ $(function() {
                         $('body').unmask();
                     },function (jqXHR, textStatus, errorThrown)
                     {
-                        console.log("Create user error", jqXHR, errorThrown);
+                        console.log('Create user error', jqXHR, errorThrown);
                         $('body').unmask();
                         $('#admin-upload-photo-error-text').text(jqXHR.responseText);
                         $('#admin-upload-photo-error').show();
                         window.scrollTo(0,0);
                         setTimeout(function(){
-                            if ($('#admin-upload-photo-error').is(":visible"))
+                            if ($('#admin-upload-photo-error').is(':visible'))
                                 $('#admin-upload-photo-error').hide();
                         }, 30000);
                     });
             },
             rules: {
-                id_espacio_opt1: "required",
-                image_opt1: "required"
+                id_espacio_opt1: 'required',
+                image_opt1: 'required'
             },
             messages: {
-                id_espacio_opt1: "Campo obligatorio",
-                id_espacio_opt1: "Campo obligatorio"
+                id_espacio_opt1: 'Campo obligatorio',
+                id_espacio_opt1: 'Campo obligatorio'
             },
-            errorClass: "form-error"
+            errorClass: 'form-error'
         });
     });
 
     var searchCampus = function(){
         var city = formOpt2CitySelect.val();
-        $('body').mask("Loading...");
+        $('body').mask('Loading...');
         getCampus(
             city,
             function(data){
@@ -111,7 +111,7 @@ $(function() {
                 window.scrollTo(0,0);
                 $('body').unmask();
                 setTimeout(function(){
-                    if ($('#admin-upload-photo-error').is(":visible"))
+                    if ($('#admin-upload-photo-error').is(':visible'))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
             });
@@ -119,7 +119,7 @@ $(function() {
 
     var searchBuildings = function(){
         var campus = formOpt2CampusSelect.val();
-        $('body').mask("Loading...");
+        $('body').mask('Loading...');
         getBuildings(
             campus,
             function(data){
@@ -138,7 +138,7 @@ $(function() {
                 window.scrollTo(0,0);
                 $('body').unmask();
                 setTimeout(function(){
-                    if ($('#admin-upload-photo-error').is(":visible"))
+                    if ($('#admin-upload-photo-error').is(':visible'))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
             });
@@ -146,7 +146,7 @@ $(function() {
 
     var searchFloors = function(){
         selectedBuilding = formOpt2BuildingSelect.val();
-        $('body').mask("Loading...");
+        $('body').mask('Loading...');
         var floors = null;
         buildings.forEach(function(building){
             if (building.ID_Edificio == selectedBuilding) floors = building.plantas;
@@ -162,7 +162,7 @@ $(function() {
 
     var searchRooms = function(){
         var floor = formOpt2FloorSelect.val();
-        $('body').mask("Loading...");
+        $('body').mask('Loading...');
         getRooms(
             selectedBuilding + floor,
             function(data){
@@ -180,7 +180,7 @@ $(function() {
                 window.scrollTo(0,0);
                 $('body').unmask();
                 setTimeout(function(){
-                    if ($('#admin-upload-photo-error').is(":visible"))
+                    if ($('#admin-upload-photo-error').is(':visible'))
                         $('#admin-upload-photo-error').hide();
                 }, 30000);
             });
@@ -206,10 +206,10 @@ $(function() {
 
         var validatorForm2 = formOpt2.validate({
             invalidHandler: function(event, validator) {
-                console.log("Upload photo option 2 form: INVALID");
+                console.log('Upload photo option 2 form: INVALID');
             },
             submitHandler: function(form){
-                console.log("Upload photo option 2 form: VALID");
+                console.log('Upload photo option 2 form: VALID');
                 var formData = new FormData();
                 formData.append('name', $('select[name=id_espacio_opt2]').val() + '_' + Date.now() + '.jpg');
                 formData.append('file', $('input[name=image_opt2]')[0].files[0]);
@@ -219,8 +219,8 @@ $(function() {
                 } else {
                     formData.append('email', JSON.parse(sessionStorage.getItem('userData')).email);
                 }
-                console.log("formData", formData);
-                $('body').mask("Loading...");
+                console.log('formData', formData);
+                $('body').mask('Loading...');
                 uploadPhoto(
                     formData,
                     function(data){
@@ -236,28 +236,28 @@ $(function() {
                         $('#admin-upload-photo-error').show();
                         window.scrollTo(0,0);
                         setTimeout(function(){
-                            if ($('#admin-upload-photo-error').is(":visible"))
+                            if ($('#admin-upload-photo-error').is(':visible'))
                                 $('#admin-upload-photo-error').hide();
                         }, 30000);
                     });
             },
             rules: {
-                city: "required",
-                campus: "required",
-                building: "required",
-                floor: "required",
-                id_espacio_opt1: "required",
-                image_opt1: "required"
+                city: 'required',
+                campus: 'required',
+                building: 'required',
+                floor: 'required',
+                id_espacio_opt1: 'required',
+                image_opt1: 'required'
             },
             messages: {
-                city: "Campo obligatorio",
-                campus: "Campo obligatorio",
-                building: "Campo obligatorio",
-                floor: "Campo obligatorio",
-                id_espacio_opt1: "Campo obligatorio",
-                image_opt1: "Campo obligatorio"
+                city: 'Campo obligatorio',
+                campus: 'Campo obligatorio',
+                building: 'Campo obligatorio',
+                floor: 'Campo obligatorio',
+                id_espacio_opt1: 'Campo obligatorio',
+                image_opt1: 'Campo obligatorio'
             },
-            errorClass: "form-error"
+            errorClass: 'form-error'
         });
     });
 });

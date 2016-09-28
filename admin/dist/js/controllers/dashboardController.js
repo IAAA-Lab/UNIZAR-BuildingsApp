@@ -5,7 +5,7 @@ $(function() {
         if (document.readyState === 'complete') {
             if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
                 $('body').mask('Loading...');
-                window.location.href = "login.html";
+                window.location.href = 'login.html';
             }
         }
     };
@@ -17,7 +17,7 @@ $(function() {
         if (typeof(children.lenght) == 'undefined' && hash.length > 0) {
             $('body').mask('Loading...');
             var target = hash.substr(1,hash.length-1) + '.html';
-            console.log("Go to: ", target);
+            console.log('Go to: ', target);
             $('#page-wrapper').empty();
             $('#page-wrapper').load(target,{},function(){ $('body').unmask(); });
         }
@@ -26,8 +26,8 @@ $(function() {
     //User menu behaviour
     $('.dropdown-toggle').click(function(e){
         var dropdown_user = $('.dropdown-user');
-        console.log("Dropdown user visible", dropdown_user.is(":visible"));
-        if (!dropdown_user.is(":visible")) {
+        console.log('Dropdown user visible', dropdown_user.is(':visible'));
+        if (!dropdown_user.is(':visible')) {
             dropdown_user.css('display','block');
         } else {
             dropdown_user.css('display','none');
@@ -47,7 +47,7 @@ $(function() {
     $('.go-to').click(function(e){
         $('body').mask('Loading...');
         var target = $(this).attr('href');
-        console.log("Go to: ", target);
+        console.log('Go to: ', target);
         $('#page-wrapper').empty();
         $('#page-wrapper').load(target,{},function(){ $('body').unmask(); });
         window.location.hash = target.split('.html')[0];

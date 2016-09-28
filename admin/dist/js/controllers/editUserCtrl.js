@@ -3,12 +3,12 @@ $(function() {
         if (document.readyState === 'complete') {
             if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
                 $('body').mask('Loading...');
-                window.location.href = "login.html";
+                window.location.href = 'login.html';
             }
         }
     };
 
-    if ($('.dropdown-user').is(":visible")) $('.dropdown-user').css('display','none');
+    if ($('.dropdown-user').is(':visible')) $('.dropdown-user').css('display','none');
 
     var editBtn = $('#edit-btn');
     var saveBtn = $('#save-btn');
@@ -20,7 +20,7 @@ $(function() {
     cancelBtn.hide();
 
     var userData = JSON.parse(sessionStorage.getItem('userData'));
-    console.log("userData", userData);
+    console.log('userData', userData);
     $.each(userData, function(key,val){
         $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
     });
@@ -35,7 +35,7 @@ $(function() {
     saveBtn.click(function(){
 
         $.validator.addMethod(
-            "regex",
+            'regex',
             function(value, element, regexp) {
                 if (regexp.constructor != RegExp)
                     regexp = new RegExp(regexp);
@@ -43,15 +43,15 @@ $(function() {
                     regexp.lastIndex = 0;
                 return this.optional(element) || regexp.test(value);
             },
-            "Contrase? poco segura"
+            'Contraseña poco segura'
         );
 
-        var validator = $( "#edit-user-form" ).validate({
+        var validator = $( '#edit-user-form' ).validate({
             invalidHandler: function(event, validator) {
-                console.log("Create user invalid form");
+                console.log('Create user invalid form');
             },
             submitHandler: function(form){
-                console.log("Create user valid form");
+                console.log('Create user valid form');
                 var userNewData = {};
                 userNewData.id = userData.id;
                 $('#edit-user-panel').find('.form-control').each(function(){
@@ -65,11 +65,11 @@ $(function() {
                     }
                 });
                 console.log(userNewData);
-                $('body').mask("Loading...");
+                $('body').mask('Loading...');
                 editUser(JSON.stringify(userNewData),
                     function(data, textStatus, jqXHR)
                     {
-                        console.log("Edit user success",data,textStatus, jqXHR);
+                        console.log('Edit user success',data,textStatus, jqXHR);
                         sessionStorage.setItem('userData', JSON.stringify(data.body));
                         $('#edit-user-success-text').text('El usuario '+data.body.username+' ha sido modificado con ?ito.');
                         $('#edit-user-success').show();
@@ -81,18 +81,18 @@ $(function() {
                         $('body').unmask();
                     },function (jqXHR, textStatus, errorThrown)
                     {
-                        console.log("Edit user error", jqXHR, errorThrown);
+                        console.log('Edit user error', jqXHR, errorThrown);
                         $('body').unmask();
                         $('#edit-user-error-text').text(jqXHR.responseText);
                         $('#edit-user-error').show();
                         setTimeout(function(){
-                            if ($('#edit-user-error').is(":visible"))
+                            if ($('#edit-user-error').is(':visible'))
                                 $('#edit-user-error').hide();
                         }, 30000);
                     })
             },
             rules: {
-                username: "required",
+                username: 'required',
                 password: {
                     minlength: 6,
                     regex: /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$/,
@@ -102,8 +102,8 @@ $(function() {
                     equalTo: '#password',
                     regex: /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$/,
                 },
-                name: "required",
-                surnames: "required",
+                name: 'required',
+                surnames: 'required',
                 email: {
                     required: true,
                     email: true
@@ -113,25 +113,25 @@ $(function() {
                 }
             },
             messages: {
-                username: "Campo obligatorio",
+                username: 'Campo obligatorio',
                 password: {
-                    minlength: "M\u00EDnimo 6 caracteres"
+                    minlength: 'M\u00EDnimo 6 caracteres'
                 },
                 repeatPassword: {
-                    minlength: "M\u00EDnimo 6 caracteres",
-                    equalTo: "Las contrase\u00F1as no conciden"
+                    minlength: 'M\u00EDnimo 6 caracteres',
+                    equalTo: 'Las contrase\u00F1as no conciden'
                 },
-                name: "Campo obligatorio",
-                surnames: "Campo obligatorio",
+                name: 'Campo obligatorio',
+                surnames: 'Campo obligatorio',
                 birthDate: {
-                    date: "La fecha debe ser estar en el formato DD/MM/YYY"
+                    date: 'La fecha debe ser estar en el formato DD/MM/YYY'
                 },
                 email: {
-                    required: "Campo obligatorio",
-                    email: "El email debe estar en el formato name@domain.com"
+                    required: 'Campo obligatorio',
+                    email: 'El email debe estar en el formato name@domain.com'
                 }
             },
-            errorClass: "form-error"
+            errorClass: 'form-error'
         });
     });
 

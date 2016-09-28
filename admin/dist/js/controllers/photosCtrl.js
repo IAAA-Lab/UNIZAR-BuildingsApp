@@ -3,7 +3,7 @@ $(function() {
         if (document.readyState === 'complete') {
             if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
                 $('body').mask('Loading...');
-                window.location.href = "login.html";
+                window.location.href = 'login.html';
             }
         }
     };
@@ -18,14 +18,14 @@ $(function() {
     $(document).ready( function () {
 
         var getCityId = function(city){
-            var cityId = "",
+            var cityId = '',
                 cityName = city[0] + city.toLowerCase().substr(1);
             getConstants('cities').forEach(function(city){ if (city.value==cityName) { cityId = city.id;}});
             return cityId;
         }
 
         var getCampusId = function(campusValues, campusName){
-            var campusId = "";
+            var campusId = '';
             campusValues.forEach(function(campus){ if (campus.campus==campusName) { campusId = campus.ID;}});
             return campusId;
         }
@@ -49,7 +49,7 @@ $(function() {
                     $('#admin-photos-error-text').text(jqXHR.responseText);
                     $('#admin-photos-error').show();
                     setTimeout(function(){
-                        if ($('#admin-photos-error').is(":visible"))
+                        if ($('#admin-photos-error').is(':visible'))
                             $('#admin-photos-error').hide();
                     }, 30000);
                 });
@@ -74,7 +74,7 @@ $(function() {
                     $('#admin-photos-error-text').text(jqXHR.responseText);
                     $('#admin-photos-error').show();
                     setTimeout(function(){
-                        if ($('#admin-photos-error').is(":visible"))
+                        if ($('#admin-photos-error').is(':visible'))
                             $('#admin-photos-error').hide();
                     }, 30000);
                 });
@@ -92,7 +92,7 @@ $(function() {
                 }
             });
 
-            if (!buildingId) callback("Error: No se ha encontrado información sobre el edificio");
+            if (!buildingId) callback('Error: No se ha encontrado información sobre el edificio');
             else {
                 selectedBuilding = buildingId;
                 selFloor = $('#'+mode+'-photo-floor');
@@ -125,7 +125,7 @@ $(function() {
                     $('#admin-photos-error-text').text(jqXHR.responseText);
                     $('#admin-photos-error').show();
                     setTimeout(function(){
-                        if ($('#admin-photos-error').is(":visible"))
+                        if ($('#admin-photos-error').is(':visible'))
                             $('#admin-photos-error').hide();
                     }, 30000);
                 });
@@ -188,13 +188,13 @@ $(function() {
             selFloor = $('#edit-photo-floor'),
             selStatus = $('#edit-photo-status');
 
-        var loadMask = function() { $('body').mask("Cargando..."); };
+        var loadMask = function() { $('body').mask('Cargando...'); };
         var unloadMask = function(err) {
             if (err) {
                 $('#admin-photos-error-text').text(err);
                 $('#admin-photos-error').show();
                 setTimeout(function(){
-                    if ($('#admin-photos-error').is(":visible"))
+                    if ($('#admin-photos-error').is(':visible'))
                         $('#admin-photos-error').hide();
                 }, 30000);
             }
@@ -225,7 +225,7 @@ $(function() {
         //Define table configuration
         var photosTable = $('#dataTable-photos').DataTable({
             ajax: {
-                url: getConstants("API_URL") + "/photos/",
+                url: getConstants('API_URL') + '/photos/',
                 dataSrc: ''
             },
             language: getTranslation('editor'),
@@ -258,9 +258,9 @@ $(function() {
                             var tempImage = new Image();
                             tempImage.src = imagePath;
                             tempImage.onload = function() {
-                                console.log("tempImage ", tempImage.width, tempImage.height);
+                                console.log('tempImage ', tempImage.width, tempImage.height);
                                 var resizedImage = resizeImage(tempImage.width, tempImage.height);
-                                console.log("resizedImage", resizedImage);
+                                console.log('resizedImage', resizedImage);
                                 $('#image-preview-modal').modal('show');
                                 $('#image-preview').css('width', resizedImage.width);
                                 $('#image-preview').css('height',resizedImage.height);
@@ -273,12 +273,12 @@ $(function() {
                     text: 'Editar',
                     action: function ( e, dt, node, config ) {
                         if ($('#dataTable-photos').DataTable().rows({ selected: true })[0].length == 1) {
-                            $('body').mask("Cargando...");
+                            $('body').mask('Cargando...');
                             var photoData = $('#dataTable-photos').DataTable().rows({ selected: true }).data()[0];
                             searchCampus('edit', null, null, photoData, function(){
                                 $('#edit-photo-modal').modal({
                                     keyboard: true,
-                                    backdrop: "static",
+                                    backdrop: 'static',
                                     show:true,
                                 });
 
@@ -291,12 +291,12 @@ $(function() {
                     text: 'Eliminar',
                     action: function ( e, dt, node, config ) {
                         if ($('#dataTable-photos').DataTable().rows({ selected: true })[0].length == 1) {
-                            $('body').mask("Cargando...");
+                            $('body').mask('Cargando...');
                             var photoData = $('#dataTable-photos').DataTable().rows({ selected: true }).data()[0];
                             searchCampus('delete', null, null, photoData, function(){
                                 $('#delete-photo-modal').modal({
                                     keyboard: true,
-                                    backdrop: "static",
+                                    backdrop: 'static',
                                     show:true,
                                 });
 
@@ -349,7 +349,7 @@ $(function() {
 
     //Define action on click Save button for modify photo data
     $('#edit-photo-btn').click(function(){
-        $('body').mask("Enviando...");
+        $('body').mask('Enviando...');
 
         var originalPhotoData = $('#dataTable-photos').DataTable().rows({ selected: true }).data()[0],
             sendData = {};
@@ -365,11 +365,11 @@ $(function() {
         campusArray.forEach(function(campus){
             if (campus.ID == sendData.campus) sendData.campus = campus.campus;
         });
-        sendData.roomName = $('#edit-photo-roomName').val().split("(")[0].trim();
-        sendData.roomId = $('#edit-photo-roomName').val().split("(")[1].slice(0,-1);
-        sendData.name = sendData.roomId + "_" + sendData.name.split("_")[1];
+        sendData.roomName = $('#edit-photo-roomName').val().split('(')[0].trim();
+        sendData.roomId = $('#edit-photo-roomName').val().split('(')[1].slice(0,-1);
+        sendData.name = sendData.roomId + '_' + sendData.name.split('_')[1];
 
-        if (sendData.status == "Rejected") sendData.reason = $("#edit-photo-reason").val();
+        if (sendData.status == 'Rejected') sendData.reason = $('#edit-photo-reason').val();
 
         delete sendData.created;
         delete sendData.updated;
@@ -379,17 +379,17 @@ $(function() {
             function(data){
                 $('#dataTable-photos').DataTable().ajax.reload();
                 $('#edit-photo-modal .close').click();
-                $('#admin-photos-success-text').text("Información de la imagen actualizada correctamente");
+                $('#admin-photos-success-text').text('Información de la imagen actualizada correctamente');
                 $('#admin-photos-success').show();
                 $('body').unmask();
             },
             function(jqXHR, textStatus, errorThrown){
                 $('body').unmask();
                 $('#edit-photo-modal .close').click();
-                $('#admin-photos-error-text').text("Error editando la información de la imagen: " + jqXHR.responseText);
+                $('#admin-photos-error-text').text('Error editando la información de la imagen: ' + jqXHR.responseText);
                 $('#admin-photos-error').show();
                 setTimeout(function(){
-                    if ($('#admin-photos-error').is(":visible"))
+                    if ($('#admin-photos-error').is(':visible'))
                         $('#admin-photos-error').hide();
                 }, 30000);
             });
@@ -397,7 +397,7 @@ $(function() {
 
     //Define action on click 'Eliminar' button for delete a photo
     $('#delete-photo-btn').click(function(){
-        $('body').mask("Enviando...");
+        $('body').mask('Enviando...');
 
         var photoData = $('#dataTable-photos').DataTable().rows({ selected: true }).data()[0];
 
@@ -406,17 +406,17 @@ $(function() {
             function(data){
                 $('#dataTable-photos').DataTable().ajax.reload();
                 $('#delete-photo-modal .close').click();
-                $('#admin-photos-success-text').text("Imagen eliminada con éxito");
+                $('#admin-photos-success-text').text('Imagen eliminada con éxito');
                 $('#admin-photos-success').show();
                 $('body').unmask();
             },
             function(jqXHR, textStatus, errorThrown){
                 $('body').unmask();
                 $('#delete-photo-modal .close').click()
-                $('#admin-photos-error-text').text("Error eliminando la imagen: " + jqXHR.responseText);
+                $('#admin-photos-error-text').text('Error eliminando la imagen: ' + jqXHR.responseText);
                 $('#admin-photos-error').show();
                 setTimeout(function(){
-                    if ($('#admin-photos-error').is(":visible"))
+                    if ($('#admin-photos-error').is(':visible'))
                         $('#admin-photos-error').hide();
                 }, 30000);
             });
@@ -433,7 +433,7 @@ $(function() {
         };
     }
 
-    $("#preview-edit-photo-btn").on("click", function() {
+    $('#preview-edit-photo-btn').on('click', function() {
         var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val();
         var tempImage = new Image();
         tempImage.src = imagePath;
@@ -446,7 +446,7 @@ $(function() {
         }
     });
 
-    $("#preview-delete-photo-btn").on("click", function() {
+    $('#preview-delete-photo-btn').on('click', function() {
         var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val();
         var tempImage = new Image();
         tempImage.src = imagePath;

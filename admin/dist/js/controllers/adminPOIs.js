@@ -3,7 +3,7 @@ $(function() {
         if (document.readyState === 'complete') {
             if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
                 $('body').mask('Loading...');
-                window.location.href = "login.html";
+                window.location.href = 'login.html';
             }
         }
     };
@@ -57,7 +57,7 @@ $(function() {
         //Define table configuration
         var poisTable = $('#dataTable-pois').DataTable({
             ajax: {
-                url: getConstants("API_URL") + "/pois/",
+                url: getConstants('API_URL') + '/pois/',
                 dataSrc: ''
             },
             language: getTranslation('editor'),
@@ -84,22 +84,22 @@ $(function() {
                 {
                     text: 'Editar',
                     action: function ( e, dt, node, config ) {
-                        $('body').mask("Cargando...");
+                        $('body').mask('Cargando...');
                         if ($('#dataTable-pois').DataTable().rows({ selected: true })[0].length == 1) {
                             var poiData = $('#dataTable-pois').DataTable().rows({ selected: true }).data()[0];
                             $.ajax({
-                                url : getConstants("API_URL") + "/estancias/campus",
-                                type: "GET",
+                                url : getConstants('API_URL') + '/estancias/campus',
+                                type: 'GET',
                                 contentType: 'application/json',
                                 success: function(campusValues, textStatus, jqXHR)
                                 {
-                                    console.log("Get distinct campus",campusValues);
+                                    console.log('Get distinct campus',campusValues);
 
                                     fillModal('edit', campusValues, poiData);
 
                                     $('#edit-poi-modal').modal({
                                         keyboard: true,
-                                        backdrop: "static",
+                                        backdrop: 'static',
                                         show:true,
                                     });
 
@@ -107,12 +107,12 @@ $(function() {
                                 },
                                 error: function (jqXHR, textStatus, errorThrown)
                                 {
-                                    console.log("Get distinct campus error", jqXHR, errorThrown);
+                                    console.log('Get distinct campus error', jqXHR, errorThrown);
                                     $('body').unmask();
-                                    $('#admin-pois-error-text').text("Error recuperando los datos del punto de interés: " + jqXHR.responseText);
+                                    $('#admin-pois-error-text').text('Error recuperando los datos del punto de interés: ' + jqXHR.responseText);
                                     $('#admin-pois-error').show();
                                     setTimeout(function(){
-                                        if ($('#admin-pois-error').is(":visible"))
+                                        if ($('#admin-pois-error').is(':visible'))
                                             $('#admin-pois-error').hide();
                                     }, 30000);
                                 }
@@ -130,7 +130,7 @@ $(function() {
 
                             $('#delete-poi-modal').modal({
                                 keyboard: true,
-                                backdrop: "static",
+                                backdrop: 'static',
                                 show:true,
                             });
                         }
@@ -162,7 +162,7 @@ $(function() {
 
     //Define action on click Save button for modify a POI
     $('#edit-poi-btn').click(function(){
-        $('body').mask("Enviando...");
+        $('body').mask('Enviando...');
 
         var poiData = $('#dataTable-pois').DataTable().rows({ selected: true }).data()[0],
             sendData = {};
@@ -174,26 +174,26 @@ $(function() {
                 sendData[key] = poiData[key];
         }
 
-        sendData.approved = $('#edit-poi-approved').is(":checked");
+        sendData.approved = $('#edit-poi-approved').is(':checked');
         delete sendData.updated;
 
         editPOI(
             JSON.stringify(sendData),
             function(data, textStatus, jqXHR)
             {
-                console.log("Modify poi", data);
+                console.log('Modify poi', data);
                 $('#dataTable-pois').DataTable().ajax.reload();
                 $('#edit-poi-modal .close').click();
                 $('body').unmask();
             },function (jqXHR, textStatus, errorThrown)
             {
-                console.log("Modify poi error", jqXHR, errorThrown);
+                console.log('Modify poi error', jqXHR, errorThrown);
                 $('body').unmask();
                 $('#edit-poi-modal .close').click();
-                $('#admin-pois-error-text').text("Error editando el punto de interés: " + jqXHR.responseText);
+                $('#admin-pois-error-text').text('Error editando el punto de interés: ' + jqXHR.responseText);
                 $('#admin-pois-error').show();
                 setTimeout(function(){
-                    if ($('#admin-pois-error').is(":visible"))
+                    if ($('#admin-pois-error').is(':visible'))
                         $('#admin-pois-error').hide();
                 }, 30000);
             });
@@ -201,7 +201,7 @@ $(function() {
 
     //Define action on click 'Eliminar' button for delete a POI
     $('#delete-poi-btn').click(function(){
-        $('body').mask("Enviando...");
+        $('body').mask('Enviando...');
 
         var poiData = $('#dataTable-pois').DataTable().rows({ selected: true }).data()[0];
         delete poiData.updated;
@@ -210,19 +210,19 @@ $(function() {
             poiData.id,
             function(data, textStatus, jqXHR)
             {
-                console.log("Delete poi",data,textStatus, jqXHR);
+                console.log('Delete poi',data,textStatus, jqXHR);
                 $('#dataTable-pois').DataTable().ajax.reload();
                 $('#delete-poi-modal .close').click();
                 $('body').unmask();
             },function (jqXHR, textStatus, errorThrown)
             {
-                console.log("Delete poi error", jqXHR, errorThrown);
+                console.log('Delete poi error', jqXHR, errorThrown);
                 $('body').unmask();
                 $('#delete-poi-modal .close').click()
-                $('#admin-pois-error-text').text("Error editando el punto de interés: " + jqXHR.responseText);
+                $('#admin-pois-error-text').text('Error editando el punto de interés: ' + jqXHR.responseText);
                 $('#admin-pois-error').show();
                 setTimeout(function(){
-                    if ($('#admin-pois-error').is(":visible"))
+                    if ($('#admin-pois-error').is(':visible'))
                         $('#admin-pois-error').hide();
                 }, 30000);
             });
