@@ -165,7 +165,9 @@ $(function() {
                         else if (key == 'campus'){
                             var campus = null;
                             campusArray.forEach(function(c){
-                                if (c.campus === photoData.campus) campus = c.ID;
+                                if (c.campus === poiData.campus) {
+                                    campus = (mode === 'edit') ? c.ID : c.campus;
+                                }
                             });
                             selCampus.val(campus);
                         }
