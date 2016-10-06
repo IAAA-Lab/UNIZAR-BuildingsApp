@@ -9214,6 +9214,8 @@ img[usemap] {
   margin-top: 1%;
   margin-bottom: 2%;
   /* MARKERS */ }
+  #mapa .leaflet-popup {
+    bottom: 0px !important; }
   #mapa .leaflet-popup-content {
     margin: 10px 10px !important;
     line-height: 1.8 !important; }
