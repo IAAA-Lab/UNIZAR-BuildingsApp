@@ -26,9 +26,9 @@ import com.uzapp.dominio.Espacios;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/busquedas")
-public class BusquedasRestController {
+public class Busquedas {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BusquedasRestController.class);
+	private static final Logger logger = LoggerFactory.getLogger(Busquedas.class);
 	
 	@RequestMapping(
 			value = "/codigoespacios", 
