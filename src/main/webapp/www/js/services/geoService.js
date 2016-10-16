@@ -49,9 +49,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         $scope.map.attributionControl.setPrefix('');
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
 
-        var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Geoserver + "sigeuz/wms", {
+        var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", {
             layers: 'sigeuz:bordes',
             format: 'image/png',
+            styles: 'show_hide_label_with_zoom',
             transparent: true,
             minZoom: 15,
             maxZoom: 25,
@@ -68,22 +69,17 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var controlSearch = new L.Control.Search({layer: sharedProperties.getMarkerLayer(), initial: false, position:'topright'});
         $scope.map.addControl(controlSearch);
 
-        var selectedFeature;
-        var queryCoordinates;
         var src = new Proj4js.Proj('EPSG:4326'); //Sistema de proyección del origen
         var dst = new Proj4js.Proj('EPSG:25830'); //Sistema de proyección de las entidades de destino
 
-        $scope.map.on('click', function(e) {
-            console.log("Click on map", e);
-            if (selectedFeature) {
-                $scope.map.removeLayer(selectedFeature);
-            };
-            var owsrootUrl = APP_CONSTANTS.URI_Geoserver + 'ows';
-            
+        $scope.map.on('click', function(e)
+        {
+            var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
             var selectedPoint = e.latlng;
+         
             var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
             Proj4js.transform(src, dst, p);
-            queryCoordinates = e.latlng;
+            
             var defaultParameters = {
                 service : 'WFS',
                 version : '1.1.1',
@@ -140,25 +136,26 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         infoService.getInfoEdificio(edificioName).then(
             function (dataEdificio) {
                 console.log("Data edificio", dataEdificio);
-                if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null) {
-                    $scope.descripcion = dataEdificio;
-
-                    var edificio = $scope.descripcion[0];
+                if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null)
+                {
+                    var edificio = dataEdificio[0];
 
                     var html_header = '<div id="popup" class="text-center map-mark"><b>'+edificio.edificio+'</b><br>'+edificio.direccion+'</div> ';
 
                     var html_select = '<div>' + $scope.translation.SELECCIONAR_PLANTA;
-                    html_select += '<select class="ion-input-select select-map" onchange="if(this!=undefined)selectPlano(this);" ng-model="plantaPopup" >';
+                    html_select += '<select class="ion-input-select select-map" onchange="selectPlano(this);" ng-model="plantaPopup" >';
                     html_select+='<option value=undefined selected="selected"></option>';
 
-                    for (i=0;i<edificio.plantas.length;i++){//Bucle para cargar en el select todas las plantas
-                        var selectValue = data+edificio.plantas[i],
-                            selectClass = 'class="'+selectValue+'"',
-                            selectValueAttr = 'value="'+selectValue+'"',
-                            dataEdificioFloor = 'data-floor="'+i+'"',
+                    // Load building floor values in HTML 'select' element
+                    for (i=0;i<edificio.plantas.length;i++)
+                    {
+                        var floorValue = edificio.plantas[i],
+                            selectClass = 'class="'+floorValue+'"',
+                            selectValueAttr = 'value="'+floorValue+'"',
+                            dataEdificioFloor = 'data-building="'+edificio.ID_Edificio+'"',
                             attributes = [selectClass, selectValueAttr, dataEdificioFloor].join(' ');
 
-                        html_select+='<option '+attributes+'>'+edificio.plantas[i]+'</option>';
+                        html_select+='<option '+attributes+'>'+floorValue+'</option>';
                     }
                     html_select+='</select>';
 
@@ -179,6 +176,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     sharedProperties.setMarkerLayer(markerLayer);
                     sharedProperties.setLastMapMarker(marker);
                     marker.fireEvent('click');
+                }
+                else {
+                    console.log("Error on getInfoEdificio, data invalid", err);
+                    var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                    errorMsg += 'información del edificio</div>';
+                    showInfoPopup('¡Error!', errorMsg);
                 }
             },
             function(err){
@@ -228,10 +231,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         //Close opened popup on previous map
         var mapa = sharedProperties.getMapa();
         if (typeof(mapa) != 'undefined') mapa.closePopup();
+        
+        var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
+            floor = localStorage.planta,
+            edificio_id = building + floor;
 
-        var edificio=localStorage.planta;
+        edificio_id = edificio_id.replace(/\./g,"_").toLowerCase();
 
-        var url = APP_CONSTANTS.URI_Geoserver + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio.toLowerCase()+'&srsName=epsg:4326&outputFormat=application/json';
+        var url = APP_CONSTANTS.URI_Geoserver_1 + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio_id+'&srsName=epsg:4326&outputFormat=application/json';
         $.ajax({
             url : url,
             type: 'GET',
@@ -262,10 +269,9 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         });
 
         function handleJson(data, sharedProperties, poisService, createModal, callback) {
-            console.log("Data",data);
-
             var plano = sharedProperties.getPlano(),
-                coordenadas = data.features[0].geometry.coordinates[0][0][0];
+                coordenadas = data.features[0].geometry.coordinates[0][0][0],
+                addLegendToPlan = true;
 
             //Remove previous plan if exists
             if(!(typeof plano == 'undefined')) {
@@ -284,7 +290,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             L.geoJson(data, {
                 style: function (feature) {
                     var et_id = feature.properties.et_id;
-                    //Remark last serach room
+                    //Remark last search room
                     if (typeof(localStorage.lastSearch) != 'undefined'){
                         if (feature.properties.et_id == localStorage.lastSearch) return {color: "black"};
                     }
@@ -296,7 +302,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
             updatePOIs(plano, sharedProperties);
 
-            callback(plano);
+            callback(plano, addLegendToPlan);
         }
 
         //Funcion que gestiona cada una de las capas de GeoJSON
@@ -365,11 +371,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     //Add markers for every POI
-    function updatePOIs(plano, sharedProperties){
-
-        var floor = localStorage.floor.indexOf('floor') == -1 ? localStorage.floor : JSON.parse(localStorage.floor).floor,
-            building = localStorage.planta,
-            markers = []
+    function updatePOIs(plano, sharedProperties) {
+        var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
+            floor = localStorage.planta,
+            markers = [];
 
         poisService.getRoomPOIs(building, floor).then(
             function(pois) {

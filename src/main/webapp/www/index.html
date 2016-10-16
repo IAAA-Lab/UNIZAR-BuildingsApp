@@ -76,11 +76,10 @@
 */
     //Selecciono un plano de la planta seleccionada.
     function selectPlano(planta) {
-        console.log("selectPlano", arguments);
+        console.log("selectPlano", planta);
         localStorage.planta = planta.value;
-        var floor = JSON.stringify($('.'+planta.value).data());
-        if (typeof(floor) == 'undefined') localStorage.floor = planta.floor;
-        else localStorage.floor = floor;
+        var building = JSON.stringify($('.'+planta.value).data());
+        localStorage.building = building;
         window.location = "#/app/plano";
     }
     //Selecciono un plano de la planta seleccionada.

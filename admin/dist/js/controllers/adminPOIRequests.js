@@ -124,9 +124,27 @@ $(function() {
                 }},
                 { data: 'comment', defaultContent: ''},
                 { data: 'reason', defaultContent: ''},
-                { data: 'requestDate', defaultContent: ''},
+                { data: 'requestDate', defaultContent: '', render: function(data, type, full, meta){
+                    var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
+                        day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
+                        hour = data.date.hour < 10 ? '0' + data.date.hour : data.date.hour,
+                        minute = data.date.minute < 10 ? '0' + data.date.minute : data.date.minute,
+                        second = data.date.second < 10 ? '0' + data.date.second : data.date.second,
+                        date = [data.date.year,month,day].join('-'),
+                        time = [data.time.hour,data.time.minute,data.time.second].join(':');
+                    return date + ' ' + time;
+                }},
                 { data: 'actionDate', defaultContent: '', render: function(data, type, full, meta){
-                    if (full.status !== 'pending') return data;
+                    if (full.status !== 'pending') {
+                        var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
+                            day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
+                            hour = data.date.hour < 10 ? '0' + data.date.hour : data.date.hour,
+                            minute = data.date.minute < 10 ? '0' + data.date.minute : data.date.minute,
+                            second = data.date.second < 10 ? '0' + data.date.second : data.date.second,
+                            date = [data.date.year,month,day].join('-'),
+                            time = [data.time.hour,data.time.minute,data.time.second].join(':');
+                        return date + ' ' + time;
+                    }
                     else return '';
                 }},
                 { data: 'city' },

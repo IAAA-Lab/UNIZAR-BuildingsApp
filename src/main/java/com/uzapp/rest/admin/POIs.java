@@ -171,7 +171,7 @@ public class POIs {
             produces = "application/json")
     public ResponseEntity<?> getFloorPOIS(
         @PathVariable("building") String building, 
-        @PathVariable("floor") int floor)
+        @PathVariable("floor") String floor)
     {
         logger.info("Service: getFloorPOIS()");
         Connection connection = null;
