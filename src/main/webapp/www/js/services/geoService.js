@@ -264,7 +264,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 var errorMsg = '<div class="text-center">No se dispone del plano<br>';
                 errorMsg += 'de la planta seleccionada</div>';
                 showInfoPopup('¡Error!', errorMsg);
-                window.location = "#/app/map";
+                window.location = "#/app/mapa";
             }
         });
 
