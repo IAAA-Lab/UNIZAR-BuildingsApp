@@ -84,8 +84,9 @@
     }
     //Selecciono un plano de la planta seleccionada.
     function informacionEstancia(estancia){
+        console.log("informacionEstancia", estancia);
         localStorage.estancia = estancia.value;
-        window.location = "#/app/estancia";
+        window.location = "#/app/roomDetails";
     }
     //Edición de un POI
     function editPOI(){

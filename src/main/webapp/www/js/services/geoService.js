@@ -273,9 +273,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 coordenadas = data.features[0].geometry.coordinates[0][0][0],
                 addLegendToPlan = true;
 
-            //Remove previous plan if exists
+            //Remove previous plan layers
             if(!(typeof plano == 'undefined')) {
-                plano.remove();
+                plano.eachLayer(function (layer) {
+                    plano.removeLayer(layer);
+                });
+                addLegendToPlan = false;
+            } else {
+                plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
             }
 
             var planOptions = {
@@ -285,9 +290,8 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 minZoom: 19,
                 maxBounds: L.geoJson(data).getBounds()
             };
-            plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
 
-            L.geoJson(data, {
+            var planoLayer = L.geoJson(data, {
                 style: function (feature) {
                     var et_id = feature.properties.et_id;
                     //Remark last search room
