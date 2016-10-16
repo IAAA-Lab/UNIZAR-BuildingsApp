@@ -282,15 +282,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
             var planOptions = {
                 center: L.latLng(coordenadas[1], coordenadas[0]),
-                zoom: 20,
-                maxZoom: 21,
-                minZoom: 19,
                 maxBounds: L.geoJson(data).getBounds()
             };
 
             plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
 
-            L.geoJson(data, {
+            var planoLayer = L.geoJson(data, {
                 style: function (feature) {
                     var et_id = feature.properties.et_id;
                     //Remark last search room
@@ -302,6 +299,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     onEachFeature(feature, layer, createModal);
                 }
             }).addTo(plano);
+
+            var groupLayer = new L.featureGroup;
+            groupLayer.addLayer(planoLayer);
+            plano.fitBounds(groupLayer.getBounds());
 
             updatePOIs(plano, sharedProperties);
 
