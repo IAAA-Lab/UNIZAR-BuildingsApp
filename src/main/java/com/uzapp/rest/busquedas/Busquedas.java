@@ -26,9 +26,9 @@ import com.uzapp.dominio.Espacios;
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/busquedas")
-public class BusquedasRestController {
+public class Busquedas {
 	
-	private static final Logger logger = LoggerFactory.getLogger(BusquedasRestController.class);
+	private static final Logger logger = LoggerFactory.getLogger(Busquedas.class);
 	
 	@RequestMapping(
 			value = "/codigoespacios", 
@@ -153,10 +153,10 @@ public class BusquedasRestController {
 	}
 	
 	@RequestMapping(
-			value = "/infoedificio", 
+			value = "/infoEdificio", 
 			method = RequestMethod.GET,
 			produces = "application/json")
-	public ResponseEntity<?> getBuildingInfo(@RequestParam("edificio") String edificio)
+	public ResponseEntity<?> getBuildingInfo(@RequestParam("id") String id)
 	{
 		logger.info("Service: getBuildingInfo()");
 		Connection connection = null;
@@ -173,7 +173,7 @@ public class BusquedasRestController {
 			List<Edificio> result = new ArrayList<Edificio>();
 		
 			preparedStmt = connection.prepareStatement(query);
-			preparedStmt.setString(1, edificio);
+			preparedStmt.setString(1, id);
 			ResultSet res = preparedStmt.executeQuery();
 
 			while (res.next()){

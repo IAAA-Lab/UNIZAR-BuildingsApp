@@ -33,15 +33,14 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     //Open the modal for add a POI and load data in the modal form
     $scope.openCreatePOIModal = function(e) {
         $ionicLoading.show({template: 'Cargando...'});
-        console.log("openCreatePOIModal", e, JSON.parse(localStorage.floor));
-        var info = JSON.parse(localStorage.floor),
-            floor = info.floor,
-            id = e.target.feature.properties.et_id;
+        console.log("openCreatePOIModal", e, localStorage.building, localStorage.planta);
+        var id = e.target.feature.properties.et_id;
 
         infoService.getInfoEstancia(id).then(
             function (data) {
                 if (data.length === 0 || data == null) $ionicLoading.hide();
                 else {
+                    var floor = localStorage.planta;
                     $scope.existsCity = (data.ciudad != null && typeof data.ciudad !== 'undefined') ? true : false;
                     $scope.existsCampus = (data.campus != null && typeof data.campus !== 'undefined') ? true : false;
                     $scope.existsBuilding = (data.edificio != null && typeof data.edificio !== 'undefined') ? true : false;
@@ -57,7 +56,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         roomId: data.ID_espacio,
                         roomName: data.ID_centro,
                         address: data.dir,
-                        floor: info.floor,
+                        floor: floor,
                         latitude: e.latlng.lat,
                         longitude: e.latlng.lng
                     };
@@ -135,11 +134,6 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
         );
     };
 
-    $scope.finalSubmitDeletePOI = function(data) {
-        console.log("finalSubmitDeletePOI form",data);
-        //TODO: [DGP] Implementar funcionalidad
-    };
-
     $scope.openEditPOIModal = function(id){
         console.log("openEditPOIModal", id);
         $ionicLoading.show({template: 'Cargando...'});
@@ -158,7 +152,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
                     $scope.data = data;
 
-                    console.log("Data to modal",$scope.data);
+                    console.log("Data to modal",$scope.data, $scope.pois, $scope.floors);
                     $ionicLoading.hide();
                     $scope.modalEditPOI.show().then(function(){
                         $('#edit-poi-modal .form-error').each(function(el) { $(this).hide()});

@@ -124,9 +124,27 @@ $(function() {
                 }},
                 { data: 'comment', defaultContent: ''},
                 { data: 'reason', defaultContent: ''},
-                { data: 'requestDate', defaultContent: ''},
+                { data: 'requestDate', defaultContent: '', render: function(data, type, full, meta){
+                    var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
+                        day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
+                        hour = data.date.hour < 10 ? '0' + data.date.hour : data.date.hour,
+                        minute = data.date.minute < 10 ? '0' + data.date.minute : data.date.minute,
+                        second = data.date.second < 10 ? '0' + data.date.second : data.date.second,
+                        date = [data.date.year,month,day].join('-'),
+                        time = [data.time.hour,data.time.minute,data.time.second].join(':');
+                    return date + ' ' + time;
+                }},
                 { data: 'actionDate', defaultContent: '', render: function(data, type, full, meta){
-                    if (full.status !== 'pending') return data;
+                    if (full.status !== 'pending') {
+                        var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
+                            day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
+                            hour = data.date.hour < 10 ? '0' + data.date.hour : data.date.hour,
+                            minute = data.date.minute < 10 ? '0' + data.date.minute : data.date.minute,
+                            second = data.date.second < 10 ? '0' + data.date.second : data.date.second,
+                            date = [data.date.year,month,day].join('-'),
+                            time = [data.time.hour,data.time.minute,data.time.second].join(':');
+                        return date + ' ' + time;
+                    }
                     else return '';
                 }},
                 { data: 'city' },
@@ -147,11 +165,10 @@ $(function() {
 
         var operation = $('#request-btn').text() === 'Aprobar' ? 'approve' : 'reject';
 
-        $.ajax({
-            url : getConstants("API_URL") + "/pois/request/"+requestData.id+"/"+operation+"/"+requestData.type+"/",
-            type: 'PUT',
-            contentType: 'application/json',
-            success: function(data, textStatus, jqXHR)
+        approveRejectPOI(
+            requestData,
+            operation,
+            function(data, textStatus, jqXHR)
             {
                 console.log("Success request for "+requestData.type+" poi",data);
                 $('#dataTable-requests').DataTable().ajax.reload();
@@ -164,8 +181,7 @@ $(function() {
                     if ($('#admin-requests-success').is(":visible"))
                         $('#admin-requests-success').hide();
                 }, 30000);
-            },
-            error: function (jqXHR, textStatus, errorThrown)
+            },function (jqXHR, textStatus, errorThrown)
             {
                 console.log("Error on request for "+requestData.type+" poi error", jqXHR, errorThrown);
                 $('body').unmask();
@@ -179,7 +195,6 @@ $(function() {
                     if ($('#admin-requests-error').is(":visible"))
                         $('#admin-requests-error').hide();
                 }, 30000);
-            }
-        });
+            });
     });
 });
