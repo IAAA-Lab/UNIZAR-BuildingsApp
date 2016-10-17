@@ -16,7 +16,7 @@ public class POIRequest {
     private String campus;
     private String building;
     private String room;
-    private int floor;
+    private String floor;
 
     private LocalDateTime requestDate;
     private LocalDateTime actionDate;
@@ -67,7 +67,7 @@ public class POIRequest {
     }
 
     public POIRequest(int id, String type, int poi, String category, String comment, String reason, String email, 
-        String status, String city, String campus, String building, String room, int floor, LocalDateTime requestDate, LocalDateTime actionDate){
+        String status, String city, String campus, String building, String room, String floor, LocalDateTime requestDate, LocalDateTime actionDate){
         this.id=id;
         this.type=type;
         this.poi=poi;

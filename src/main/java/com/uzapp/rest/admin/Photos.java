@@ -3,7 +3,7 @@ package com.uzapp.rest.admin;
 import com.uzapp.dominio.Photo;
 
 import com.uzapp.bd.ConnectionManager;
-import com.uzapp.rest.busquedas.EstanciasRestController;
+import com.uzapp.rest.busquedas.Estancias;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -74,7 +74,7 @@ public class Photos {
     if (mode.equals("admin")) status = "Approved";
     else status = "Pending";
 
-    EstanciasRestController estanciasRestController = new EstanciasRestController();
+    Estancias estanciasRestController = new Estancias();
     Photo photo = null;
     logger.info("Room passed: " + room);
     ResultSet info = estanciasRestController.getRoomInfo(connection, room);

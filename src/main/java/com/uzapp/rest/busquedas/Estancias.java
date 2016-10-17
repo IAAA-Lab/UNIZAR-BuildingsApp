@@ -26,9 +26,9 @@ import com.uzapp.dominio.Espacios;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/estancias")
-public class EstanciasRestController {
+public class Estancias {
 	
-	private static final Logger logger = LoggerFactory.getLogger(EstanciasRestController.class);
+	private static final Logger logger = LoggerFactory.getLogger(Estancias.class);
 	
 	public ResultSet getRoomInfo(Connection connection, String roomId) throws SQLException 
 	{

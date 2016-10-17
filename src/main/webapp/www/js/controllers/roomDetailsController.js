@@ -45,7 +45,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             var idEspacioArray = $scope.infoEstancia.ID_espacio.split('.');
             var planta = {
                 floor: idEspacioArray[2],
-                value: idEspacioArray.splice(0,idEspacioArray.length-1).join('_')
+                building: idEspacioArray.splice(0,idEspacioArray.length-2).join('.') + '.'
             }
             selectPlano(planta);
         };

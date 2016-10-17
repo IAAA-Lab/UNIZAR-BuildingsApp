@@ -43,7 +43,7 @@ public class POIs {
                         rs.getString("edificio"),
                         rs.getString("estancia_id"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta"),
+                        rs.getString("planta"),
                         rs.getString("categoria"),
                         rs.getString("comment"),
                         rs.getString("dir"),
@@ -123,7 +123,7 @@ public class POIs {
                         rs.getString("edificio"),
                         rs.getString("estancia_id"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta"),
+                        rs.getString("planta"),
                         rs.getString("categoria"),
                         rs.getString("comment"),
                         rs.getString("dir"),
@@ -171,7 +171,7 @@ public class POIs {
             produces = "application/json")
     public ResponseEntity<?> getFloorPOIS(
         @PathVariable("building") String building, 
-        @PathVariable("floor") int floor)
+        @PathVariable("floor") String floor)
     {
         logger.info("Service: getFloorPOIS()");
         Connection connection = null;
@@ -180,7 +180,7 @@ public class POIs {
             Gson gson = new Gson();
             connection = ConnectionManager.getConnection();
 
-            String query = "SELECT * FROM pois WHERE estancia_id LIKE \'"+building+"%\' AND planta="+floor+" AND approved=true";
+            String query = "SELECT * FROM pois WHERE estancia_id LIKE \'"+building+"%\' AND planta=\'"+floor+"\' AND approved=true";
             System.out.println("Query: " + query);
             preparedStmt = connection.prepareStatement(query);
 
@@ -194,7 +194,7 @@ public class POIs {
                         rs.getString("edificio"),
                         rs.getString("estancia_id"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta"),
+                        rs.getString("planta"),
                         rs.getString("categoria"),
                         rs.getString("comment"),
                         rs.getString("dir"),
@@ -239,7 +239,7 @@ public class POIs {
             preparedStmt.setString(3, poi.getBuilding());
             preparedStmt.setString(4, poi.getRoomId());
             preparedStmt.setString(5, poi.getRoomName());
-            preparedStmt.setInt(6, poi.getFloor());
+            preparedStmt.setString(6, poi.getFloor());
             preparedStmt.setString(7, poi.getCategory());
             preparedStmt.setString(8, poi.getComments());
             preparedStmt.setString(9, poi.getAddress());
@@ -290,7 +290,7 @@ public class POIs {
             preparedStmt.setString(1, poi.getCity());
             preparedStmt.setString(2, poi.getCampus());
             preparedStmt.setString(3, poi.getBuilding());
-            preparedStmt.setInt(4, poi.getFloor());
+            preparedStmt.setString(4, poi.getFloor());
             preparedStmt.setString(5, poi.getCategory());
             preparedStmt.setString(6, poi.getComments());
             preparedStmt.setString(7, poi.getAddress());
@@ -400,7 +400,7 @@ public class POIs {
                         rs.getString("campus"),
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta"),
+                        rs.getString("planta"),
                         rs.getTimestamp("request_date").toLocalDateTime(),
                         rs.getTimestamp("action_date").toLocalDateTime()));
                 }
@@ -419,7 +419,7 @@ public class POIs {
                         rs.getString("campus"),
                         rs.getString("edificio"),
                         rs.getString("estancia_nombre"),
-                        rs.getInt("planta"),
+                        rs.getString("planta"),
                         rs.getTimestamp("request_date").toLocalDateTime(),
                         rs.getTimestamp("action_date").toLocalDateTime()));
                 }

@@ -16,10 +16,21 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         option = typeof option !== 'undefined' ? option : 1;  //Si no tenemos valor, por defecto escogemos Zaragoza
         sharedProperties.setOpcion(option);
 
-        //$scope.factorias = APP_CONSTANTS.datosMapa;
+        //Initial layers
         var ggl = new L.Google('ROADMAP');
         var satelite = new L.Google('SATELLITE');
         var hybrid = new L.Google('HYBRID');
+        var openstreetmap = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom:50,
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        });
+
+        var baseMaps = {
+            "Google Roadmap": ggl,
+            "Google Satelite": satelite,
+            "Google Hibrida": hybrid,
+            "Open Street Map": openstreetmap
+        };
 
         var MIN_ZOOM = 15;
         var INIT_ZOOM = 15;
@@ -29,157 +40,157 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var INI_LAT = 41.653496;
         var INI_LON = -0.889492;
 
-        /*var OSM = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-         id: 'OSM'
-         });*/
-        //No funciona bien con geoserver y WMS
-
-        var baseMaps = {
-            // "OSM": OSM,
-            "Google Roadmap": ggl,
-            "Google Satelite": satelite,
-            "Google Hibrida": hybrid
-        };
-
         $scope.map = L.map('mapa'
             ,{
                 crs: L.CRS.EPSG3857,
-                layers: [ggl]
+                layers: [openstreetmap]
             }
         ).setView([APP_CONSTANTS.datosMapa[option].latitud, APP_CONSTANTS.datosMapa[option].longitud], INIT_ZOOM);
         $scope.map.attributionControl.setPrefix('');
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
 
+        var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", {
+            layers: 'sigeuz:bordes',
+            format: 'image/png',
+            styles: 'show_hide_label_with_zoom',
+            transparent: true,
+            minZoom: 15,
+            maxZoom: 25,
+            zIndex: 1000,
+            attribution: "Edificios"
+        });
+
+        $scope.map.addLayer(buildingsLayer,"Edificios");
+
         L.control.locate().addTo($scope.map);
 
-        sharedProperties.setMarkerLayer(new L.LayerGroup());    //layer contain searched elements
+        sharedProperties.setMarkerLayer(new L.LayerGroup());
         $scope.map.addLayer(sharedProperties.getMarkerLayer());
         var controlSearch = new L.Control.Search({layer: sharedProperties.getMarkerLayer(), initial: false, position:'topright'});
         $scope.map.addControl(controlSearch);
 
-        L.marker([42.142172, -0.405557]).addTo($scope.map)
-            .bindPopup("<div class=\"text-center\"><b>Campus Huesca</b><br>Ronda Misericordia, 5</div>");
+        var src = new Proj4js.Proj('EPSG:4326'); //Sistema de proyección del origen
+        var dst = new Proj4js.Proj('EPSG:25830'); //Sistema de proyección de las entidades de destino
 
-        L.marker([40.351661, -1.110081]).addTo($scope.map)
-            .bindPopup("<div class=\"text-center\"><b>Vicerrectorado Campus Teruel</b><br>C/Ciudad Escolar, s/n</div>");
+        $scope.map.on('click', function(e)
+        {
+            var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
+            var selectedPoint = e.latlng;
+         
+            var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
+            Proj4js.transform(src, dst, p);
+            
+            var defaultParameters = {
+                service : 'WFS',
+                version : '1.1.1',
+                request : 'GetFeature',
+                typeName : 'sigeuz:bordes',
+                maxFeatures : 500,
+                outputFormat : 'text/javascript',
+                format_options : 'callback:getJson',
+                SrsName : 'EPSG:4326'
+            };
+            
+            planta = 'CSF.1215.0'; //param 'planta' is needed, but has no use
+            var customParams = {
+                cql_filter:'DWithin(geom, POINT(' + p.x + ' ' + p.y + '), 0.1, meters)'
+            };
 
-        for (var i=0; i<APP_CONSTANTS.edificios.length; i++){
-            //Seria interesante probar con L.tileLayer.betterWMS
+            var parameters = L.Util.extend(defaultParameters, customParams);
+            var url = owsrootUrl + L.Util.getParamString(parameters);
 
-            var URI_wms = APP_CONSTANTS.URI_Geoserver + 'wms';
-            var mywms = L.tileLayer.wms(URI_wms, {
-                layers: 'proyecto:'+APP_CONSTANTS.edificios[i].toLowerCase(),
-                format: 'image/png',
-                transparent: true,
-                version: '1.3.0'
+            $.ajax({
+                url : owsrootUrl + L.Util.getParamString(parameters),
+                dataType : 'jsonp',
+                jsonpCallback : 'getJson',
+                success: function(data){
+                    console.log("Success", data);
+                    if (data.features.length > 0) {
+                        var lastMapMarker = sharedProperties.getLastMapMarker();
+                        if (lastMapMarker) {
+                            sharedProperties.getMarkerLayer().removeLayer(lastMapMarker);
+                        }
+                        showMarker($scope, data, selectedPoint, infoService);
+                    }
+                }
             });
-
-            $scope.map.addLayer(mywms);
-            $(document).ready(function() {
-                addMarkers($scope, i, infoService);
-            });
-        }
+        });
 
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(function (position) {
                 sharedProperties.setLatUser(position.coords.latitude);
                 sharedProperties.setLonUser(position.coords.longitude);
-                rellenarCampus($scope);
             });
         }
 
         sharedProperties.setMapa($scope.map);
         return $scope.map;
     }
+
     // Funcion encargada de añdir el marcador sobre el edificio para mostrar despues la informacion de dicho edificio
-    function addMarkers($scope, index, infoService){
+    function showMarker($scope, data, point, infoService){
 
-        var url = APP_CONSTANTS.URI_Geoserver + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:' + APP_CONSTANTS.edificios[index].toLowerCase()+ '&srsName=epsg:4326&outputFormat=application/json';
-        $.ajax({
-            url : url,
-            type: 'GET',
-            dataType : 'json',
-            crossDomain: true,
-            headers: { 'Access-Control-Allow-Origin': '*' },
-            success: handleJson
-        });
-                
-        function handleJson(data) {
+        var coordenadas = data.features[0].geometry.coordinates[0][0][0];
+        var edificioName = data.features[0].properties.cod3;
 
-            var coordenadas = data.features[0].geometry.coordinates[0][0][0];
-            var edificioName = APP_CONSTANTS.edificios[index].split("_").join(".").substring(0,9);
+        infoService.getInfoEdificio(edificioName).then(
+            function (dataEdificio) {
+                console.log("Data edificio", dataEdificio);
+                if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null)
+                {
+                    var edificio = dataEdificio[0];
 
-            infoService.getInfoEdificio(edificioName).then(
-                function (dataEdificio) {
-                    if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null) {
-                        $scope.descripcion = dataEdificio;
+                    var html_header = '<div id="popup" class="text-center map-mark"><b>'+edificio.edificio+'</b><br>'+edificio.direccion+'</div> ';
 
-                        var edificio = $scope.descripcion[0];
+                    var html_select = '<div>' + $scope.translation.SELECCIONAR_PLANTA;
+                    html_select += '<select class="ion-input-select select-map" onchange="selectPlano(this);" ng-model="plantaPopup" >';
+                    html_select+='<option value=undefined selected="selected"></option>';
 
-                        var html_header = '<div id="popup" class="text-center map-mark"><b>'+edificio.edificio+'</b><br>'+edificio.direccion+'</div> ';
+                    // Load building floor values in HTML 'select' element
+                    for (i=0;i<edificio.plantas.length;i++)
+                    {
+                        var floorValue = edificio.plantas[i],
+                            selectClass = 'class="'+floorValue+'"',
+                            selectValueAttr = 'value="'+floorValue+'"',
+                            dataEdificioFloor = 'data-building="'+edificio.ID_Edificio+'"',
+                            attributes = [selectClass, selectValueAttr, dataEdificioFloor].join(' ');
 
-                        var html_select = '<div>' + $scope.translation.SELECCIONAR_PLANTA;
-                        html_select += '<select class="ion-input-select select-map" onchange="if(this!=undefined)selectPlano(this);" ng-model="plantaPopup" >';
-                        html_select+='<option value=undefined selected="selected"></option>';
-
-                        for (i=0;i<edificio.plantas.length;i++){//Bucle para cargar en el select todas las plantas
-                            var selectValue = APP_CONSTANTS.edificios[index].substring(0,9)+edificio.plantas[i],
-                                selectClass = 'class="'+selectValue+'"',
-                                selectValueAttr = 'value="'+selectValue+'"',
-                                dataEdificioFloor = 'data-floor="'+i+'"',
-                                attributes = [selectClass, selectValueAttr, dataEdificioFloor].join(' ');
-
-                            html_select+='<option '+attributes+'>'+edificio.plantas[i]+'</option>';
-                        }
-                        html_select+='</select>';
-
-                        var redireccion = "'https://maps.google.es/maps?saddr=" +
-                            sharedProperties.getLatUser() + "," + sharedProperties.getLonUser() +
-                            "&daddr=" + coordenadas[1]+ ',' + coordenadas[0]+"&output=embed'";
-
-                        var html_button='<button class="button button-small button-positive button-how" onclick="location.href ='+redireccion+'" >'+$scope.translation.HOWTOARRIVE+' </button></div>';
-                        var html = html_header + html_select + html_button;
-
-                        var marker = new L.marker([coordenadas[1], coordenadas[0]],{title:edificio.edificio}).addTo($scope.map).bindPopup(html);
-
-                        var markerLayer = sharedProperties.getMarkerLayer();
-                        markerLayer.addLayer(marker);
-                        sharedProperties.setMarkerLayer(markerLayer);
+                        html_select+='<option '+attributes+'>'+floorValue+'</option>';
                     }
-                },
-                function(err){
-                    console.log("Error on getInfoEdificio", err);
+                    html_select+='</select>';
+
+                    var redireccion = "'https://maps.google.es/maps?saddr=" +
+                        sharedProperties.getLatUser() + "," + sharedProperties.getLonUser() +
+                        "&daddr=" + point.lng + ',' + point.lat +"&output=embed'";
+
+                    var html_button='<button class="button button-small button-positive button-how" onclick="location.href ='+redireccion+'" >'+$scope.translation.HOWTOARRIVE+' </button></div>';
+                    var html = html_header + html_select + html_button;
+                    var myIcon = L.icon({
+                        iconUrl: '',
+                        iconSize: [5, 5]
+                    });
+                    var marker = new L.marker(point,{opacity: 0, title:edificio.edificio}).addTo($scope.map).bindPopup(html);
+
+                    var markerLayer = sharedProperties.getMarkerLayer();
+                    markerLayer.addLayer(marker);
+                    sharedProperties.setMarkerLayer(markerLayer);
+                    sharedProperties.setLastMapMarker(marker);
+                    marker.fireEvent('click');
+                }
+                else {
+                    console.log("Error on getInfoEdificio, data invalid", err);
                     var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
-                    errorMsg += 'información de algunos edificios</div>';
+                    errorMsg += 'información del edificio</div>';
                     showInfoPopup('¡Error!', errorMsg);
                 }
-            );
-        }
-    }
-
-    /* Metodo para crear Popups en los campus que no estan completados con sus edficios
-     * para poder calcular ruta hasta ellos.
-     */
-    function rellenarCampus($scope){
-
-        var latUser = sharedProperties.getLatUser(),
-            lonUser = sharedProperties.getLonUser();
-
-        var redireccionPopup = "'https://maps.google.es/maps?saddr=" + latUser + "," + lonUser + "&daddr=41.6830208,-0.8886136'";
-
-        L.marker([41.6830208, -0.8886136]).addTo($scope.map)
-            .bindPopup('<div class=\"text-center\"><b>Campus Rio Ebro</b><br>C/María de Luna, s/n</div>' +
-            '<button class="button button-small button-positive button-how" onclick="location.href ='+redireccionPopup+'" >'+$scope.translation.HOWTOARRIVE+' </button>');
-
-        redireccionPopup = "'https://maps.google.es/maps?saddr=" + latUser + "," + lonUser + "&daddr=41.6465754,-0.8878908'";
-        L.marker([41.6465754, -0.8878908]).addTo($scope.map)
-            .bindPopup('<div class=\"text-center\"><b>Campus Gran Vía, Facultad Económicas</b><br>Paseo de la Gran Vía, 2</div>' +
-            '<button class="button button-small button-positive button-how" onclick="location.href ='+redireccionPopup+'" >'+$scope.translation.HOWTOARRIVE+' </button>');
-
-        redireccionPopup = "'https://maps.google.es/maps?saddr=" + latUser + "," + lonUser + "&daddr=41.6347223,-0.8630691'";
-        L.marker([41.6347223, -0.8630691]).addTo($scope.map)
-            .bindPopup('<div class=\"text-center\"><b>Facultad de Veterinaria</b><br>Calle Miguel Servet, 177</div>' +
-            '<button class="button button-small button-positive button-how" onclick="location.href ='+redireccionPopup+'" >'+$scope.translation.HOWTOARRIVE+' </button>');
+            },
+            function(err){
+                console.log("Error on getInfoEdificio", err);
+                var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
+                errorMsg += 'información de algunos edificios</div>';
+                showInfoPopup('¡Error!', errorMsg);
+            }
+        );
     }
 
     function localizarHuesca() {
@@ -220,10 +231,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         //Close opened popup on previous map
         var mapa = sharedProperties.getMapa();
         if (typeof(mapa) != 'undefined') mapa.closePopup();
+        
+        var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
+            floor = localStorage.planta,
+            edificio_id = building + floor;
 
-        var edificio=localStorage.planta;
+        edificio_id = edificio_id.replace(/\./g,"_").toLowerCase();
 
-        var url = APP_CONSTANTS.URI_Geoserver + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio.toLowerCase()+'&srsName=epsg:4326&outputFormat=application/json';
+        var url = APP_CONSTANTS.URI_Geoserver_1 + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio_id+'&srsName=epsg:4326&outputFormat=application/json';
         $.ajax({
             url : url,
             type: 'GET',
@@ -245,38 +260,37 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             },
             error: function (jqXHR, textStatus, errorThrown)
             {
-                console.log("Error getting plan of " + edificio, jqXHR, errorThrown);
+                console.log("Error getting plan of " + edificio_id, jqXHR, errorThrown);
                 var errorMsg = '<div class="text-center">No se dispone del plano<br>';
                 errorMsg += 'de la planta seleccionada</div>';
                 showInfoPopup('¡Error!', errorMsg);
-                window.location = "#/app/map";
+                window.location = "#/app/mapa";
             }
         });
 
         function handleJson(data, sharedProperties, poisService, createModal, callback) {
-            console.log("Data",data);
-
+            console.log("handleJson", data);
             var plano = sharedProperties.getPlano(),
-                coordenadas = data.features[0].geometry.coordinates[0][0][0];
+                coordenadas = data.features[0].geometry.coordinates[0][0][0],
+                addLegendToPlan = true;
 
-            //Remove previous plan if exists
+            //Remove previous plan layers
             if(!(typeof plano == 'undefined')) {
                 plano.remove();
+                addLegendToPlan = false;
             }
 
             var planOptions = {
                 center: L.latLng(coordenadas[1], coordenadas[0]),
-                zoom: 20,
-                maxZoom: 21,
-                minZoom: 19,
                 maxBounds: L.geoJson(data).getBounds()
             };
+
             plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
 
-            L.geoJson(data, {
+            var planoLayer = L.geoJson(data, {
                 style: function (feature) {
                     var et_id = feature.properties.et_id;
-                    //Remark last serach room
+                    //Remark last search room
                     if (typeof(localStorage.lastSearch) != 'undefined'){
                         if (feature.properties.et_id == localStorage.lastSearch) return {color: "black"};
                     }
@@ -286,9 +300,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 }
             }).addTo(plano);
 
+            var groupLayer = new L.featureGroup;
+            groupLayer.addLayer(planoLayer);
+            plano.fitBounds(groupLayer.getBounds());
+
             updatePOIs(plano, sharedProperties);
 
-            callback(plano);
+            callback(plano, addLegendToPlan);
         }
 
         //Funcion que gestiona cada una de las capas de GeoJSON
@@ -357,11 +375,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     //Add markers for every POI
-    function updatePOIs(plano, sharedProperties){
-
-        var floor = localStorage.floor.indexOf('floor') == -1 ? localStorage.floor : JSON.parse(localStorage.floor).floor,
-            building = localStorage.planta,
-            markers = []
+    function updatePOIs(plano, sharedProperties) {
+        var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
+            floor = localStorage.planta,
+            markers = [];
 
         poisService.getRoomPOIs(building, floor).then(
             function(pois) {

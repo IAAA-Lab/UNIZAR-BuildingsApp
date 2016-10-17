@@ -104,7 +104,7 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
             var deferred = $q.defer();
             var request = {
                 method: 'GET',
-                url: APP_CONSTANTS.URI_API + 'busquedas/infoedificio?edificio='+edificio,
+                url: APP_CONSTANTS.URI_API + 'busquedas/infoEdificio?id='+edificio,
                 contentType: 'application/json',
                 dataType: "json"
             };

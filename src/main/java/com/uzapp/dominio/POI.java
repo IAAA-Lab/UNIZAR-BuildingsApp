@@ -9,7 +9,7 @@ public class POI {
     private String building;
     private String roomId;
     private String roomName;
-    private int floor;
+    private String floor;
     private String category;
     private String comments;
     private String address;
@@ -21,7 +21,7 @@ public class POI {
 
     public POI() {}
 
-    public POI(String city, String campus, String building, String roomId, String roomName, int floor,
+    public POI(String city, String campus, String building, String roomId, String roomName, String floor,
                 String category, String comments, String address, double latitude, double longitude, String email){
         this.city=city;
         this.campus=campus;
@@ -37,7 +37,7 @@ public class POI {
         this.email=email;
     }
 
-    public POI(int id, String city, String campus, String building, String roomId, String roomName, int floor,
+    public POI(int id, String city, String campus, String building, String roomId, String roomName, String floor,
                 String category, String comments, String address, double latitude, double longitude, String email){
         this.id=id;
         this.city=city;
@@ -54,7 +54,7 @@ public class POI {
         this.email=email;
     }
 
-    public POI(int id, String city, String campus, String building, String roomId, String roomName, int floor, String category,
+    public POI(int id, String city, String campus, String building, String roomId, String roomName, String floor, String category,
                 String comments, String address, double latitude, double longitude, Boolean approved, String email, LocalDateTime updated){
         this.id=id;
         this.city=city;
@@ -91,8 +91,8 @@ public class POI {
     public String getRoomName() { return this.roomName; }
     public void setRoomName(String roomName) { this.roomName = roomName; }
 
-    public int getFloor() { return this.floor; }
-    public void setFloor(int floor) { this.floor = floor; }
+    public String getFloor() { return this.floor; }
+    public void setFloor(String floor) { this.floor = floor; }
 
     public String getCategory() { return this.category; }
     public void setCategory(String category) { this.category = category; }
