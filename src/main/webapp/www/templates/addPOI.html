@@ -48,6 +48,14 @@
                         ng-show="addPOIform.$submitted && addPOIform.floor.$error.required">
                     <span>Planta es un campo obligatorio</span>
                 </label>
+                <label class="item item-input">
+                    <span class="input-label">Espacio</span>
+                    <input type="text" name="room" ng-model="data.room" ng-readonly="existsRoom" required>
+                </label>
+                <label class="item item-input form-error" 
+                        ng-show="addPOIform.$submitted && addPOIform.room.$error.required">
+                    <span>Espacio es un campo obligatorio</span>
+                </label>
                 <label class="item item-input item-select">
                     <span class="input-label">Categoría</span>
                     <select name="category" ng-model="data.category" required
