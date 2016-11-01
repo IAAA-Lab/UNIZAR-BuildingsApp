@@ -103,7 +103,7 @@ public class Estancias {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"TBES\".\"id_espacio\" ,\"TBES\".\"id_centro\", \"TBUSO\".\"TIPO_DE_USO\", round(\"TBES\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
+			String query = "SELECT DISTINCT \"TBES\".\"id_espacio\" ,\"TBES\".\"id_centro\", \"TBUSO\".\"TIPO_DE_USO\", round(\"TBES\".\"superficie\",2) AS \"SUPERFICIE\" ";
 			query += "FROM \"tb_espacios\" \"TBES\",\"TB_TIPO_DE_USO\" \"TBUSO\"  ";
 			query += "WHERE \"TBES\".\"tipo_de_uso\" = \"TBUSO\".ID AND \"TBES\".\"id_espacio\" = ?";
 
@@ -113,7 +113,7 @@ public class Estancias {
 			ResultSet res = preparedStmt.executeQuery();
 
 			if (res.next()){
-				result=new Espacios(res.getString("id_espacio"),res.getString("id_centro"),res.getString("TIPO_DE_USO"),res.getString("SUPERFICIE"));
+				result=new Espacios(res.getString("id_espacio"),res.getString("id_centro"),res.getString("TIPO_DE_USO"),res.getString("superficie"));
 				System.out.println("Room details result: "+gson.toJson(result));
       	return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 			}
