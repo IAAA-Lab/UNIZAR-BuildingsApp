@@ -34,15 +34,15 @@ public class Estancias {
 	{
 		logger.info("Method: getRoomInfo()");
 
-		String querySelect = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\", \"TBES\".\"ID_CENTRO\", ";
-		querySelect += "\"TBED\".\"EDIFICIO\" AS \"edificio\", \"TBED\".\"DIRECCION\" AS \"dir\", ";
+		String querySelect = "SELECT DISTINCT \"TBES\".\"id_espacio\", \"TBES\".\"id_centro\", ";
+		querySelect += "\"TBED\".\"edificio\" AS \"edificio\", \"TBED\".\"direccion\" AS \"dir\", ";
 		querySelect += "\"TBCI\".\"CIUDADES\" AS \"ciudad\", \"TBCC\".\"CAMPUS\" AS \"campus\" ";
 
-		String queryFrom = "FROM \"TB_ESPACIOS\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
-		queryFrom += "\"TB_EDIFICIOS\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
+		String queryFrom = "FROM \"tb_espacios\" \"TBES\", \"TB_CIUDADES\" \"TBCI\", ";
+		queryFrom += "\"tb_edificios\" \"TBED\", \"TB_CODIGOS_DE_CAMPUS\" \"TBCC\" ";
 
-		String queryWhere = "WHERE \"TBES\".\"ID_ESPACIO\" = ? AND \"TBES\".\"ID_EDIFICIO\"=\"TBED\".\"ID_EDIFICIO\" ";
-		queryWhere +=  "AND \"TBED\".\"CAMPUS\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
+		String queryWhere = "WHERE \"TBES\".\"id_espacio\" = ? AND \"TBES\".\"id_edificio\"=\"TBED\".\"id_edificio\" ";
+		queryWhere +=  "AND \"TBED\".\"campus\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
 
 		String query = querySelect + queryFrom + queryWhere;
 	
@@ -69,8 +69,8 @@ public class Estancias {
 			ResultSet respuesta = getRoomInfo(connection, estancia);
 			if (respuesta.next()){
 				infoResult = new Espacios(
-												respuesta.getString("ID_ESPACIO"),
-												respuesta.getString("ID_CENTRO"),
+												respuesta.getString("id_espacio"),
+												respuesta.getString("id_centro"),
 												respuesta.getString("edificio"),
 												respuesta.getString("dir"),
 												respuesta.getString("ciudad"),
@@ -103,9 +103,9 @@ public class Estancias {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"TBES\".\"ID_ESPACIO\" ,\"TBES\".\"ID_CENTRO\", \"TBUSO\".\"TIPO_DE_USO\", round(\"TBES\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
-			query += "FROM \"TB_ESPACIOS\" \"TBES\",\"TB_TIPO_DE_USO\" \"TBUSO\"  ";
-			query += "WHERE \"TBES\".\"TIPO_DE_USO\" = \"TBUSO\".ID AND \"TBES\".\"ID_ESPACIO\" = ?";
+			String query = "SELECT DISTINCT \"TBES\".\"id_espacio\" ,\"TBES\".\"id_centro\", \"TBUSO\".\"TIPO_DE_USO\", round(\"TBES\".\"SUPERFICIE\",2) AS \"SUPERFICIE\" ";
+			query += "FROM \"tb_espacios\" \"TBES\",\"TB_TIPO_DE_USO\" \"TBUSO\"  ";
+			query += "WHERE \"TBES\".\"tipo_de_uso\" = \"TBUSO\".ID AND \"TBES\".\"id_espacio\" = ?";
 
 			Espacios result;
 			preparedStmt = connection.prepareStatement(query);
@@ -113,7 +113,7 @@ public class Estancias {
 			ResultSet res = preparedStmt.executeQuery();
 
 			if (res.next()){
-				result=new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO"),res.getString("TIPO_DE_USO"),res.getString("SUPERFICIE"));
+				result=new Espacios(res.getString("id_espacio"),res.getString("id_centro"),res.getString("TIPO_DE_USO"),res.getString("SUPERFICIE"));
 				System.out.println("Room details result: "+gson.toJson(result));
       	return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 			}
@@ -145,9 +145,9 @@ public class Estancias {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"ID_ESPACIO\" ,\"ID_CENTRO\" ";
-			query += "FROM \"TB_ESPACIOS\" ";
-			query += "WHERE \"ID_ESPACIO\" LIKE ? ORDER BY \"ID_CENTRO\" ASC";
+			String query = "SELECT DISTINCT \"id_espacio\" ,\"id_centro\" ";
+			query += "FROM \"tb_espacios\" ";
+			query += "WHERE \"id_espacio\" LIKE ? ORDER BY \"id_centro\" ASC";
 
 			List<Espacios> roomsResult = new ArrayList<Espacios>();
 			
@@ -157,7 +157,7 @@ public class Estancias {
 			ResultSet res = preparedStmt.executeQuery();
 
 			while (res.next()){
-				roomsResult.add(new Espacios(res.getString("ID_ESPACIO"),res.getString("ID_CENTRO")));
+				roomsResult.add(new Espacios(res.getString("id_espacio"),res.getString("id_centro")));
 			}
 			
       return new ResponseEntity<>(gson.toJson(roomsResult), HttpStatus.OK);
