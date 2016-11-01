@@ -11,9 +11,8 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     });
 
     function crearMapa($scope, infoService){
-        //TODO: [DGP] Use of localStorage for recover option?
         var option = sharedProperties.getOpcion();
-        option = typeof option !== 'undefined' ? option : 1;  //Si no tenemos valor, por defecto escogemos Zaragoza
+        option = typeof option !== 'undefined' ? option : 1;
         sharedProperties.setOpcion(option);
 
         //Initial layers
@@ -32,20 +31,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             "Open Street Map": openstreetmap
         };
 
-        var MIN_ZOOM = 15;
-        var INIT_ZOOM = 15;
-        var MAX_ZOOM = 15;
-
-        //Centro ciudad
-        var INI_LAT = 41.653496;
-        var INI_LON = -0.889492;
-
         $scope.map = L.map('mapa'
             ,{
                 crs: L.CRS.EPSG3857,
                 layers: [openstreetmap]
             }
-        ).setView([APP_CONSTANTS.datosMapa[option].latitud, APP_CONSTANTS.datosMapa[option].longitud], INIT_ZOOM);
+        ).setView([APP_CONSTANTS.datosMapa[option].latitud, APP_CONSTANTS.datosMapa[option].longitud], 16);
         $scope.map.attributionControl.setPrefix('');
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
 
@@ -69,14 +60,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var controlSearch = new L.Control.Search({layer: sharedProperties.getMarkerLayer(), initial: false, position:'topright'});
         $scope.map.addControl(controlSearch);
 
-        var src = new Proj4js.Proj('EPSG:4326'); //Sistema de proyección del origen
-        var dst = new Proj4js.Proj('EPSG:25830'); //Sistema de proyección de las entidades de destino
+        var src = new Proj4js.Proj('EPSG:4326');
+        var dst = new Proj4js.Proj('EPSG:25830');
 
         $scope.map.on('click', function(e)
         {
             var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
             var selectedPoint = e.latlng;
-         
             var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
             Proj4js.transform(src, dst, p);
             
@@ -91,25 +81,24 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 SrsName : 'EPSG:4326'
             };
             
-            planta = 'CSF.1215.0'; //param 'planta' is needed, but has no use
             var customParams = {
                 cql_filter:'DWithin(geom, POINT(' + p.x + ' ' + p.y + '), 0.1, meters)'
             };
 
             var parameters = L.Util.extend(defaultParameters, customParams);
-            var url = owsrootUrl + L.Util.getParamString(parameters);
 
             $.ajax({
                 url : owsrootUrl + L.Util.getParamString(parameters),
                 dataType : 'jsonp',
                 jsonpCallback : 'getJson',
                 success: function(data){
-                    console.log("Success", data);
+                    console.log("Success getting building info", data);
                     if (data.features.length > 0) {
                         var lastMapMarker = sharedProperties.getLastMapMarker();
                         if (lastMapMarker) {
                             sharedProperties.getMarkerLayer().removeLayer(lastMapMarker);
                         }
+                        $scope.map.panTo(selectedPoint);
                         showMarker($scope, data, selectedPoint, infoService);
                     }
                 }
@@ -127,7 +116,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         return $scope.map;
     }
 
-    // Funcion encargada de añdir el marcador sobre el edificio para mostrar despues la informacion de dicho edificio
+    // Show marker with building info over selected building
     function showMarker($scope, data, point, infoService){
 
         var coordenadas = data.features[0].geometry.coordinates[0][0][0];
@@ -135,7 +124,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         infoService.getInfoEdificio(edificioName).then(
             function (dataEdificio) {
-                console.log("Data edificio", dataEdificio);
+                console.log("Data building", dataEdificio);
                 if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null)
                 {
                     var edificio = dataEdificio[0];
@@ -234,9 +223,9 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         
         var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
             floor = localStorage.planta,
-            edificio_id = building + floor;
+            planta_id = building + floor;
 
-        edificio_id = edificio_id.replace(/\./g,"_").toLowerCase();
+        edificio_id = planta_id.replace(/\./g,"_").toLowerCase();
 
         var url = APP_CONSTANTS.URI_Geoserver_1 + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio_id+'&srsName=epsg:4326&outputFormat=application/json';
         $.ajax({
@@ -246,83 +235,200 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             crossDomain: true,
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function(data) {
-                handleJson(data, sharedProperties, poisService, createModal, function(plano){
-                    addLegend(plano, function(){
-                        // Define legend behaviour
-                        $('.legend').hide();
-                        $('.legend-button').click(function(){
-                            if ($('.legend').is(":visible")) $('.legend').hide(500);
-                            else $('.legend').show(500);
+                handleJson(data, planta_id, sharedProperties, poisService, createModal, function(plano, addLegendToPlan){
+                    if (addLegendToPlan) {
+                        addLegend(plano, function(){
+                            // Define legend behaviour
+                            $('.legend').hide();
+                            $('.legend-button').click(function(){
+                                if ($('.legend').is(":visible")) $('.legend').hide(500);
+                                else $('.legend').show(500);
+                            });
+                            sharedProperties.setPlano(plano);
                         });
+                    } else {
                         sharedProperties.setPlano(plano);
-                    });
+                    }
                 });
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log("Error getting plan of " + edificio_id, jqXHR, errorThrown);
-                var errorMsg = '<div class="text-center">No se dispone del plano<br>';
-                errorMsg += 'de la planta seleccionada</div>';
-                showInfoPopup('¡Error!', errorMsg);
-                window.location = "#/app/mapa";
             }
         });
 
-        function handleJson(data, sharedProperties, poisService, createModal, callback) {
-            console.log("handleJson", data);
+        function handleJson(data, planta_id, sharedProperties, poisService, createModal, callback) {
+            console.log("handleJson", data, planta_id);
             var plano = sharedProperties.getPlano(),
-                coordenadas = data.features[0].geometry.coordinates[0][0][0],
+                coordinates = data.features[0].geometry.coordinates[0][0][0],
+                floorCoordinates = new L.latLng(coordinates[1], coordinates[0]);
                 addLegendToPlan = true;
 
             //Remove previous plan layers
             if(!(typeof plano == 'undefined')) {
                 plano.remove();
+                plano.invalidateSize();
                 addLegendToPlan = false;
             }
 
-            var planOptions = {
-                center: L.latLng(coordenadas[1], coordenadas[0]),
-                maxBounds: L.geoJson(data).getBounds()
+            var imageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", 
+            {
+                layers: 'sigeuz:vista_plantas',
+                maxZoom: 25,
+                zIndex: 5,
+                viewparams : 'PLANTA:'+planta_id,
+                format: 'image/png', transparent: true, attribution: planta_id
+            });
+
+            var mapProperties = 
+            {
+                crs: L.CRS.EPSG3857,
+                layers: [imageLayer]
             };
 
-            plano = new L.map('plan',planOptions).setView([coordenadas[1],coordenadas[0]],20);
+            plano = new L.map('plan', mapProperties).setView(floorCoordinates, 20);
+            plano.setMaxBounds(L.geoJson(data).getBounds());
 
-            var planoLayer = L.geoJson(data, {
-                style: function (feature) {
-                    var et_id = feature.properties.et_id;
-                    //Remark last search room
-                    if (typeof(localStorage.lastSearch) != 'undefined'){
-                        if (feature.properties.et_id == localStorage.lastSearch) return {color: "black"};
-                    }
-                },
-                onEachFeature: function(feature, layer){
-                    onEachFeature(feature, layer, createModal);
-                }
-            }).addTo(plano);
+            $('.leaflet-container').css('cursor','pointer');
 
-            var groupLayer = new L.featureGroup;
-            groupLayer.addLayer(planoLayer);
-            plano.fitBounds(groupLayer.getBounds());
+            //On 'click' event --> Show room information if room has been clicked
+            plano.on('click', function(point){
+                var srcRoom = new Proj4js.Proj('EPSG:4326');
+                var dstRoom = new Proj4js.Proj('EPSG:25830');
+                var pRoom = new Proj4js.Point(point.latlng.lng,point.latlng.lat);
+                Proj4js.transform(srcRoom, dstRoom, pRoom);
 
+                var defaultParameters = {
+                    service : 'WFS',
+                    version : '1.1.1',
+                    request : 'GetFeature',
+                    typeName : "sigeuz:vista_plantas",
+                    maxFeatures : 500,
+                    outputFormat : 'text/javascript',
+                    format_options : 'callback:getJson',
+                    SrsName : 'EPSG:4326'
+                };
+                
+                var customParams = {
+                    cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
+                    viewparams:'PLANTA:'+planta_id
+                };
+
+                var parameters = L.Util.extend(defaultParameters, customParams);
+
+                var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
+
+                $.ajax({
+                    url : owsrootUrl + L.Util.getParamString(parameters),
+                    dataType : 'jsonp',
+                    jsonpCallback : 'getJson',
+                    success : handleJsonClick
+                });
+            });
+
+            //On 'contextmenu' event --> Show 'Create POI modal' if room has been clicked
+            plano.on('contextmenu', function(e){
+                localStorage.contextMenuClickedPoint = JSON.stringify(e.latlng);
+                var srcRoom = new Proj4js.Proj('EPSG:4326');
+                var dstRoom = new Proj4js.Proj('EPSG:25830');
+                var pRoom = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
+                Proj4js.transform(srcRoom, dstRoom, pRoom);
+
+                var defaultParameters = {
+                    service : 'WFS',
+                    version : '1.1.1',
+                    request : 'GetFeature',
+                    typeName : "sigeuz:vista_plantas",
+                    maxFeatures : 500,
+                    outputFormat : 'text/javascript',
+                    format_options : 'callback:getJson',
+                    SrsName : 'EPSG:4326'
+                };
+                
+                var customParams = {
+                    cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
+                    viewparams:'PLANTA:'+planta_id
+                };
+
+                var parameters = L.Util.extend(defaultParameters, customParams);
+
+                var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
+
+                $.ajax({
+                    url : owsrootUrl + L.Util.getParamString(parameters),
+                    dataType : 'jsonp',
+                    jsonpCallback : 'getJson',
+                    success : handleJsonContextMenu
+                });
+            });
+
+            console.log("Last search", localStorage.lastSearch);
+                    
             updatePOIs(plano, sharedProperties);
 
             callback(plano, addLegendToPlan);
         }
 
-        //Funcion que gestiona cada una de las capas de GeoJSON
-        function onEachFeature(feature, layer, createModal) {
-            layer.on({
-                click: whenClicked,
-                contextmenu: function(e){
-                    createModal(e);
-                }
-            });
+        function handleJsonContextMenu(data) {
+            if (data.features.length) {
+                console.log("handleJsonContextMenu",data);
+                var selectedRoom = null;
+                var selectedFeature = L.geoJson(data, {
+                    onEachFeature: function (feature, layer) {
+                        selectedRoom = layer;
+                        layer.on({
+                            contextmenu: function(e){
+                                var pointClicked = JSON.parse(localStorage.contextMenuClickedPoint),
+                                    roomId = data.features[0].properties.id_unico
+                                createModal(pointClicked, roomId);
+                            }
+                        });
+                    }
+                });
+                var currentPlano = sharedProperties.getPlano();
+                var currentLayers = [];
+                currentPlano.eachLayer(function(layer){
+                    currentLayers.push(layer);
+                });
+                currentLayers.forEach(function(layer,i){
+                    if (i !== 0) currentPlano.removeLayer(layer);
+                });
+                selectedFeature.addTo(currentPlano);
+                selectedRoom.fireEvent('contextmenu');
+                sharedProperties.setPlano(currentPlano);
+                updatePOIs(currentPlano, sharedProperties);
+            }
         }
 
-        //Funcion que dada la estancia seleccionada, muestra la informacion relativa
-        function whenClicked(e) {
+        function handleJsonClick(data) {
+            if (data.features.length) {
+                console.log("handleJsonClick",data);
+                var selectedRoom = null;
+                var selectedFeature = L.geoJson(data, {
+                    onEachFeature: function (feature, layer) {
+                        selectedRoom = layer;
+                        layer.on({
+                            click: whenClicked
+                        });
+                    }
+                });
+                var currentPlano = sharedProperties.getPlano();
+                var currentLayers = [];
+                currentPlano.eachLayer(function(layer){
+                    currentLayers.push(layer);
+                });
+                currentLayers.forEach(function(layer,i){
+                    if (i !== 0) currentPlano.removeLayer(layer);
+                });
+                selectedFeature.addTo(currentPlano);
+                selectedRoom.fireEvent('click');
+                sharedProperties.setPlano(currentPlano);
+                updatePOIs(currentPlano, sharedProperties);
+            }
+        }
 
-            var id = e.target.feature.properties.et_id;
+        //Show info about room clicked on map
+        function whenClicked(e) {
+            console.log("Room clicked", e);
+            var id = e.target.feature.properties.id_unico;
+            var roomCoordinates = e.target.feature.geometry.coordinates[0][0][0];
+            var roomLatLng = new L.LatLng(roomCoordinates[1],roomCoordinates[0]);
 
             infoService.getInfoEstancia(id).then(
                 function (data) {
@@ -334,13 +440,16 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     } else {
                         $scope.infoEstancia = data;
                         console.log("infoEstancia",data);
+
                         var html_list = '<div><ul class="list-group">';
                         var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
                         html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
                         html_list = html_list + html_list_items + '</ul></div>';
                         var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="informacionEstancia(this)">'+$scope.translation.MASINFO+' </button></div>';
                         var html =  html_list + html_button;
-                        e.layer.bindPopup(html).openPopup();
+
+                        var currentPlano = sharedProperties.getPlano();
+                        L.popup().setLatLng(roomLatLng).setContent(html).openOn(currentPlano);
                     }
                 },
                 function(err){
@@ -352,7 +461,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             );
         }
 
-        //Function que añade la leyenda al plano
+        //Add legend to map
         function addLegend(plano, callback) {
             var legend = L.control({position: 'topright'});
             legend.onAdd = function (map) {
