@@ -9189,12 +9189,12 @@ img[usemap] {
   margin-left: 20% !important; }
 
 #search-view .item-select select {
-  font-size: 16px !important;
+  font-size: 14px !important;
   width: 100%;
   direction: ltr; }
 
 #search-view .item-select option {
-  font-size: 16px !important; }
+  font-size: 14px !important; }
 
 #search-view .input-label {
   font-weight: bold; }
@@ -9215,7 +9215,7 @@ img[usemap] {
   margin-bottom: 2%;
   /* MARKERS */ }
   #mapa .leaflet-popup {
-    bottom: 0px !important; }
+    bottom: -40px !important; }
   #mapa .leaflet-popup-content {
     margin: 10px 10px !important;
     line-height: 1.8 !important; }
