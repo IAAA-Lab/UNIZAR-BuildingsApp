@@ -68,22 +68,4 @@ public class ConnectionManager {
 		}
 		return null;
 	}
-	
-	 /*// Pruebas de conexion
-	  public static void main(String[] args){
-		Connection c = ConnectionManager.getConnection();
-		String queryString = "SELECT * FROM \"TB_ESPACIOS\"";    
-
-        try {
-			PreparedStatement preparedStatement = c.prepareStatement(queryString);
-			ResultSet rs = preparedStatement.executeQuery();
-			
-			while(rs.next()){
-				System.out.println("Espacio: "+rs.getString("ID_ESPACIO"));
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}*/
 }

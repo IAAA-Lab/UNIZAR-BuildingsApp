@@ -42,14 +42,14 @@ public class Busquedas {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"ID_ESPACIO\" FROM \"TB_ESPACIOS\" ORDER BY \"ID_ESPACIO\" ASC";
+			String query = "SELECT DISTINCT \"id_espacio\" FROM \"tb_espacios\" ORDER BY \"ID_ESPACIO\" ASC";
 
 			List<Espacios> resultado = new ArrayList<Espacios>();
 
 			ResultSet respuesta = connection.prepareStatement(query).executeQuery();
 
 			while (respuesta.next()){
-				resultado.add(new Espacios(respuesta.getString("ID_ESPACIO")));
+				resultado.add(new Espacios(respuesta.getString("id_espacio")));
 			}
 			System.out.println("resultado"+gson.toJson(resultado));
       return new ResponseEntity<>(gson.toJson(resultado), HttpStatus.OK);
@@ -120,8 +120,8 @@ public class Busquedas {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
-			query += "FROM \"TB_EDIFICIOS\" WHERE \"CAMPUS\" = ? ORDER BY \"EDIFICIO\" ASC";
+			String query = "SELECT DISTINCT \"id_edificio\" , \"edificio\", \"direccion\" ";
+			query += "FROM \"tb_edificios\" WHERE \"campus\" = ? ORDER BY \"edificio\" ASC";
 
 			System.out.println(query);
 
@@ -132,9 +132,9 @@ public class Busquedas {
 			ResultSet res = preparedStmt.executeQuery();
 
 			while (res.next()){
-				String idEdificio= res.getString("ID_EDIFICIO");
+				String idEdificio= res.getString("id_edificio");
 				List<String> buildingFloors = getBuildingFloors(connection,idEdificio);
-				buildings.add(new Edificio(idEdificio,res.getString("EDIFICIO"),res.getString("DIRECCION"),buildingFloors));
+				buildings.add(new Edificio(idEdificio,res.getString("edificio"),res.getString("direccion"),buildingFloors));
 			}
 
 			System.out.println("Buildings result"+gson.toJson(buildings));
@@ -165,8 +165,8 @@ public class Busquedas {
 			connection = ConnectionManager.getConnection();
 			Gson gson = new Gson();
 
-			String query = "SELECT DISTINCT \"ID_EDIFICIO\" , \"EDIFICIO\", \"DIRECCION\" ";
-			query += "FROM \"TB_EDIFICIOS\" WHERE \"ID_EDIFICIO\" = ?";
+			String query = "SELECT DISTINCT \"id_edificio\" , \"edificio\", \"direccion\" ";
+			query += "FROM \"tb_edificios\" WHERE \"id_edificio\" = ?";
 
 			System.out.println(query);
 
@@ -177,9 +177,9 @@ public class Busquedas {
 			ResultSet res = preparedStmt.executeQuery();
 
 			while (res.next()){
-				String idEdificio= res.getString("ID_EDIFICIO");
+				String idEdificio= res.getString("id_edificio");
 				List<String> buildingFloors = getBuildingFloors(connection,idEdificio);
-				result.add(new Edificio(idEdificio,res.getString("EDIFICIO"),res.getString("DIRECCION"),buildingFloors));
+				result.add(new Edificio(idEdificio,res.getString("edificio"),res.getString("direccion"),buildingFloors));
 			}
 
 			System.out.println("Building info result: "+gson.toJson(result));
@@ -202,8 +202,9 @@ public class Busquedas {
 		List<String> buildingFloors = new ArrayList<String>();
 		PreparedStatement preparedStmt = null;
 		try {
-			String query = "SELECT DISTINCT SUBSTRING(\"ID_UTC\",1,2) AS \"floors\" ";
-			query += "FROM \"TB_ESPACIOS\" WHERE \"ID_EDIFICIO\" = ? ORDER BY \"floors\" ASC";
+			String query = "SELECT DISTINCT SUBSTRING(\"id_utc\",1,2) AS \"floors\" ";
+			query += "FROM \"tb_espacios\" ";
+			query += "WHERE \"id_edificio\" = ? AND SUBSTRING(\"id_utc\",1,2) NOT IN ('EX','CU') ORDER BY \"floors\" ASC";
 		
 			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, idEdificio);
