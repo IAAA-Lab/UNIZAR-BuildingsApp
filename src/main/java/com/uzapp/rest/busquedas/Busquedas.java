@@ -203,7 +203,8 @@ public class Busquedas {
 		PreparedStatement preparedStmt = null;
 		try {
 			String query = "SELECT DISTINCT SUBSTRING(\"id_utc\",1,2) AS \"floors\" ";
-			query += "FROM \"tb_espacios\" WHERE \"id_edificio\" = ? ORDER BY \"floors\" ASC";
+			query += "FROM \"tb_espacios\" ";
+			query += "WHERE \"id_edificio\" = ? AND SUBSTRING(\"id_utc\",1,2) NOT IN ('EX','CU') ORDER BY \"floors\" ASC";
 		
 			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, idEdificio);
