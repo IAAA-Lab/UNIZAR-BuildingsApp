@@ -39,7 +39,7 @@ public class Database {
             String db_user_dest = prop.getProperty("dbsuperuser");
             String db_pwd_dest = prop.getProperty("dbsuperuser_password");
 
-            String script = "/root/scripts/database/update_db.sh";
+            String script = "/tmp/scripts/database/update_db.sh";
 
             String[] cmd = {"bash", script, db_host_orig, db_name_orig, db_user_orig, db_pwd_orig, db_host_dest, db_name_dest, db_user_dest, db_pwd_dest};
 
