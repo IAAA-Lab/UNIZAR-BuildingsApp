@@ -3,12 +3,10 @@
 <script src="../dist/js/controllers/databaseCtrl.js"></script>
 
 <div class="alert alert-success alert-dismissible" role="alert" id="admin-updateDB-success">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <span id="admin-updateDB-success-text"></span>
 </div>
 
 <div class="alert alert-danger alert-dismissible" role="alert" id="admin-updateDB-error">
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
     <span id="admin-updateDB-error-text"></span>
 </div>
 
@@ -24,11 +22,24 @@
         <br>
         <p><b>NOTA IMPORTANTE: </b> El proceso de actualización de los datos de los espacios es muy delicado. Por favor, si tras la actualización la aplicación móvil comienza a mal funcionar, o el proceso de actualización devuelve un error, contacte inmediatamente con el equipo de sistemas para restaurar los datos anteriores.</p>
     </div>
+    <br>
 </div>
 <div class="row">
     <div class="col-lg-12">
         <div>
-            <button id="update-db-btn" type="button" class="btn btn-success">ACTUALIZAR ESPACIOS</button>
+            <br><p><b>Seleccione las tablas que desea actualizar o no seleccione ninguna si desea actualizar todas</b></p>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div id="database-tables"></div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div>
+            <button id="update-db-btn" type="button" class="btn btn-success">ACTUALIZAR ESPACIOS</button><br><br>
         </div>
     </div>
 </div>
