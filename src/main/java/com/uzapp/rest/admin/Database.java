@@ -5,10 +5,21 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Properties;
 import java.lang.Runtime;
 import java.lang.Process;
+
+import com.google.gson.Gson;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.*;
+
+import com.uzapp.bd.ConnectionManager;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -18,13 +29,49 @@ public class Database {
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
     @RequestMapping(
+            value = "/tables",
+            method = RequestMethod.GET)
+    public ResponseEntity<?> getDatabaseTables(){
+        logger.info("Servicio: getDatabaseTables");
+        Gson gson = new Gson();
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        try {
+            connection = ConnectionManager.getConnection();
+
+            String query = "SELECT table_name FROM information_schema.tables ";
+            query += "WHERE table_schema='public' AND (table_name LIKE 'tb_%' OR table_name LIKE 'TB_%') ";
+            query += "  ORDER BY table_name";
+            preparedStmt = connection.prepareStatement(query);
+            ResultSet rs = preparedStmt.executeQuery();
+
+            List<String> database_tables = new ArrayList<String>();
+
+            while(rs.next()) {
+                database_tables.add(rs.getString("table_name"));
+            }
+
+            return new ResponseEntity<>(gson.toJson(database_tables), HttpStatus.OK);
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+        }
+    }
+
+    @RequestMapping(
             value = "/update",
             method = RequestMethod.PUT)
-    public ResponseEntity<?> update(){
+    public ResponseEntity<?> update(@RequestBody String tables){
         logger.info("Servicio: update database");
         String result = null;
         try {
-            
             InputStream input = Database.class.getClassLoader().getResourceAsStream("config.properties");
             Properties prop = new Properties();
             prop.load(input);
@@ -41,7 +88,7 @@ public class Database {
 
             String script = "/tmp/scripts/database/update_db.sh";
 
-            String[] cmd = {"bash", script, db_host_orig, db_name_orig, db_user_orig, db_pwd_orig, db_host_dest, db_name_dest, db_user_dest, db_pwd_dest};
+            String[] cmd = {"bash", script, db_host_orig, db_name_orig, db_user_orig, db_pwd_orig, db_host_dest, db_name_dest, db_user_dest, db_pwd_dest, tables};
 
             Runtime r = Runtime.getRuntime();                    
 

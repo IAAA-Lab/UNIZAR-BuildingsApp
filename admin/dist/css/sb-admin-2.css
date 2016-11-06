@@ -466,3 +466,6 @@ table.dataTable tbody tr.selected {
 #update-db-btn {
     margin-top: 25px;
 }
+#database-tables input[type="checkbox"]{
+    margin-left: 20px;
+}
