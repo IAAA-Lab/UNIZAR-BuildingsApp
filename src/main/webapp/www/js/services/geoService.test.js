@@ -1,5 +1,5 @@
 
-UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, poisService, APP_CONSTANTS, $ionicModal, $ionicPopup) {
+UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, poisService, APP_CONSTANTS, $ionicModal, $ionicPopup, $ionicLoading) {
 
     return ({
         crearMapa: crearMapa,
@@ -228,6 +228,8 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
         
+        $ionicLoading.show({template: 'Cargando...'});
+
         //Close opened popup on previous map
         var mapa = sharedProperties.getMapa();
         if (typeof(mapa) != 'undefined') mapa.closePopup();
@@ -247,15 +249,21 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function(data) {
                 handleJson(data, sharedProperties, poisService, createModal, function(plano){
-                    addLegend(plano, function(){
-                        // Define legend behaviour
-                        $('.legend').hide();
-                        $('.legend-button').click(function(){
-                            if ($('.legend').is(":visible")) $('.legend').hide(500);
-                            else $('.legend').show(500);
+                    if (addLegendToPlan) {
+                        addLegend(plano, function(){
+                            // Define legend behaviour
+                            $('.legend').hide();
+                            $('.legend-button').click(function(){
+                                if ($('.legend').is(":visible")) $('.legend').hide(500);
+                                else $('.legend').show(500);
+                            });
+                            sharedProperties.setPlano(plano);
+                            $ionicLoading.hide();
                         });
+                    } else {
                         sharedProperties.setPlano(plano);
-                    });
+                        $ionicLoading.hide();
+                    }
                 });
             }
         });*/
@@ -271,9 +279,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                                 else $('.legend').show(500);
                             });
                             sharedProperties.setPlano(plano);
+                            $ionicLoading.hide();
                         });
                     } else {
                         sharedProperties.setPlano(plano);
+                        $ionicLoading.hide();
                     }
                 });
 
@@ -416,6 +426,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             },
             function(err){
                 console.log("Error on getRoomPOIs", err);
+                $ionicLoading.hide();
                 $ionicPopup.alert({
                     title: '¡Error!',
                     template: '<div class="text-center">Ha ocurrido un error recuperando<br>los puntos de interés</div>'
