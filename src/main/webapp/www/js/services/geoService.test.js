@@ -1,4 +1,3 @@
-
 UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, poisService, APP_CONSTANTS, $ionicModal, $ionicPopup, $ionicLoading) {
 
     return ({
@@ -122,9 +121,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var coordenadas = data.features[0].geometry.coordinates[0][0][0];
         var edificioName = data.features[0].properties.cod3;
 
+        $ionicLoading.show({template: 'Cargando...'});
         infoService.getInfoEdificio(edificioName).then(
             function (dataEdificio) {
                 console.log("Data building", dataEdificio);
+                $ionicLoading.hide();
                 if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null)
                 {
                     var edificio = dataEdificio[0];
@@ -175,6 +176,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             },
             function(err){
                 console.log("Error on getInfoEdificio", err);
+                $ionicLoading.hide();
                 var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
                 errorMsg += 'información de algunos edificios</div>';
                 showInfoPopup('¡Error!', errorMsg);
@@ -254,6 +256,15 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         $ionicLoading.hide();
                     }
                 });
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                console.log("Error getting plan of " + edificio_id, jqXHR, errorThrown);
+                $ionicLoading.hide();
+                var errorMsg = '<div class="text-center">No se dispone del plano<br>';
+                errorMsg += 'de la planta seleccionada</div>';
+                showInfoPopup('¡Error!', errorMsg);
+                window.location = "#/app/mapa";
             }
         });*/
 
@@ -422,6 +433,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         function handleJsonClick(data) {
             if (data.features.length) {
                 console.log("handleJsonClick",data);
+                $ionicLoading.show({template: 'Cargando...'});
                 var selectedRoom = null;
                 var selectedFeature = L.geoJson(data, {
                     onEachFeature: function (feature, layer) {
@@ -443,6 +455,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 selectedRoom.fireEvent('click');
                 sharedProperties.setPlano(currentPlano);
                 updatePOIs(currentPlano, sharedProperties);
+                $ionicLoading.hide();
             }
         }
 
@@ -477,6 +490,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 },
                 function(err){
                     console.log("Error on getInfoEstancia", err);
+                    $ionicLoading.hide();
                     var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
                     errorMsg += 'la información del espacio</div>';
                     showInfoPopup('¡Error!', errorMsg);
