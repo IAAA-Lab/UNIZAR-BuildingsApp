@@ -374,6 +374,10 @@ table.dataTable thead .sorting:after {
     font-weight: bold;
 }
 
+.nav-third-level {
+    margin-left: 20px;
+}
+
 /* DISABLED LINKS */
 .disabled-link {
     pointer-events: none;
@@ -433,7 +437,7 @@ table.dataTable tbody tr.selected {
 
 #admin-poi-explanation, #admin-poi-requests-explanation,
 #admin-upload-photo-explanation, #admin-photos-explanation,
-#admin-home-intro {
+#admin-home-intro, #admin-updateDB-explanation {
     text-align: justify;
     font-size: 15px;
     color: black;
@@ -456,4 +460,12 @@ table.dataTable tbody tr.selected {
 
 #image-preview-modal .modal-body {
     text-align: center;
+}
+
+/* UPDATE DATABASE PAGE*/
+#update-db-btn {
+    margin-top: 25px;
+}
+#database-tables input[type="checkbox"]{
+    margin-left: 20px;
 }
