@@ -70,9 +70,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
             Proj4js.transform(src, dst, p);
 
-            sharedProperties.setMapLastClickedCoordinates(e.latlng);
-            localStorage.mapLastClickedCoordinates = JSON.stringify(e.latlng);
-
             var defaultParameters = {
                 service : 'WFS',
                 version : '1.1.1',
@@ -222,14 +219,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
-
-        /*var coordinates = sharedProperties.getMapLastClickedCoordinates();
-        if (coordinates==null) coordinates = JSON.parse(localStorage.mapLastClickedCoordinates);
-        if (coordinates == null || typeof(coordinates) == 'undefined') {
-            console.log("Not coordinates selected --> return to main map");
-            window.location = "#/app/mapa";
-            return; 
-        }*/
         
         $ionicLoading.show({template: 'Cargando...'});
 
