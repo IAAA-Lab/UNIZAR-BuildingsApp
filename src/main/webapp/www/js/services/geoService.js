@@ -9,6 +9,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         updatePOIs: updatePOIs
     });
 
+    //Creates main map with Google and OSM layers
     function crearMapa($scope, infoService){
         var option = sharedProperties.getOpcion();
         option = typeof option !== 'undefined' ? option : 1;
@@ -39,6 +40,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         $scope.map.attributionControl.setPrefix('');
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
 
+        //Loads into map the layer with UNIZAR buildings
         var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", {
             layers: 'sigeuz:bordes',
             format: 'image/png',
@@ -62,6 +64,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var src = new Proj4js.Proj('EPSG:4326');
         var dst = new Proj4js.Proj('EPSG:25830');
 
+        //Handles behaviour when map is clicked
         $scope.map.on('click', function(e)
         {
             console.log("Map clicked on", e.latlng);
@@ -87,6 +90,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
             var parameters = L.Util.extend(defaultParameters, customParams);
 
+            //On map 'click' --> show popup with info about the building selected
             $.ajax({
                 url : owsrootUrl + L.Util.getParamString(parameters),
                 dataType : 'jsonp',
@@ -116,7 +120,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         return $scope.map;
     }
 
-    // Show marker with building info over selected building
+    // Show marker with info over selected building
     function showMarker($scope, data, point, infoService){
 
         var coordenadas = data.features[0].geometry.coordinates[0][0][0];
@@ -137,7 +141,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     html_select += '<select class="ion-input-select select-map" onchange="selectPlano(this);" ng-model="plantaPopup" >';
                     html_select+='<option value=undefined selected="selected"></option>';
 
-                    // Load building floor values in HTML 'select' element
+                    // Creates HTML element for the popup ('select' with floors and button)
                     for (i=0;i<edificio.plantas.length;i++)
                     {
                         var floorValue = edificio.plantas[i],
@@ -185,6 +189,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         );
     }
 
+    //Centers the map on Huesca
     function localizarHuesca() {
         var cityData = APP_CONSTANTS.datosMapa;
         console.log('Cambio vista a: '+ cityData[0].nombre+' '+cityData[0].latitud+' '+cityData[0].longitud);
@@ -196,6 +201,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         sharedProperties.setMapa(mapa);
     }
 
+    //Centers the map on Zaragoza
     function localizarZaragoza() {
         cityData = APP_CONSTANTS.datosMapa;
         console.log('Cambio vista a: '+ cityData[1].nombre+' '+cityData[1].latitud+' '+cityData[1].longitud);
@@ -207,6 +213,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         sharedProperties.setMapa(mapa);
     }
 
+    //Centers the map on Teruel
     function localizarTeruel() {
         cityData = APP_CONSTANTS.datosMapa;
         console.log('Cambio vista a: '+ cityData[2].nombre+' '+cityData[2].latitud+' '+cityData[2].longitud);
@@ -218,6 +225,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         sharedProperties.setMapa(mapa);
     }
 
+    //Creates map with the view of the selected building floor
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
         
         $ionicLoading.show({template: 'Cargando...'});
@@ -226,6 +234,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         var mapa = sharedProperties.getMapa();
         if (typeof(mapa) != 'undefined') mapa.closePopup();
         
+        //Recover building and floor id's
         var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
             floor = localStorage.planta,
             planta_id = building + floor;
@@ -234,6 +243,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         console.log("Bulding and floor data", building, edificio_id, floor, planta_id);
 
+        // Get building coordinates in order to load image layer of the room of the building
         infoService.getBuildingCoordinates(building).then(
             function (data) {
                 var plano = sharedProperties.getPlano(),
@@ -252,6 +262,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     addLegendToPlan = false;
                 }
 
+                //Create building floor image layer
                 var imageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", 
                 {
                     layers: 'sigeuz:vista_plantas',
@@ -263,6 +274,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     zIndex: 5
                 });
 
+                //Create map of the building floor and add image layer to it
                 plano = new L.map('plan').setView(coordinates, 20);
                 plano.addLayer(imageLayer);
 
@@ -286,6 +298,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         SrsName : 'EPSG:4326'
                     };
                     
+                    console.log(pRoom.x, pRoom.y);
                     var customParams = {
                         cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
                         viewparams:'PLANTA:'+planta_id
@@ -341,9 +354,51 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         
                 updatePOIs(plano, sharedProperties);
 
+                //If last searched room matches with the building of the floor loaded 
+                //  --> Remark on the map the last searched room
+                if (typeof(localStorage.lastSearch)!==undefined) {
+                    if (localStorage.lastSearch.split('.').slice(0, -1).join('.') === planta_id) {
+                        $ionicLoading.show({template: 'Cargando...'});
+                        infoService.getRoomCentrePoint(localStorage.lastSearch).then(
+                            function (data) {
+                                console.log("Center point for rooom "+localStorage.lastSearch, data);
+                                var centerCoord = data.coordinates;
+                                var defaultParameters = {
+                                    service : 'WFS',
+                                    version : '1.1.1',
+                                    request : 'GetFeature',
+                                    typeName : "sigeuz:vista_plantas",
+                                    maxFeatures : 500,
+                                    outputFormat : 'text/javascript',
+                                    format_options : 'callback:getJson',
+                                    SrsName : 'EPSG:4326'
+                                };
+                                
+                                var customParams = {
+                                    cql_filter:'DWithin(geom, POINT(' + centerCoord[0] + ' ' + centerCoord[1] + '), 0.1, meters)',
+                                    viewparams:'PLANTA:'+planta_id
+                                };
+
+                                var parameters = L.Util.extend(defaultParameters, customParams);
+
+                                var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
+                                $.ajax({
+                                    url : owsrootUrl + L.Util.getParamString(parameters),
+                                    dataType : 'jsonp',
+                                    jsonpCallback : 'getJson',
+                                    success : handleJsonLastSearch
+                                });
+                            },
+                            function(err){
+                                console.log("Center point for room "+localStorage.lastSearch+" not found");
+                            } 
+                        )
+                    }
+                }
+
+                //Checks if legend needs to be added to the map
                 if (addLegendToPlan) {
                     addLegend(plano, function(){
-                        // Define legend behaviour
                         $('.legend').hide();
                         $('.legend-button').click(function(){
                             if ($('.legend').is(":visible")) $('.legend').hide(500);
@@ -357,6 +412,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     $ionicLoading.hide();
                 }
 
+                // Handle behaviour when map is clicked on context menu (rigth click or long tap)
                 function handleJsonContextMenu(data) {
                     if (data.features.length) {
                         console.log("handleJsonContextMenu",data);
@@ -388,6 +444,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     }
                 }
 
+                // Handle behaviour when map is clicked
                 function handleJsonClick(data) {
                     if (data.features.length) {
                         console.log("handleJsonClick",data);
@@ -417,7 +474,29 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     }
                 }
 
-                //Show info about room clicked on map
+                //Handle behaviour for show last searched room
+                function handleJsonLastSearch(data) {
+                    if (data.features.length) {
+                        console.log("handleJsonLastSearch",data);
+                        var lastSearchFeature = L.geoJson(data);
+                        var coordinatesRoom = data.features[0].geometry.coordinates[0][0][0];
+                        var currentPlano = sharedProperties.getPlano();
+                        var currentLayers = [];
+                        currentPlano.eachLayer(function(layer){
+                            currentLayers.push(layer);
+                        });
+                        currentLayers.forEach(function(layer,i){
+                            if (i !== 0) currentPlano.removeLayer(layer);
+                        });
+                        lastSearchFeature.addTo(currentPlano);
+                        currentPlano.panTo(new L.LatLng(coordinatesRoom[1], coordinates[0]));
+                        sharedProperties.setPlano(currentPlano);
+                        updatePOIs(currentPlano, sharedProperties);
+                        $ionicLoading.hide();
+                    }
+                }
+
+                //Show popup with info about room clicked on map
                 function whenClicked(e) {
                     console.log("Room clicked", e);
                     var id = e.target.feature.properties.id_unico;

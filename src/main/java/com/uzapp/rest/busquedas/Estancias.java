@@ -246,4 +246,42 @@ public class Estancias {
       catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
+
+	@RequestMapping(
+			value = "/{roomId}/center", 
+			method = RequestMethod.GET,
+			produces = "application/json")
+	public ResponseEntity<?> getRoomCenterPoint(@PathVariable("roomId") String roomId)
+	{
+		logger.info("Service: getRoomCenterPoint()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
+		try {
+			connection = ConnectionManager.getConnection();
+
+			String query = "SELECT ST_asGeoJson(ST_Centroid(geom)) as centre FROM espacios5 where id_unico=?";
+			System.out.println(query);
+
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, roomId);
+
+			ResultSet res = preparedStmt.executeQuery();
+
+			if (res.next()){
+				System.out.println("Room centre point: "+res.getString("centre"));
+      	return new ResponseEntity<>(res.getString("centre"), HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+			}
+		}
+		catch (SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+	}
 }

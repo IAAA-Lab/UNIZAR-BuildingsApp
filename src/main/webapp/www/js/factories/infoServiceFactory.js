@@ -211,6 +211,29 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
             return deferred.promise;
         };
 
+        var getRoomCentrePoint = function (roomId) {
+            var deferred = $q.defer();
+            var request = {
+                method: 'GET',
+                url: APP_CONSTANTS.URI_API + 'estancias/'+roomId+'/center',
+                contentType: 'application/json',
+                dataType: "json"
+            };
+            $timeout(function () {
+                $http(request).then(
+                    function (result) {
+                        console.log("Success getRoomCentrePoint: ",result.data);
+                        deferred.resolve(result.data);
+                    },
+                    function(err){
+                        console.log("Error getRoomCentrePoint: ",err);
+                        deferred.reject(err);
+                    }
+                );
+            });
+            return deferred.promise;
+        };
+
         var isValidEmailAddress = function(emailAddress) {
             var pattern = /^([a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+(\.[a-z\d!#$%&'*+\-\/=?^_`{|}~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]+)*|"((([ \t]*\r\n)?[ \t]+)?([\x01-\x08\x0b\x0c\x0e-\x1f\x7f\x21\x23-\x5b\x5d-\x7e\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|\\[\x01-\x09\x0b\x0c\x0d-\x7f\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))*(([ \t]*\r\n)?[ \t]+)?")@(([a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\d\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.)+([a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]|[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF][a-z\d\-._~\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]*[a-z\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])\.?$/i;
             return pattern.test(emailAddress);
@@ -226,6 +249,7 @@ UZCampusWebMapApp.factory('infoService', function($http, $q, $timeout, $state, $
             getEstancia:getEstancia,
             getAllEstancias:getAllEstancias,
             getBuildingCoordinates: getBuildingCoordinates,
+            getRoomCentrePoint: getRoomCentrePoint,
             isValidEmailAddress: isValidEmailAddress
         };
     });

@@ -42,6 +42,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
 
         // Load plan of searched room
         $scope.goToRoomPlan = function(){
+            localStorage.lastSearch = $scope.infoEstancia.ID_espacio;
             var idEspacioArray = $scope.infoEstancia.ID_espacio.split('.');
             var planta = {
                 floor: idEspacioArray[2],
