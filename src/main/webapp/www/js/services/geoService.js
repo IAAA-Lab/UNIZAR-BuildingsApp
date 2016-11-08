@@ -64,11 +64,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         $scope.map.on('click', function(e)
         {
+            console.log("Map clicked on", e.latlng);
             var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
             var selectedPoint = e.latlng;
             var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
             Proj4js.transform(src, dst, p);
-            
+
+            sharedProperties.setMapClickedCoordinates(e.latlng);
+
             var defaultParameters = {
                 service : 'WFS',
                 version : '1.1.1',
@@ -231,153 +234,123 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         edificio_id = planta_id.replace(/\./g,"_").toLowerCase();
 
-        var url = APP_CONSTANTS.URI_Geoserver_1 + 'proyecto/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=proyecto:'+edificio_id+'&srsName=epsg:4326&outputFormat=application/json';
-        $.ajax({
-            url : url,
-            type: 'GET',
-            dataType : 'json',
-            crossDomain: true,
-            headers: { 'Access-Control-Allow-Origin': '*' },
-            success: function(data) {
-                handleJson(data, sharedProperties, poisService, createModal, function(plano){
-                    if (addLegendToPlan) {
-                        addLegend(plano, function(){
-                            // Define legend behaviour
-                            $('.legend').hide();
-                            $('.legend-button').click(function(){
-                                if ($('.legend').is(":visible")) $('.legend').hide(500);
-                                else $('.legend').show(500);
-                            });
-                            sharedProperties.setPlano(plano);
-                            $ionicLoading.hide();
-                        });
-                    } else {
-                        sharedProperties.setPlano(plano);
-                        $ionicLoading.hide();
-                    }
-                });
-            },
-            error: function (jqXHR, textStatus, errorThrown)
-            {
-                console.log("Error getting plan of " + edificio_id, jqXHR, errorThrown);
-                $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">No se dispone del plano<br>';
-                errorMsg += 'de la planta seleccionada</div>';
-                showInfoPopup('¡Error!', errorMsg);
-                window.location = "#/app/mapa";
-            }
+        console.log("handleJson", planta_id);
+        var plano = sharedProperties.getPlano(),
+            addLegendToPlan = true;
+
+        //Remove previous plan layers
+        if(!(typeof plano == 'undefined')) {
+            plano.eachLayer(function (layer) {
+                plano.removeLayer(layer);
+            });
+            addLegendToPlan = false;
+        }
+
+        var imageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", 
+        {
+            layers: 'sigeuz:vista_plantas',
+            viewparams : 'PLANTA:'+planta_id,
+            format: 'image/png',
+            attribution: planta_id,
+            transparent: true,
+            maxZoom: 25, 
+            zIndex: 5
         });
 
-        function handleJson(data, planta_id, sharedProperties, poisService, createModal, callback) {
-            console.log("handleJson", data, planta_id);
-            var plano = sharedProperties.getPlano(),
-                coordinates = data.features[0].geometry.coordinates[0][0][0],
-                floorCoordinates = new L.latLng(coordinates[1], coordinates[0]);
-                addLegendToPlan = true;
+        plano = new L.map('plan').setView(sharedProperties.getMapClickedCoordinates(), 20);
+        plano.addLayer(imageLayer);
 
-            //Remove previous plan layers
-            if(!(typeof plano == 'undefined')) {
-                plano.remove();
-                plano.invalidateSize();
-                addLegendToPlan = false;
-            }
+        $('.leaflet-container').css('cursor','pointer');
 
-            var imageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Geoserver_2 + "sigeuz/wms", 
-            {
-                layers: 'sigeuz:vista_plantas',
-                maxZoom: 25,
-                zIndex: 5,
-                viewparams : 'PLANTA:'+planta_id,
-                format: 'image/png', transparent: true, attribution: planta_id
-            });
+        //On 'click' event --> Show room information if room has been clicked
+        plano.on('click', function(point){
+            var srcRoom = new Proj4js.Proj('EPSG:4326');
+            var dstRoom = new Proj4js.Proj('EPSG:25830');
+            var pRoom = new Proj4js.Point(point.latlng.lng,point.latlng.lat);
+            Proj4js.transform(srcRoom, dstRoom, pRoom);
 
-            var mapProperties = 
-            {
-                crs: L.CRS.EPSG3857,
-                layers: [imageLayer]
+            var defaultParameters = {
+                service : 'WFS',
+                version : '1.1.1',
+                request : 'GetFeature',
+                typeName : "sigeuz:vista_plantas",
+                maxFeatures : 500,
+                outputFormat : 'text/javascript',
+                format_options : 'callback:getJson',
+                SrsName : 'EPSG:4326'
+            };
+            
+            var customParams = {
+                cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
+                viewparams:'PLANTA:'+planta_id
             };
 
-            plano = new L.map('plan', mapProperties).setView(floorCoordinates, 20);
-            plano.setMaxBounds(L.geoJson(data).getBounds());
+            var parameters = L.Util.extend(defaultParameters, customParams);
 
-            $('.leaflet-container').css('cursor','pointer');
+            var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
 
-            //On 'click' event --> Show room information if room has been clicked
-            plano.on('click', function(point){
-                var srcRoom = new Proj4js.Proj('EPSG:4326');
-                var dstRoom = new Proj4js.Proj('EPSG:25830');
-                var pRoom = new Proj4js.Point(point.latlng.lng,point.latlng.lat);
-                Proj4js.transform(srcRoom, dstRoom, pRoom);
-
-                var defaultParameters = {
-                    service : 'WFS',
-                    version : '1.1.1',
-                    request : 'GetFeature',
-                    typeName : "sigeuz:vista_plantas",
-                    maxFeatures : 500,
-                    outputFormat : 'text/javascript',
-                    format_options : 'callback:getJson',
-                    SrsName : 'EPSG:4326'
-                };
-                
-                var customParams = {
-                    cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
-                    viewparams:'PLANTA:'+planta_id
-                };
-
-                var parameters = L.Util.extend(defaultParameters, customParams);
-
-                var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
-
-                $.ajax({
-                    url : owsrootUrl + L.Util.getParamString(parameters),
-                    dataType : 'jsonp',
-                    jsonpCallback : 'getJson',
-                    success : handleJsonClick
-                });
+            $.ajax({
+                url : owsrootUrl + L.Util.getParamString(parameters),
+                dataType : 'jsonp',
+                jsonpCallback : 'getJson',
+                success : handleJsonClick
             });
+        });
 
-            //On 'contextmenu' event --> Show 'Create POI modal' if room has been clicked
-            plano.on('contextmenu', function(e){
-                localStorage.contextMenuClickedPoint = JSON.stringify(e.latlng);
-                var srcRoom = new Proj4js.Proj('EPSG:4326');
-                var dstRoom = new Proj4js.Proj('EPSG:25830');
-                var pRoom = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
-                Proj4js.transform(srcRoom, dstRoom, pRoom);
+        //On 'contextmenu' event --> Show 'Create POI modal' if room has been clicked
+        plano.on('contextmenu', function(e){
+            localStorage.contextMenuClickedPoint = JSON.stringify(e.latlng);
+            var srcRoom = new Proj4js.Proj('EPSG:4326');
+            var dstRoom = new Proj4js.Proj('EPSG:25830');
+            var pRoom = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
+            Proj4js.transform(srcRoom, dstRoom, pRoom);
 
-                var defaultParameters = {
-                    service : 'WFS',
-                    version : '1.1.1',
-                    request : 'GetFeature',
-                    typeName : "sigeuz:vista_plantas",
-                    maxFeatures : 500,
-                    outputFormat : 'text/javascript',
-                    format_options : 'callback:getJson',
-                    SrsName : 'EPSG:4326'
-                };
-                
-                var customParams = {
-                    cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
-                    viewparams:'PLANTA:'+planta_id
-                };
+            var defaultParameters = {
+                service : 'WFS',
+                version : '1.1.1',
+                request : 'GetFeature',
+                typeName : "sigeuz:vista_plantas",
+                maxFeatures : 500,
+                outputFormat : 'text/javascript',
+                format_options : 'callback:getJson',
+                SrsName : 'EPSG:4326'
+            };
+            
+            var customParams = {
+                cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
+                viewparams:'PLANTA:'+planta_id
+            };
 
-                var parameters = L.Util.extend(defaultParameters, customParams);
+            var parameters = L.Util.extend(defaultParameters, customParams);
 
-                var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
+            var owsrootUrl = APP_CONSTANTS.URI_Geoserver_2 + 'ows';
 
-                $.ajax({
-                    url : owsrootUrl + L.Util.getParamString(parameters),
-                    dataType : 'jsonp',
-                    jsonpCallback : 'getJson',
-                    success : handleJsonContextMenu
-                });
+            $.ajax({
+                url : owsrootUrl + L.Util.getParamString(parameters),
+                dataType : 'jsonp',
+                jsonpCallback : 'getJson',
+                success : handleJsonContextMenu
             });
+        });
 
-            console.log("Last search", localStorage.lastSearch);
-                    
-            updatePOIs(plano, sharedProperties);
+        console.log("Last search", localStorage.lastSearch);
+                
+        updatePOIs(plano, sharedProperties);
 
-            callback(plano, addLegendToPlan);
+        if (addLegendToPlan) {
+            addLegend(plano, function(){
+                // Define legend behaviour
+                $('.legend').hide();
+                $('.legend-button').click(function(){
+                    if ($('.legend').is(":visible")) $('.legend').hide(500);
+                    else $('.legend').show(500);
+                });
+                sharedProperties.setPlano(plano);
+                $ionicLoading.hide();
+            });
+        } else {
+            sharedProperties.setPlano(plano);
+            $ionicLoading.hide();
         }
 
         function handleJsonContextMenu(data) {
