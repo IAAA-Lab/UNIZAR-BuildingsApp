@@ -2,9 +2,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
     return ({
         crearMapa: crearMapa,
-        localizarHuesca: localizarHuesca,
-        localizarZaragoza: localizarZaragoza,
-        localizarTeruel: localizarTeruel,
+        centerMap: centerMap,
         crearPlano: crearPlano,
         updatePOIs: updatePOIs
     });
@@ -12,7 +10,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     //Creates main map with Google and OSM layers
     function crearMapa($scope, infoService){
         var option = sharedProperties.getOpcion();
-        option = typeof option !== 'undefined' ? option : 1;
+        option = typeof option !== 'undefined' ? option : 0;
         sharedProperties.setOpcion(option);
 
         //Initial layers
@@ -31,12 +29,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             "Open Street Map": openstreetmap
         };
 
+        var centerMapTo = APP_CONSTANTS.datosMapa[option];
+
         $scope.map = L.map('mapa'
             ,{
                 crs: L.CRS.EPSG3857,
                 layers: [openstreetmap]
             }
-        ).setView([APP_CONSTANTS.datosMapa[option].latitud, APP_CONSTANTS.datosMapa[option].longitud], 16);
+        ).setView([centerMapTo.latitud, centerMapTo.longitud], centerMapTo.zoom);
         $scope.map.attributionControl.setPrefix('');
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
 
@@ -189,37 +189,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         );
     }
 
-    //Centers the map on Huesca
-    function localizarHuesca() {
+    //Centers the map to the option selected
+    function centerMap(option) {
         var cityData = APP_CONSTANTS.datosMapa;
-        console.log('Cambio vista a: '+ cityData[0].nombre+' '+cityData[0].latitud+' '+cityData[0].longitud);
+        console.log('Cambio vista a: '+ cityData[option].nombre+' '+cityData[option].latitud+' '+cityData[option].longitud);
         var mapa = sharedProperties.getMapa();
         if (mapa) {
-            mapa.setView(new L.LatLng(cityData[0].latitud, cityData[0].longitud), 14);
-            mapa.zoomIn(); mapa.zoomOut();
-        }
-        sharedProperties.setMapa(mapa);
-    }
-
-    //Centers the map on Zaragoza
-    function localizarZaragoza() {
-        cityData = APP_CONSTANTS.datosMapa;
-        console.log('Cambio vista a: '+ cityData[1].nombre+' '+cityData[1].latitud+' '+cityData[1].longitud);
-        var mapa = sharedProperties.getMapa();
-        if (mapa) {
-            mapa.setView(new L.LatLng(cityData[1].latitud, cityData[1].longitud), 16);
-            mapa.zoomIn(); mapa.zoomOut();
-        }
-        sharedProperties.setMapa(mapa);
-    }
-
-    //Centers the map on Teruel
-    function localizarTeruel() {
-        cityData = APP_CONSTANTS.datosMapa;
-        console.log('Cambio vista a: '+ cityData[2].nombre+' '+cityData[2].latitud+' '+cityData[2].longitud);
-        var mapa = sharedProperties.getMapa();
-        if (mapa) {
-            mapa.setView(new L.LatLng(cityData[2].latitud, cityData[2].longitud), 16);
+            mapa.setView(new L.LatLng(cityData[option].latitud, cityData[option].longitud), cityData[option].zoom);
             mapa.zoomIn(); mapa.zoomOut();
         }
         sharedProperties.setMapa(mapa);
