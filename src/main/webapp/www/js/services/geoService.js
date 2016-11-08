@@ -70,7 +70,8 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             var p = new Proj4js.Point(e.latlng.lng,e.latlng.lat);
             Proj4js.transform(src, dst, p);
 
-            sharedProperties.setMapClickedCoordinates(e.latlng);
+            sharedProperties.setMapLastClickedCoordinates(e.latlng);
+            localStorage.mapLastClickedCoordinates = JSON.stringify(e.latlng);
 
             var defaultParameters = {
                 service : 'WFS',
@@ -221,6 +222,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
+
+        var coordinates = sharedProperties.getMapLastClickedCoordinates();
+        if (coordinates==null) coordinates = JSON.parse(localStorage.mapLastClickedCoordinates);
+        if (coordinates == null || typeof(coordinates) == 'undefined') {
+            console.log("Not coordinates selected --> return to main map");
+            window.location = "#/app/mapa";
+            return; 
+        }
         
         $ionicLoading.show({template: 'Cargando...'});
 
@@ -243,6 +252,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             plano.eachLayer(function (layer) {
                 plano.removeLayer(layer);
             });
+            plano.remove();
             addLegendToPlan = false;
         }
 
@@ -257,7 +267,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             zIndex: 5
         });
 
-        plano = new L.map('plan').setView(sharedProperties.getMapClickedCoordinates(), 20);
+        plano = new L.map('plan').setView(coordinates, 20);
         plano.addLayer(imageLayer);
 
         $('.leaflet-container').css('cursor','pointer');
@@ -332,8 +342,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 success : handleJsonContextMenu
             });
         });
-
-        console.log("Last search", localStorage.lastSearch);
                 
         updatePOIs(plano, sharedProperties);
 
