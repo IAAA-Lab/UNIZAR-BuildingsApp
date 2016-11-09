@@ -31,21 +31,20 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     });
 
     //Open the modal for add a POI and load data in the modal form
-    $scope.openCreatePOIModal = function(e) {
-        $ionicLoading.show({template: 'Cargando...'});
-        console.log("openCreatePOIModal", e, localStorage.building, localStorage.planta);
-        var id = e.target.feature.properties.et_id;
+    $scope.openCreatePOIModal = function(latlng, id) {
+        console.log("openCreatePOIModal", latlng, id, localStorage.building, localStorage.planta);
 
         infoService.getInfoEstancia(id).then(
             function (data) {
-                if (data.length === 0 || data == null) $ionicLoading.hide();
-                else {
+                if (data !== null && typeof(data)!=='undefined') {
+                    $ionicLoading.show({template: 'Cargando...'});
                     var floor = localStorage.planta;
                     $scope.existsCity = (data.ciudad != null && typeof data.ciudad !== 'undefined') ? true : false;
                     $scope.existsCampus = (data.campus != null && typeof data.campus !== 'undefined') ? true : false;
                     $scope.existsBuilding = (data.edificio != null && typeof data.edificio !== 'undefined') ? true : false;
                     $scope.existsAddress = (data.dir != null && typeof data.dir !== 'undefined') ? true : false;
                     $scope.existsFloor = (floor != null && typeof floor !== 'undefined') ? true : false;
+                    $scope.existsRoom = (data.ID_espacio != null && typeof data.ID_espacio !== 'undefined') ? true : false;
 
                     var city = data.ciudad.toLowerCase();
 
@@ -53,12 +52,13 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         city: city.substr(0, 1).toUpperCase() + city.substr(1),
                         campus: data.campus,
                         building: data.edificio,
-                        roomId: data.ID_espacio,
-                        roomName: data.ID_centro,
                         address: data.dir,
                         floor: floor,
-                        latitude: e.latlng.lat,
-                        longitude: e.latlng.lng
+                        roomId: data.ID_espacio,
+                        roomName: data.ID_centro,
+                        room: data.ID_espacio + ' (' + data.ID_centro + ')',
+                        latitude: latlng.lat,
+                        longitude: latlng.lng
                     };
                     console.log("Data to modal",$scope.data);
                     $ionicLoading.hide();
@@ -69,7 +69,6 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
             },
             function(err){
                 console.log("Error on getInfoEstancia", err);
-                $ionicLoading.hide();
                 var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
                 errorMsg += 'la información de la estancia</div>';
                 $scope.showInfoPopup('¡Error!', errorMsg);
@@ -149,6 +148,9 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                     $scope.existsBuilding = (data.building != null && typeof data.building !== 'undefined') ? true : false;
                     $scope.existsAddress = (data.address != null && typeof data.address !== 'undefined') ? true : false;
                     $scope.existsFloor = (data.floor != null && typeof data.floor !== 'undefined') ? true : false;
+                    $scope.existsRoom = (data.roomId != null && typeof data.roomId !== 'undefined') ? true : false;
+
+                    data.room = data.roomId + ' (' + data.roomName + ')';
 
                     $scope.data = data;
 

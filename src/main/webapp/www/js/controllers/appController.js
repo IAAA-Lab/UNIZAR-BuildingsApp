@@ -12,6 +12,8 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
             alert($scope.translation.NAVEGADORNOCOMPATIBLE);
         }
 
+        $scope.showSubMenu = false;
+
         $scope.loadMap = function(option, menu) {
             var currentMap = sharedProperties.getMapa();
             var currentOption = sharedProperties.getOpcion();
@@ -23,11 +25,11 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
             else sharedProperties.setReloadMap(false);
             
             if (menu === true && currentOption != option) {
-                switch (sharedProperties.getOpcion()) {
-                    case 0: geoService.localizarHuesca(); break;
-                    case 1: geoService.localizarZaragoza(); break;
-                    case 2: geoService.localizarTeruel(); break;
-                }
+                geoService.centerMap(option);
             }
+        };
+
+        $scope.showHideSubMenu = function() {
+            $scope.showSubMenu = !$scope.showSubMenu;
         };
     });

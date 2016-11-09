@@ -11,17 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.*;
 
 import com.google.gson.Gson;
 import com.uzapp.bd.ConnectionManager;
 import com.uzapp.dominio.Campus;
 import com.uzapp.dominio.Edificio;
 import com.uzapp.dominio.Espacios;
+import com.uzapp.dominio.Point;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -198,6 +195,85 @@ public class Estancias {
 			
 			connection.close();
       return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
+		}
+		catch (SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+	}
+
+	@RequestMapping(
+			value = "/{buildingId}/coordinates", 
+			method = RequestMethod.GET,
+			produces = "application/json")
+	public ResponseEntity<?> getBuildingCoordinates(@PathVariable("buildingId") String buildingId)
+	{
+		logger.info("Service: getBuildingCoordinates()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
+		Gson gson = new Gson();
+		Point p;
+		try {
+			connection = ConnectionManager.getConnection();
+
+			String query = "SELECT x,y FROM bordes WHERE cod3=?";
+			System.out.println(query);
+
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, buildingId);
+
+			ResultSet res = preparedStmt.executeQuery();
+
+			if (res.next()){
+				p = new Point(res.getDouble("x"),res.getDouble("y"));
+				System.out.println("Building coordinates: "+gson.toJson(p));
+      	return new ResponseEntity<>(gson.toJson(p), HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+			}
+		}
+		catch (SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+	}
+
+	@RequestMapping(
+			value = "/{roomId}/center", 
+			method = RequestMethod.GET,
+			produces = "application/json")
+	public ResponseEntity<?> getRoomCenterPoint(@PathVariable("roomId") String roomId)
+	{
+		logger.info("Service: getRoomCenterPoint()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
+		try {
+			connection = ConnectionManager.getConnection();
+
+			String query = "SELECT ST_asGeoJson(ST_Centroid(geom)) as centre FROM espacios5 where id_unico=?";
+			System.out.println(query);
+
+			preparedStmt = connection.prepareStatement(query);
+			preparedStmt.setString(1, roomId);
+
+			ResultSet res = preparedStmt.executeQuery();
+
+			if (res.next()){
+				System.out.println("Room centre point: "+res.getString("centre"));
+      	return new ResponseEntity<>(res.getString("centre"), HttpStatus.OK);
+			}
+			else {
+				return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
+			}
 		}
 		catch (SQLException e) {
         e.printStackTrace();

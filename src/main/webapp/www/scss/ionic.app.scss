@@ -21,6 +21,7 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "../lib/ionic/scss/ionic";
 @import 'style';
+@import 'side-menu';
 @import 'room-details-view';
 @import 'search-view';
 @import 'map-view';

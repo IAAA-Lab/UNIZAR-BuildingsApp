@@ -13,11 +13,7 @@ UZCampusWebMapApp.controller('MapCtrl',function($scope, $rootScope, geoService, 
 	$scope.$on('$ionicView.beforeEnter', function(){ 
 		//Check if the map view must be changed
     if (sharedProperties.getReloadMap() === true) {
-    	switch (sharedProperties.getOpcion()) {
-    		case 0: geoService.localizarHuesca(); break;
-    		case 1: geoService.localizarZaragoza(); break;
-    		case 2: geoService.localizarTeruel(); break;
-    	}
+    	geoService.centerMap(sharedProperties.getOpcion());
 	  }
   });
 });
