@@ -1,16 +1,13 @@
 <div id="confirm-create-poi-popup">
 	<p>
-		Al confirmar la edición del punto de 
-		interés, los datos se enviarán y serán 
-		aprobados o rechazados por un administrador.
+		{{i18n.pois.modals.confirm_creation.text1}}
 	</p>
 	<p>
-		Si desea recibir notificación de dicha aprobación o rechazo, 
-		marque la casilla e introduzca una dirección de email:
+		{{i18n.pois.modals.confirm_creation.text2}}
 	</p>
 	<div class="list">
 		<label class="checkbox-inline">
-				<input type="checkbox" value="" ng-model="emailChecked">Recibir notificación
+				<input type="checkbox" value="" ng-model="emailChecked">{{i18n.pois.modals.confirm_creation.notification}}
 		</label>
 	  <label class="item item-input">
 	    <input type="email" ng-model="email">

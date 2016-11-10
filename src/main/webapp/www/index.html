@@ -37,7 +37,6 @@
     <!-- My app's js files -->
     <script src="js/app.js"></script>
     <script src="js/constants.js"></script>
-    <script src="js/directives/fancySelect.js"></script>
     <script src="js/directives/formAddPOI.js"></script>
     <script src="js/directives/formEditPOI.js"></script>
     <script src="js/services/sharedProperties.js"></script>
@@ -49,7 +48,7 @@
     <script src="js/controllers/topController.js"></script>
     <script src="js/controllers/translateController.js"></script>
     <script src="js/controllers/mapController.js"></script>
-    <script src="js/controllers/planController.js"></script>
+    <script src="js/controllers/floorController.js"></script>
     <script src="js/controllers/roomDetailsController.js"></script>
     <script src="js/controllers/photosController.js"></script>
     <script src="js/controllers/searchController.js"></script>
@@ -75,16 +74,16 @@
 *  y no aseguraba su correcto funcionamiento.
 */
     //Selecciono un plano de la planta seleccionada.
-    function selectPlano(planta) {
-        console.log("selectPlano", planta);
-        localStorage.planta = planta.floor ? planta.floor : planta.value;
-        localStorage.building = planta.building ? planta.building : JSON.stringify($('.'+planta.value).data());
-        window.location = "#/app/plano";
+    function goToFloorMap(data) {
+        console.log("goToFloorMap", data);
+        localStorage.floor = data.floor ? data.floor : data.value;
+        localStorage.building = data.building ? data.building : JSON.stringify($('.'+data.value).data());
+        window.location = "#/app/floor";
     }
     //Selecciono un plano de la planta seleccionada.
-    function informacionEstancia(estancia){
-        console.log("informacionEstancia", estancia);
-        localStorage.estancia = estancia.value;
+    function getRoomInfo(room){
+        console.log("getRoomInfo", room);
+        localStorage.room = room.value;
         window.location = "#/app/roomDetails";
     }
     //Edición de un POI

@@ -1,40 +1,40 @@
 UZCampusWebMapApp.constant('APP_CONSTANTS', {
     URI_API: 'http://localhost:8080/',
-    URI_Geoserver_1: 'http://155.210.14.31:8080/geoserver/',
+    URI_Geoserver: 'http://155.210.14.31:8080/geoserver/',
     URI_Photos: 'http://localhost:8080/www/images/photos/',
-    URI_Geoserver_2: 'http://155.210.21.36:8080/geoserver/',
+    URI_Sigeuz_Geoserver: 'http://155.210.21.36:8080/geoserver/',
     photosWidth: 640,
     photosHeight: 350,
     datosMapa: [
         {
-            nombre: "Campus San Francisco",
-            latitud: 41.642217,
-            longitud: -0.900011,
+            name: "Campus San Francisco",
+            lat: 41.642217,
+            lng: -0.900011,
             zoom: 17
         },{
-            nombre: "Campus Rio Ebro",
-            latitud: 41.683600515594215,
-            longitud: -0.8856855332851411,
+            name: "Campus Rio Ebro",
+            lat: 41.683600515594215,
+            lng: -0.8856855332851411,
             zoom: 17
         },{
-            nombre: "Campus Empresariales",
-            latitud: 41.64716492110404,
-            longitud: -0.8871446549892426,
+            name: "Campus Empresariales",
+            lat: 41.64716492110404,
+            lng: -0.8871446549892426,
             zoom: 18
         },{
-            nombre: "Campus Miguel Servet",
-            latitud: 41.63484190473223,
-            longitud: -0.8589070290327073,
+            name: "Campus Miguel Servet",
+            lat: 41.63484190473223,
+            lng: -0.8589070290327073,
             zoom: 18
         },{
-            nombre: "Huesca",
-            latitud: 42.142172,
-            longitud: -0.405557,
+            name: "Huesca",
+            lat: 42.142172,
+            lng: -0.405557,
             zoom: 18
         },{
-            nombre: "Teruel",
-            latitud: 40.351661,
-            longitud: -1.110081,
+            name: "Teruel",
+            lat: 40.351661,
+            lng: -1.110081,
             zoom: 18
         }
     ],

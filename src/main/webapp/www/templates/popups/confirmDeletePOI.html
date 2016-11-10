@@ -1,20 +1,17 @@
 <div id="confirm-delete-poi-popup">
 	<p>
-		La eliminación del punto de interés
-		será revisada y posteriormente aprobada
-		o rechazada por un administrador.
+		{{i18n.pois.modals.confirm_delete.text1}}
 	</p>
 	<p>
-		Por favor, introduzca una razón:
+		{{i18n.pois.modals.confirm_delete.reason_label}}
 	</p>
 	<textarea rows="5" required style="border: 1px solid grey; margin-bottom: 10px; padding: 5px;"></textarea>
 	<p>
-		Si desea recibir notificación de dicha aprobación o rechazo, 
-		marque la casilla e introduzca una dirección de email:
+		{{i18n.pois.modals.confirm_delete.text2}}
 	</p>
 	<div class="list">
 		<label class="checkbox-inline">
-				<input type="checkbox" value="" ng-model="emailChecked">Recibir notificación
+				<input type="checkbox" value="" ng-model="emailChecked">{{i18n.pois.modals.confirm_delete.notification}}
 		</label>
 	  <label class="item item-input">
 	    <input type="email" ng-model="email" required>

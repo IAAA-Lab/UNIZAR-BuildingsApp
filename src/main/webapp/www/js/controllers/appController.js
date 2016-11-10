@@ -9,17 +9,17 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
         $scope.provincia = "";
 
         if (/firefox/i.test(userAgent)) {
-            alert($scope.translation.NAVEGADORNOCOMPATIBLE);
+            alert($scope.i18n.errors.browser_compatibility);
         }
 
         $scope.showSubMenu = false;
 
         $scope.loadMap = function(option, menu) {
-            var currentMap = sharedProperties.getMapa();
-            var currentOption = sharedProperties.getOpcion();
+            var currentMap = sharedProperties.getMap();
+            var currentOption = sharedProperties.getOption();
 
             if (typeof currentMap === 'undefined' || currentOption !== option) {
-                sharedProperties.setOpcion(option);
+                sharedProperties.setOption(option);
                 sharedProperties.setReloadMap(true);
             }
             else sharedProperties.setReloadMap(false);

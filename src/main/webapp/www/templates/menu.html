@@ -13,42 +13,42 @@
       <div id="menu-list">
         <ion-list class="list">
           <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/home">
-            <i class="icon ion-home"></i><span>{{translation.INICIO}}</span>
+            <i class="icon ion-home"></i><span>{{i18n.home.title}}</span>
           </ion-item>
-          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/busqueda">
-            <i class="icon ion-ios-search"></i><span>{{translation.BUSQUEDA}}</span>
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/search">
+            <i class="icon ion-ios-search"></i><span>{{i18n.search.title}}</span>
           </ion-item>
-          <!--<ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/busquedaavanzada">
-            <i class="icon ion-ios-search"></i><span>{{translation.BUSQUEDAAVANZADA}}</span>
+          <!--<ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/searchAdvanced">
+            <i class="icon ion-ios-search"></i><span>{{i18n.advanced_search.title}}</span>
           </ion-item> deshabilitado hasta concretar-->
-          <!--<ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/favoritos">
-            <i class="icon ion-star"></i><span>{{translation.FAVORITOS}}</span>
+          <!--<ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/favs">
+            <i class="icon ion-star"></i><span>{{i18n.favs.title}}</span>
           </ion-item>-->
-          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/ajustes">
-            <i class="icon ion-settings"></i><span>{{translation.AJUSTES}}</span>
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/settings">
+            <i class="icon ion-settings"></i><span>{{i18n.settings.title}}</span>
           </ion-item>
           <!--<ion-item item-type="item-icon-left" nav-clear menu-close href=>
-            <i class="icon ion-log-in"></i><span>LOGIN UTC</span>
+            <i class="icon ion-log-in"></i><span>{{i18n.login.title}}</span>
           </ion-item>-->
           <ion-item class="menu-level1" item-type="item-icon-left" ng-click="showHideSubMenu()">
             <i class="icon ion-map"></i><span>Zaragoza</span>
-            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(0,true)" ui-sref="app.mapa" ng-show="showSubMenu">
+            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(0,true)" ui-sref="app.map" ng-show="showSubMenu">
               <i class="icon ion-location"></i><span>Campus San Francisco</span>
             </ion-item>
-            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(1,true)" ui-sref="app.mapa" ng-show="showSubMenu">
+            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(1,true)" ui-sref="app.map" ng-show="showSubMenu">
               <i class="icon ion-location"></i><span>Campus Río Ebro</span>
             </ion-item>
-            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(2,true)" ui-sref="app.mapa" ng-show="showSubMenu">
+            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(2,true)" ui-sref="app.map" ng-show="showSubMenu">
               <i class="icon ion-location"></i><span>Campus Empresariales</span>
             </ion-item>
-            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(3,true)" ui-sref="app.mapa" ng-show="showSubMenu">
+            <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(3,true)" ui-sref="app.map" ng-show="showSubMenu">
               <i class="icon ion-location"></i><span>Campus Miguel Servet</span>
             </ion-item>
           </ion-item>
-          <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(4,true)" ui-sref="app.mapa">
+          <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(4,true)" ui-sref="app.map">
             <i class="icon ion-map"></i><span>Huesca</span>
           </ion-item>
-          <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(5,true)" ui-sref="app.mapa">
+          <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(5,true)" ui-sref="app.map">
             <i class="icon ion-map"></i><span>Teruel</span>
           </ion-item>
         </ion-list>
