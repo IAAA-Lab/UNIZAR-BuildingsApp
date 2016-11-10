@@ -1,46 +1,239 @@
 {
-  "INICIO":"Inicio",
-  "BUSQUEDA":"Búsqueda",
-  "BUSQUEDAAVANZADA":"Búsqueda avanzada",
-  "FAVORITOS":"Favoritos",
-  "AJUSTES":"Ajustes",
-  "MAPA":"Mapa",
-  "VER_MAPA": "Ver mapa",
-  "PLANO":"Plano",
-  "SALIR":"Salir",
-  "INGLES":"Inglés",
-  "PORTUGUES": "Portugués",
-  "SELECCIONAR_IDIOMA":"Selecciona el idioma para la aplicación",
-  "SELECCIONAR_CIUDAD":"Ciudad",
-  "SELECCIONAR_CAMPUS":"Campus",
-  "SELECCIONAR_EDIFICIO":"Edificio",
-  "SELECCIONAR_PLANTA":"Planta",
-  "SELECCIONAR_ESTANCIA":"Espacio",
-  "SELECCIONAR_CODIGO_ESPACIO":"Código de espacio",
-  "SELECCIONAR_FOTO": "Selecciona el número de la foto",
-  "ALERT_SELECT": "Por favor, rellene todo el formulario",
-  "DATOSESTANCIA": "Datos del espacio",
-  "DATOSNOMBRE": "Nombre",
-  "DATOSTIPO": "Tipo",
-  "DATOSSUPERFICIE": "Superficie",
-  "PRIMERA" : "Primera",
-  "SEGUNDA": "Segunda",
-  "TERCERA": "Tercera",
-  "AULA": "Aula",
-  "LABORATORIO": "Laboratorio",
-  "DESPACHO": "Despacho",
-  "BUSCAR": "Buscar",
-  "MASINFO": "Más información",
-  "ACCEDER": "Acceder",
-  "ESPANOL":"Español",
-  "CARGANDO":"Cargando",
-  "NOPHOTO": "Este espacio no tiene foto",
-  "BACK": "Volver",
-  "PREVIOUS": "Anterior",
-  "NEXT": "Siguiente",
-  "PHOTO": "Ver fotos",
-  "ADD_PHOTO": "Añadir",
-  "ADDFAVOURITE": "Favorito añadido",
-  "NAVEGADORNOCOMPATIBLE": "Es probable que haya incompatibilidades con su navegador al utilizar la aplicación",
-  "HOWTOARRIVE": "Como llegar"
+  "home": {
+    "title": "Inicio",
+    "logo_alt": "Logo de la Universidad de Zaragoza",
+    "map_alt": "Mapa de provincias de Aragón"
+  },
+  "settings":{
+    "title": "Ajustes",
+    "select_language": "Seleccionar idioma",
+    "spanish": "Español",
+    "english": "Inglés",
+    "portuguese": "Portugés"
+  },
+  "map":{
+    "title": "Mapa",
+    "select_floor": "Planta",
+    "btn_howto": "Cómo llegar"
+  },
+  "search":{
+    "title": "Búsqueda",
+    "select_labels":{
+      "city": "Ciudad",
+      "campus": "Campus",
+      "building": "Edificio",
+      "floor": "Planta",
+      "room": "Estancia"
+    },
+    "search_btn": "Buscar"
+  },
+  "advanced_search":{
+    "title": "Búsqueda avanzada",
+    "button_text": "Busqueda por codigo de Espacio",
+    "select_text": "Código de espacio",
+    "main_btn": "Buscar"
+  },
+  "favs":{
+    "title": "Favoritos"
+  },
+  "floor": {
+    "title": "Planta",
+    "popups":{
+      "room":{
+        "button": "Más información"
+      },
+      "edit_poi":{
+        "button": "Editar",
+        "labels":{
+          "category": "Categoría",
+          "comments": "Comentarios"
+        }
+      }
+    }
+  },
+  "room_details":{
+    "title": "Detalles del espacio",
+    "labels":{
+      "id": "Identificador",
+      "room": "Espacio",
+      "type": "Tipo",
+      "area": "Superficie"
+    },
+    "buttons":{
+      "photo": "Ver fotos",
+      "map": "Ver mapa"
+    }
+  },
+  "photos":{
+    "title": "Fotos",
+    "buttons":{
+      "add": "Añadir"
+    },
+    "modals": {
+      "confirm_upload1":{
+        "title": "No hay fotos",
+        "title_upload": "Subir foto",
+        "text1": "No se encontraron fotos para el espacio seleccionado.",
+        "text2": "¿Quiere añadir una nueva foto?",
+        "text3": "La imagen subida deberá ser aprobada por un administrador. Si desea recibir notificación de dicha aprobación o rechazo, marque la casilla e introduzca una dirección de email:",
+        "notification": "Recibir notificación"
+      },
+      "confirm_upload2":{
+        "title": "No hay fotos",
+        "text1": "No se encontraron fotos para el espacio seleccionado.",
+        "text2": "¿Quiere añadir una nueva foto?",
+        "text3": "La imagen subida deberá ser aprobada por un administrador. Si desea recibir notificación de dicha aprobación o rechazo, marque la casilla e introduzca una dirección de email:",
+        "notification": "Recibir notificación"
+      },
+      "success_upload":{
+        "title": "Foto subida con éxito",
+        "text": "La imagen se ha enviado con éxito. Recuerde que primero deberá ser aprobada por un administrador"
+      }
+    },
+    "legend":{
+      "photo": "Foto ",
+      "of": " de "
+    }
+  },
+  "pois":{
+    "modals":{
+      "creation":{
+        "title": "Nuevo Punto de Interés",
+        "labels": {
+          "city": "Ciudad",
+          "campus": "Campus",
+          "building": "Edificio",
+          "address": "Dirección",
+          "floor": "Planta",
+          "room": "Espacio",
+          "category": "Categoría",
+          "comments": "Comentarios"
+        },
+        "buttons":{
+          "create": "Crear Punto de Interés"
+        },
+        "errors":{
+          "mandatory_field": {
+            "city": "Ciudad es un campo obligatorio",
+            "campus": "Campus es un campo obligatorio",
+            "building": "Edificio es un campo obligatorio",
+            "address": "Dirección es un campo obligatorio",
+            "floor": "Planta es un campo obligatorio",
+            "room": "Espacio es un campo obligatorio",
+            "category": "Categoría es un campo obligatorio",
+            "comments": "Comentarios es un campo obligatorio"
+          }
+        }
+      },
+      "confirm_creation":{
+        "title": "Confirmar creación de POI",
+        "text1": "Al confirmar la edición del punto de interés, los datos se enviarán y serán aprobados o rechazados por un administrador.",
+        "text2": "Si desea recibir notificación de dicha aprobación o rechazo, marque la casilla e introduzca una dirección de email:",
+        "notification": "Recibir notificación",
+        "buttons":{
+          "ok": "Guardar",
+          "cancel": "Cancelar"
+        }
+      },
+      "edition":{
+        "title": "Editar/Eliminar Punto de Interés",
+        "labels": {
+          "city": "Ciudad",
+          "campus": "Campus",
+          "building": "Edificio",
+          "address": "Dirección",
+          "floor": "Planta",
+          "room": "Espacio",
+          "category": "Categoría",
+          "comments": "Comments"
+        },
+        "buttons":{
+          "save": "Guardar",
+          "delete": "Eliminar"
+        },
+        "errors":{
+          "mandatory_field": {
+            "city": "Ciudad es un campo obligatorio",
+            "campus": "Campus es un campo obligatorio",
+            "building": "Edificio es un campo obligatorio",
+            "address": "Dirección es un campo obligatorio",
+            "floor": "Planta es un campo obligatorio",
+            "room": "Espacio es un campo obligatorio",
+            "category": "Categoría es un campo obligatorio",
+            "comments": "Comments es un campo obligatorio"
+          }
+        }
+      },
+      "confirm_edition":{
+        "title": "Confirmar modificación",
+        "text1": "Al confirmar la modificación del punto de interés se creara una petición que será aprobada o rechaza por un administrador.",
+        "text2": "Si desea recibir notificación de dicha aprobación o rechazo, marque la casilla e introduzca una dirección de email:",
+        "notification": "Recibir notificación",
+        "buttons":{
+          "ok": "Guardar",
+          "cancel": "Cancelar"
+        }
+      },
+      "confirm_delete":{
+        "title": "Confirmar eliminación",
+        "text1": "La eliminación del punto de interés será revisada y posteriormente aprobada o rechazada por un administrador.",
+        "text2": "Si desea recibir notificación de dicha aprobación o rechazo, marque la casilla e introduzca una dirección de email:",
+        "reason_label": "Por favor, introduzca una razón:",
+        "notification": "Recibir notificación",
+        "buttons":{
+          "ok": "Eliminar",
+          "cancel": "Cancelar"
+        }
+      }
+    }
+  },
+  "errors":{
+    "error": "¡Error!",
+    "warning": "¡Aviso!",
+    "browser_compatibility": "Es probable que haya incompatibilidades con su navegador al utilizar la aplicación",
+    "info":{
+      "room": "Ha ocurrido un error recuperando<br>la información del espacio",
+      "selected_room": "No se dispone de información<br>sobre el espacio seleccionada",
+      "building": "Ha ocurrido un error recuperando<br>información del edificio",
+      "buildings": "Ha ocurrido un error recuperando<br>información de alguno de los edificios"
+    },
+    "search":{
+      "room": "Ha ocurrido un error buscando<br>el espacio ",
+      "rooms": "Ha ocurrido un error<br>buscando los espacios",
+      "campus": "Ha ocurrido un error buscando<br>los campus de la ciudad",
+      "buildings": "Ha ocurrido un error buscando<br>los edificios del campus",
+      "floor": "Ha ocurrido un error buscando<br>los espacios de la planta",
+      "photos": "Ha ocurrido un error buscando<br>las fotos del espacio seleccionado",
+      "invalid_form": "Por favor, rellene<br>el formulario completo"
+    },
+    "pois":{
+      "get_info": "Ha ocurrido un error recuperando<br>los datos del puntos de interés",
+      "creation": "Ha ocurrido un error creando<br>el punto de interés",
+      "edition": "Ha ocurrido un error enviando<br>la petición de modificación del punto de interés",
+      "delete": "Ha ocurrido un error enviando<br>la petición de eliminación del punto de interés",
+      "search": "Ha ocurrido un error recuperando<br>los puntos de interés"
+    }
+  },
+  "success":{
+    "success": "¡Éxito!",
+    "pois":{
+      "creation": "Creación del punto de interés enviada con éxito",
+      "edition": "Petición de modificación del punto de interés enviada con éxito",
+      "delete": "Petición de eliminación del punto de interés enviada con éxito"
+    }
+  },
+  "loading_mask":{
+    "loading": "Cargando...",
+    "sending": "Enviando...",
+    "searching": "Buscando...",
+    "invalid_mail": "Introduzca un email válido",
+    "invalid_reason": "Introduzca una razón",
+    "error_load_image": "Error al cargar la imagen",
+    "sending_image": "Enviando la foto...",
+    "error_send_image": "Error al enviar la imagen",
+    "error_select_image": "Por favor seleccione una imagen",
+    "error_invalid_image": "Por favor seleccione una imagen válida",
+    "error_image_size": "El tamaño permitido es de 1MB",
+    "invalid_form": "El formulario es inválido"
+  }
 }

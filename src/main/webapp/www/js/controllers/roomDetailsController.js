@@ -2,7 +2,9 @@
  * RoomDetailsCtrl: Controlador encargado de la página de información de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, infoService, photosService, APP_CONSTANTS){
+UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, infoService, photosService, translationService, APP_CONSTANTS){
+
+        translationService.getTranslation($scope, localStorage.selectedLanguage);
 
         $scope.showInfoPopup = function(title, msg){
             $ionicPopup.alert({
@@ -13,16 +15,16 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
 
         //This code will be executed every time the controller view is loaded
         $scope.$on('$ionicView.beforeEnter', function(){
-            var estancia = localStorage.estancia;
-            $ionicLoading.show({ template: 'Buscando...'});
-            infoService.getEstancia(estancia).then(
+            var roomId = localStorage.room;
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.searching});
+            infoService.getRoom(roomId).then(
                 function (data) {
-                    $scope.infoEstancia = data;
+                    $scope.infoRoom = data;
                     localStorage.lastSearch = data.ID_espacio;
                     $ionicLoading.hide();
                     $scope.data = {
-                        city: data.ID_espacio,
-                        estancia: data.ID_centro,
+                        id: data.ID_espacio,
+                        room: data.ID_centro,
                         type: data.tipo_uso,
                         area: data.superficie
                     };
@@ -30,9 +32,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 function(err){
                     console.log('Error on getEstancia', err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
-                    errorMsg += 'la estancia '+estancia+'</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.room+roomId+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                     $timeout(function() {
                       $('#estancia-view .back-btn').click();
                     }, 0);
@@ -42,21 +43,19 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
 
         // Load plan of searched room
         $scope.goToRoomPlan = function(){
-            localStorage.lastSearch = $scope.infoEstancia.ID_espacio;
-            var idEspacioArray = $scope.infoEstancia.ID_espacio.split('.');
-            var planta = {
+            localStorage.lastSearch = $scope.infoRoom.ID_espacio;
+            var idEspacioArray = $scope.infoRoom.ID_espacio.split('.');
+            var floorData = {
                 floor: idEspacioArray[2],
                 building: idEspacioArray.splice(0,idEspacioArray.length-2).join('.') + '.'
             }
-            selectPlano(planta);
+            goToFloorMap(floorData);
         };
 
         $scope.loadPhotos = function() {
-
-            var estancia = localStorage.estancia;
-            $ionicLoading.show({ template: 'Cargando...'});
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.loading});
             // Get count of room photos that exists on server
-            photosService.count(estancia).then(
+            photosService.count(localStorage.room).then(
                 function (data) {
                     console.log('Success getting photos: ',data);
                     $ionicLoading.hide();
@@ -71,9 +70,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 function(err){
                     console.log('Error getting photos: ',err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
-                    errorMsg += 'las fotos del espacio seleccionado</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.photos+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                 }
             );
         };
@@ -86,7 +84,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 return 1;
             }
             else if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
-                $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
+                $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_mail, duration: 1500});
                 return 0;
             }
             else {
@@ -101,7 +99,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             if (typeof(Camera) !== 'undefined') {
                 var addPhotoPopup = $ionicPopup.show({
                     templateUrl: 'templates/popups/confirmUploadPhoto.html',
-                    title: 'No hay fotos',
+                    title: $scope.i18n.photos.modals.confirm_upload1.title,
                     scope: $scope,
                     buttons: [
                         {
@@ -141,7 +139,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             } else {
                 var addPhotoPopup = $ionicPopup.show({
                     templateUrl: 'templates/popups/confirmUploadPhoto2.html',
-                    title: 'No hay fotos',
+                    title: $scope.i18n.photos.modals.confirm_upload2.title,
                     scope: $scope,
                     buttons: [
                         {
@@ -190,18 +188,18 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 function(err){
                     console.log('Error selecting picture', err);
                     if (err != 'Camera cancelled') {
-                        $ionicLoading.show({template: 'Error al cargar la imagen', duration:1500});
+                        $ionicLoading.show({template: $scope.i18n.loading_mask.error_load_image, duration:1500});
                     }
             });
         };
 
         //Upload picture to server
         $scope.uploadPicture = function(email, popup) {
-            $ionicLoading.show({template: 'Enviando la foto...'});
+            $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
             var fileURL = $scope.picURL;
             var options = new FileUploadOptions();
             options.fileKey = 'file';
-            options.fileName = [localStorage.estancia, new Date().getTime()].join('_') + '.jpg';
+            options.fileName = [localStorage.room, new Date().getTime()].join('_') + '.jpg';
             options.mimeType = 'image/jpeg';
             options.httpMethod = 'POST';
             options.chunkedMode = true;
@@ -222,8 +220,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                     popup.close();
                     $ionicLoading.hide();
                     var alertPopup = $ionicPopup.alert({
-                        title: 'Foto subida con éxito',
-                        template: '<p>La imagen se ha enviado con éxito. Recuerde que primero deberá ser aprobada por un administrador</p>'
+                        title: $scope.i18n.photos.modals.success_upload.title,
+                        template: '<p>'+$scope.i18n.photos.modals.success_upload.text+'</p>'
                     });
                     alertPopup.then(function(res){
                         if ($('.popup-container').length > 0) {
@@ -234,29 +232,29 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 function(){
                     console.log("Error uploading photo to server", arguments);
                     $ionicLoading.hide();
-                    $ionicLoading.show({template: 'Error al enviar la imagen', duration:1500});
+                    $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
                 }, options, true);
         };
 
         //Upload picture to server
         $scope.uploadPictureFromInput = function(email, popup) {
-            $ionicLoading.show({template: 'Enviando la foto...'});
+            $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
             var file = $('input[name=imageUpload]')[0].files[0];
 
             if (typeof(file) == 'undefined') {
-                $ionicLoading.show({ template: 'Por favor seleccione una imagen', duration: 1500});
+                $ionicLoading.show({ template: $scope.i18n.loading_mask.error_select_image, duration: 1500});
             }
             else if (file.type.indexOf("image") == -1) {
-                $ionicLoading.show({ template: 'Por favor seleccione una imagen válida', duration: 1500});
+                $ionicLoading.show({ template: $scope.i18n.loading_mask.error_invalid_image, duration: 1500});
             }
             else if (file.size > 1048576) {
                 //TODO: [DGP] Delete condition when bug fixed on server side
-                $ionicLoading.show({ template: 'El tamaño máximo permitido es de 1MB', duration: 1500});
+                $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
             }
             else {
                 var formData = new FormData();
                 formData.append('file', file);
-                formData.append('name', [localStorage.estancia, new Date().getTime()].join('_') + '.jpg');
+                formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
                 formData.append('email', email);
                 formData.append('mode', 'user');
                 console.log("formData", formData);
@@ -273,8 +271,8 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                         popup.close();
                         $ionicLoading.hide();
                         var alertPopup = $ionicPopup.alert({
-                            title: 'Foto subida con éxito',
-                            template: '<p>La imagen se ha enviado con éxito. Recuerde que primero deberá ser aprobada por un administrador</p>'
+                            title: $scope.i18n.photos.modals.success_upload.title,
+                            template: '<p>'+$scope.i18n.photos.modals.success_upload.text+'</p>'
                         });
                         alertPopup.then(function(res){
                             if ($('.popup-container').length > 0) {
@@ -286,7 +284,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                     {
                         console.log("Error uploading photo to server", arguments);
                         $ionicLoading.hide();
-                        $ionicLoading.show({template: 'Error al enviar la imagen', duration:1500});
+                        $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
                     }
                 });     
             }

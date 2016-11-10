@@ -1,4 +1,4 @@
-<ion-view title={{translation.BUSQUEDAAVANZADA}}>
+<ion-view title={{i18n.advanced_search.title}}>
 
     <ion-nav-buttons side="left">
         <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
@@ -8,16 +8,14 @@
 
         <div class="list">
 
-
-            <button class="button button-positive" ng-click="busquedaEspacios()">
-                Busqueda por codigo de Espacio
+            <button class="button button-positive" ng-click="searchAllRoomsCodes()">
+                {{i18n.advanced_search.button_text}}
             </button>
             <label id="codEspacio" style="display:none" class="item item-input item-select formulario-input">
                 <div class="input-label" >
-                    {{translation.SELECCIONAR_CODIGO_ESPACIO}}
+                    {{i18n.advanced_search.select_text}}
                 </div>
                 <select  class="ion-input-select" ng-model="codigoEspacios" >
-                    <!-- No se añade traduccion a los valores ya que son los mismos sin importar el lenguaje-->
                     <option ng-repeat="cod in codigoEspacios"
                             value="{{cod.ID_espacio}}">
                         {{cod.ID_espacio}}
@@ -29,9 +27,8 @@
         </div>
 
         <button class="button button-positive" >
-            {{translation.BUSCAR}}
+            {{i18n.advanced_search.main_btn}}
         </button>
-
 
     </ion-content>
 

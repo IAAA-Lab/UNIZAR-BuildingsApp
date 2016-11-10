@@ -13,12 +13,17 @@ UZCampusWebMapApp.controller('TranslationCtrl',['$scope', 'translationService', 
             $scope.changeLanguage = function (langKey) {
                 console.log(langKey);
                 $scope.selectedLanguage = langKey;
+                localStorage.selectedLanguage = langKey;
                 $scope.translate();
-                sharedProperties.setMapa(undefined);//Por si hay cambio de idioma, que se repinte el mapa en inglés si ya se habia visitado
             };
 
             //Init
-            $scope.selectedLanguage = 'es';
+            if (!localStorage.selectedLanguage) {
+                $scope.selectedLanguage = 'es';
+                localStorage.selectedLanguage = 'es';
+            } else {
+                $scope.selectedLanguage = localStorage.selectedLanguage;
+            }
             $scope.translate();
         }
     ]);

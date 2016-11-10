@@ -6,11 +6,15 @@ UZCampusWebMapApp.service('translationService', function($resource) {
 
     function getTranslation($scope, language) {
 
+        if (language === null || typeof(language)==='undefined') {
+            language = 'es';
+        }
+
         var languageFilePath = 'translations/translation_' + language + '.json';
-        console.log(languageFilePath);
+        console.log("Language file path for "+language+" : "+languageFilePath);
 
         $resource(languageFilePath).get(function (data) {
-            $scope.translation = data;
+            $scope.i18n = data;
         });
     };
 });

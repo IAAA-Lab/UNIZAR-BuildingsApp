@@ -10,7 +10,7 @@ UZCampusWebMapApp.directive('formEditPointOfInterest', function($ionicLoading) {
         } else {
           if (!data.hasOwnProperty('comments') || typeof(data.comments) == 'undefined') $('.comments-error').show();
           if (!data.hasOwnProperty('category') || typeof(data.category) == 'undefined') $('.category-error').show();
-          $ionicLoading.show({ template: 'El formulario es inválido', duration: 1500})
+          $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_form, duration: 1500})
         }
       }
 
