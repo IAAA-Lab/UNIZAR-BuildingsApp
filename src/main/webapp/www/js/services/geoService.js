@@ -372,7 +372,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
                 //If last searched room matches with the building of the floor loaded 
                 //  --> Remark on the map the last searched room
-                if (typeof(localStorage.lastSearch)!==undefined) {
+                if (typeof(localStorage.lastSearch)!=='undefined') {
                     if (localStorage.lastSearch.split('.').slice(0, -1).join('.') === floor_id) {
                         $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
                         infoService.getRoomCentrePoint(localStorage.lastSearch).then(
