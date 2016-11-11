@@ -87,7 +87,7 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
               url: "/floor",
               views: {
                   'menuContent':{
-                      templateUrl: "templates/floor.html",
+                      templateUrl: "templates/floorMap.html",
                       controller: 'FloorCtrl'
                   }
               }

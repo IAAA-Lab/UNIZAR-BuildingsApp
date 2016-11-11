@@ -36,6 +36,11 @@ UZCampusWebMapApp.constant('APP_CONSTANTS', {
             lat: 40.351661,
             lng: -1.110081,
             zoom: 18
+        },{
+            name: "",
+            lat: 0,
+            lng: 0,
+            zoom: 18
         }
     ],
     pois: [
