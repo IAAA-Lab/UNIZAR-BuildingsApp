@@ -9819,6 +9819,10 @@ html, body {
   height: 100%;
   width: 100%; }
 
+.title {
+  text-align: center !important;
+  font-size: 14px !important; }
+
 /* SIDE MENU */
 .mymenu {
   color: #ffffff;
@@ -9956,6 +9960,10 @@ img[usemap] {
   margin-right: 1%;
   margin-top: 1%;
   margin-bottom: 2%;
+  /* SEARCH BOX */
+  /*.leaflet-control-search.search-expt {
+    margin-left: -50%;
+  }*/
   /* MARKERS */ }
   #map .leaflet-popup {
     bottom: -40px !important; }

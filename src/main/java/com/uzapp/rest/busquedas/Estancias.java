@@ -220,7 +220,7 @@ public class Estancias {
 		try {
 			connection = ConnectionManager.getConnection();
 
-			String query = "SELECT x,y FROM bordes WHERE cod3=?";
+			String query = "SELECT x,y,codigoedif FROM bordes WHERE cod3=?";
 			System.out.println(query);
 
 			preparedStmt = connection.prepareStatement(query);
@@ -229,7 +229,7 @@ public class Estancias {
 			ResultSet res = preparedStmt.executeQuery();
 
 			if (res.next()){
-				p = new Point(res.getDouble("x"),res.getDouble("y"));
+				p = new Point(res.getDouble("x"),res.getDouble("y"),res.getString("codigoedif"));
 				System.out.println("Building coordinates: "+gson.toJson(p));
       	return new ResponseEntity<>(gson.toJson(p), HttpStatus.OK);
 			}
@@ -274,6 +274,42 @@ public class Estancias {
 			else {
 				return new ResponseEntity<>("", HttpStatus.NOT_FOUND);
 			}
+		}
+		catch (SQLException e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+	}
+
+	@RequestMapping(
+			value = "/building", 
+			method = RequestMethod.GET,
+			produces = "application/json")
+	public ResponseEntity<?> getAllBuildings()
+	{
+		logger.info("Service: getAllBuildings()");
+		Connection connection = null;
+		PreparedStatement preparedStmt = null;
+		Gson gson = new Gson();
+		try {
+			connection = ConnectionManager.getConnection();
+
+			String query = "SELECT x,y,codigoedif FROM bordes";
+			System.out.println(query);
+
+			List<Point> buildings = new ArrayList<Point>();
+
+			ResultSet res = connection.prepareStatement(query).executeQuery();
+
+			while (res.next()){
+				buildings.add(new Point(res.getDouble("x"),res.getDouble("y"),res.getString("codigoedif")));
+			}
+			System.out.println("Buildings: "+gson.toJson(buildings));
+      return new ResponseEntity<>(gson.toJson(buildings), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();

@@ -12,8 +12,6 @@ UZCampusWebMapApp.controller('MapCtrl',function($scope, $rootScope, geoService, 
   //This code will be executed every time the controller view is loaded
 	$scope.$on('$ionicView.beforeEnter', function(){ 
 		//Check if the map view must be changed
-    if (sharedProperties.getReloadMap() === true) {
-    	geoService.centerMap(sharedProperties.getOption());
-	  }
+    geoService.centerMap(sharedProperties.getOption());
   });
 });

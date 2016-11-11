@@ -34,11 +34,16 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         $scope.map = L.map('map'
             ,{
                 crs: L.CRS.EPSG3857,
+                zoomControl: false,
                 layers: [openstreetmap]
             }
         ).setView([centerMapTo.lat, centerMapTo.lng], centerMapTo.zoom);
         $scope.map.attributionControl.setPrefix('');
+
+        //Add controls to map
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
+        L.control.zoom({position: 'topright'}).addTo($scope.map);
+        L.control.locate({position: 'topright'}).addTo($scope.map);
 
         //Loads into map the layer with UNIZAR buildings
         var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", {
@@ -51,15 +56,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             zIndex: 1000,
             attribution: "Edificios"
         });
-
         $scope.map.addLayer(buildingsLayer,"Edificios");
 
-        L.control.locate().addTo($scope.map);
-
+        //Loads into map layer that will contain selected building marker
         sharedProperties.setMarkerLayer(new L.LayerGroup());
-        $scope.map.addLayer(sharedProperties.getMarkerLayer());
-        var controlSearch = new L.Control.Search({layer: sharedProperties.getMarkerLayer(), initial: false, position:'topright'});
-        $scope.map.addControl(controlSearch);
+        $scope.map.addLayer(sharedProperties.getMarkerLayer(),'Marker');
 
         var src = new Proj4js.Proj('EPSG:4326');
         var dst = new Proj4js.Proj('EPSG:25830');
@@ -117,38 +118,68 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         }
 
         sharedProperties.setMap($scope.map);
-        return $scope.map;
+
+        infoService.getAllBuildings().then(
+            function(buildings){
+                //Loads into map layer for contains all buildings markers for search
+                var searchMarkersLayer = new L.LayerGroup();
+                $scope.map.addLayer(searchMarkersLayer,'Search');
+
+                //Populate layer with markers from sample data for search
+                for(i in buildings) {
+                    var buildingName = buildings[i].buildingName,
+                        pos = new L.latLng([buildings[i].y,buildings[i].x]),
+                        marker = new L.Marker(pos, {opacity: 0, title: buildingName} );
+                    marker.bindPopup(buildingName);
+                    searchMarkersLayer.addLayer(marker);
+                }
+
+                //Add search control to the map
+                $scope.map.addControl( new L.Control.Search({
+                    layer: searchMarkersLayer,
+                    initial: false,
+                    position:'topleft',
+                    minLength: 2
+                }));
+                sharedProperties.setMap($scope.map);
+                return $scope.map;
+            },
+            function(err){
+                console.log("Error on getAllBuildings", err);
+                sharedProperties.setMap($scope.map);
+                return $scope.map;
+            }
+        );
     }
 
     // Show marker with info over selected building
     function showMarker($scope, data, point, infoService){
 
-        var coordenadas = data.features[0].geometry.coordinates[0][0][0];
-        var edificioName = data.features[0].properties.cod3;
+        var buildingName = data.features[0].properties.cod3;
 
         $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
-        infoService.getBuildingInfo(edificioName).then(
-            function (dataEdificio) {
-                console.log("Data building", dataEdificio);
+        infoService.getBuildingInfo(buildingName).then(
+            function (buildingData) {
+                console.log("Data building", buildingData);
                 $ionicLoading.hide();
-                if (dataEdificio.length > 0  && typeof(dataEdificio) != 'undefined' && dataEdificio != null)
+                if (buildingData.length > 0  && typeof(buildingData) != 'undefined' && buildingData != null)
                 {
-                    var edificio = dataEdificio[0];
+                    var building = buildingData[0];
 
-                    var html_header = '<div id="popup" class="text-center map-mark"><b>'+edificio.edificio+'</b><br>'+edificio.direccion+'</div> ';
+                    var html_header = '<div id="popup" class="text-center map-mark"><b>'+building.edificio+'</b><br>'+building.direccion+'</div> ';
 
                     var html_select = '<div>' + $scope.i18n.map.select_floor;
                     html_select += '<select class="ion-input-select select-map" onchange="goToFloorMap(this);" ng-model="plantaPopup" >';
                     html_select+='<option value=undefined selected="selected"></option>';
 
                     // Creates HTML element for the popup ('select' with floors and button)
-                    for (i=0;i<edificio.plantas.length;i++)
+                    for (i=0;i<building.plantas.length;i++)
                     {
-                        var floorValue = edificio.plantas[i],
+                        var floorValue = building.plantas[i],
                             selectClass = 'class="'+floorValue+'"',
                             selectValueAttr = 'value="'+floorValue+'"',
-                            dataEdificioFloor = 'data-building="'+edificio.ID_Edificio+'"',
-                            attributes = [selectClass, selectValueAttr, dataEdificioFloor].join(' ');
+                            dataBuildingFloor = 'data-building="'+building.ID_Edificio+'"',
+                            attributes = [selectClass, selectValueAttr, dataBuildingFloor].join(' ');
 
                         html_select+='<option '+attributes+'>'+floorValue+'</option>';
                     }
@@ -164,7 +195,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         iconUrl: '',
                         iconSize: [5, 5]
                     });
-                    var marker = new L.marker(point,{opacity: 0, title:edificio.edificio}).addTo($scope.map).bindPopup(html);
+                    var marker = new L.marker(point,{opacity: 0, title:building.edificio}).addTo($scope.map).bindPopup(html);
 
                     var markerLayer = sharedProperties.getMarkerLayer();
                     markerLayer.addLayer(marker);
@@ -213,19 +244,26 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             floor = localStorage.floor,
             floor_id = building + floor;
 
-        edificio_id = floor_id.replace(/\./g,"_").toLowerCase();
-
-        console.log("Bulding and floor data", building, edificio_id, floor, floor_id);
+        building_id = floor_id.replace(/\./g,"_").toLowerCase();
+        console.log("Bulding and floor data", building, building_id, floor, floor_id);
 
         // Get building coordinates in order to load image layer of the room of the building
         infoService.getBuildingCoordinates(building).then(
             function (data) {
                 var floorMap = sharedProperties.getFloorMap(),
-                    addLegendToPlan = true,
+                    buildingName = data.buildingName,
                     coordinates = {
                         lat: data.y,
                         lng: data.x
                     };
+
+                //Set coordinates for center map when return from floor view
+                APP_CONSTANTS.datosMapa[APP_CONSTANTS.datosMapa.length-1] = {
+                    name: buildingName,
+                    lat: data.y,
+                    lng: data.x
+                };
+                sharedProperties.setOption(APP_CONSTANTS.datosMapa.length-1);
 
                 //Remove previous plan layers
                 if(!(typeof floorMap == 'undefined')) {
@@ -233,11 +271,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         floorMap.removeLayer(layer);
                     });
                     floorMap.remove();
-                    addLegendToPlan = false;
                 }
 
                 //Create building floor image layer
-                var imageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", 
+                var buildingImageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", 
                 {
                     layers: 'sigeuz:vista_plantas',
                     viewparams : 'PLANTA:'+floor_id,
@@ -248,9 +285,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     zIndex: 5
                 });
 
+                console.log("Building "+building+" image layer:",buildingImageLayer);
+
                 //Create map of the building floor and add image layer to it
-                floorMap = new L.map('plan').setView(coordinates, 20);
-                floorMap.addLayer(imageLayer);
+                floorMapProperties = {
+                        attributionControl: false,
+                        layers: [buildingImageLayer]
+                }
+                floorMap = new L.map('plan',floorMapProperties).setView(coordinates, 20);
 
                 $('.leaflet-container').css('cursor','pointer');
 
@@ -370,21 +412,21 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     }
                 }
 
-                //Checks if legend needs to be added to the map
-                if (addLegendToPlan) {
-                    addLegend(floorMap, function(){
-                        $('.legend').hide();
-                        $('.legend-button').click(function(){
-                            if ($('.legend').is(":visible")) $('.legend').hide(500);
-                            else $('.legend').show(500);
-                        });
-                        sharedProperties.setFloorMap(floorMap);
-                        $ionicLoading.hide();
+                addLegend(floorMap, function(){
+                    $('.legend').hide();
+                    $('.legend-button').click(function(){
+                        if ($('.legend').is(":visible")) $('.legend').hide(500);
+                        else $('.legend').show(500);
                     });
-                } else {
                     sharedProperties.setFloorMap(floorMap);
                     $ionicLoading.hide();
-                }
+                });
+
+                $(".title").each(function(){
+                    if($(this).text().indexOf($scope.i18n.floor.title)>-1){
+                        $(this).text($scope.i18n.floor.title + " " + floor + " - " + buildingName);
+                    }
+                });
 
                 // Handle behaviour when map is clicked on context menu (rigth click or long tap)
                 function handleJsonContextMenu(data) {
