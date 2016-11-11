@@ -193,8 +193,13 @@ echo "#############################################################"
 echo "BUILDING APK..."
 echo "#############################################################"
 echo ""; echo "";
-#ionic platform android   #Only necessary first time
+
+ionic platform rm android
+ionic platform add android
+ionic platform android
+ionic plugin add cordova-plugin-file-transfer cordova-plugin-camera cordova-plugin-imagepicker cordova-plugin-whitelist ionic-plugin-keyboard cordova-plugin-android-permissions@0.10.0
 ionic build android
+
 if [ "$TEST" = true ]
 then
 	mv /home/dgarcia/UNIZAR-BuildingsApp/src/main/webapp/platforms/android/build/outputs/apk/android-debug.apk /var/www/html/uz-map-test.apk
