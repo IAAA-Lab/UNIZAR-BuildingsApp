@@ -14,13 +14,9 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
 
         $scope.showSubMenu = false;
 
-        $scope.loadMap = function(option, menu) {
-            var currentMap = sharedProperties.getMap();
-            var currentOption = sharedProperties.getOption();
-            
-            if (menu === true) {
-                geoService.centerMap(option);
-            }
+        $scope.loadMap = function(option) {            
+            sharedProperties.setOption(option);
+            geoService.centerMap(option);
         };
 
         $scope.showHideSubMenu = function() {
