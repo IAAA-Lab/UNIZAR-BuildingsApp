@@ -119,7 +119,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.creation+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalCreatePOI.hide();
-                geoService.updatePOIs(sharedProperties.getFloorMap(), sharedProperties);
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on createPOI", err);
@@ -220,6 +220,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.edition+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on finalSubmitEditPOI", err);
@@ -283,6 +284,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.delete+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on finalSubmitDeletePOI", err);

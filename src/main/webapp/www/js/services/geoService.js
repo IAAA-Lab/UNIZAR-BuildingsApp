@@ -367,8 +367,6 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         success : handleJsonContextMenu
                     });
                 });
-                        
-                updatePOIs($scope, floorMap, sharedProperties);
 
                 //If last searched room matches with the building of the floor loaded 
                 //  --> Remark on the map the last searched room
@@ -409,7 +407,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                                 console.log("Center point for room "+localStorage.lastSearch+" not found");
                             } 
                         )
+                    } else {
+                        updatePOIs($scope, floorMap, sharedProperties);
                     }
+                } else {
+                    updatePOIs($scope, floorMap, sharedProperties);
                 }
 
                 addLegend(floorMap, function(){
@@ -430,85 +432,100 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
                 // Handle behaviour when map is clicked on context menu (rigth click or long tap)
                 function handleJsonContextMenu(data) {
-                    if (data.features.length) {
-                        console.log("handleJsonContextMenu",data);
-                        var selectedRoom = null;
-                        var selectedFeature = L.geoJson(data, {
-                            onEachFeature: function (feature, layer) {
-                                selectedRoom = layer;
-                                layer.on({
-                                    contextmenu: function(e){
-                                        var pointClicked = JSON.parse(localStorage.contextMenuClickedPoint),
-                                            roomId = data.features[0].properties.id_unico
-                                        createModal(pointClicked, roomId);
-                                    }
-                                });
-                            }
-                        });
-                        var currentMap = sharedProperties.getFloorMap();
-                        var currentLayers = [];
-                        currentMap.eachLayer(function(layer){
-                            currentLayers.push(layer);
-                        });
-                        currentLayers.forEach(function(layer,i){
-                            if (i !== 0) currentMap.removeLayer(layer);
-                        });
-                        selectedFeature.addTo(currentMap);
-                        selectedRoom.fireEvent('contextmenu');
-                        sharedProperties.setFloorMap(currentMap);
-                        updatePOIs($scope, currentMap, sharedProperties);
+                    try {
+                        if (data.features.length) {
+                            console.log("handleJsonContextMenu",data);
+                            var selectedRoom = null;
+                            var selectedFeature = L.geoJson(data, {
+                                onEachFeature: function (feature, layer) {
+                                    selectedRoom = layer;
+                                    layer.on({
+                                        contextmenu: function(e){
+                                            var pointClicked = JSON.parse(localStorage.contextMenuClickedPoint),
+                                                roomId = data.features[0].properties.id_unico
+                                            createModal(pointClicked, roomId);
+                                        }
+                                    });
+                                }
+                            });
+                            var currentMap = sharedProperties.getFloorMap();
+                            var currentLayers = [];
+                            currentMap.eachLayer(function(layer){
+                                currentLayers.push(layer);
+                            });
+                            currentLayers.forEach(function(layer,i){
+                                if (i !== 0) currentMap.removeLayer(layer);
+                            });
+                            selectedFeature.addTo(currentMap);
+                            selectedRoom.fireEvent('contextmenu');
+                            sharedProperties.setFloorMap(currentMap);
+                            updatePOIs($scope, currentMap, sharedProperties);
+                        }
+                    } catch(err) {
+                        console.log("handleJsonContextMenu catch err", err);
+                        updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
                     }
                 }
 
                 // Handle behaviour when map is clicked
                 function handleJsonClick(data) {
-                    if (data.features.length) {
-                        console.log("handleJsonClick",data);
-                        $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
-                        var selectedRoom = null;
-                        var selectedFeature = L.geoJson(data, {
-                            onEachFeature: function (feature, layer) {
-                                selectedRoom = layer;
-                                layer.on({
-                                    click: whenClicked
-                                });
-                            }
-                        });
-                        var currentMap = sharedProperties.getFloorMap();
-                        var currentLayers = [];
-                        currentMap.eachLayer(function(layer){
-                            currentLayers.push(layer);
-                        });
-                        currentLayers.forEach(function(layer,i){
-                            if (i !== 0) currentMap.removeLayer(layer);
-                        });
-                        selectedFeature.addTo(currentMap);
-                        selectedRoom.fireEvent('click');
-                        sharedProperties.setFloorMap(currentMap);
-                        updatePOIs($scope, currentMap, sharedProperties);
-                        $ionicLoading.hide();
+                    try {
+                        if (data.features.length) {
+                            console.log("handleJsonClick",data);
+                            $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
+                            var selectedRoom = null;
+                            var selectedFeature = L.geoJson(data, {
+                                onEachFeature: function (feature, layer) {
+                                    selectedRoom = layer;
+                                    layer.on({
+                                        click: whenClicked
+                                    });
+                                }
+                            });
+                            var currentMap = sharedProperties.getFloorMap();
+                            var currentLayers = [];
+                            currentMap.eachLayer(function(layer){
+                                currentLayers.push(layer);
+                            });
+                            currentLayers.forEach(function(layer,i){
+                                if (i !== 0) currentMap.removeLayer(layer);
+                            });
+                            selectedFeature.addTo(currentMap);
+                            selectedRoom.fireEvent('click');
+                            sharedProperties.setFloorMap(currentMap);
+                            updatePOIs($scope, currentMap, sharedProperties);
+                            $ionicLoading.hide();
+                        }
+                    } catch(err) {
+                        console.log("handleJsonClick catch err", err);
+                        updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
                     }
                 }
 
                 //Handle behaviour for show last searched room
                 function handleJsonLastSearch(data) {
-                    if (data.features.length) {
-                        console.log("handleJsonLastSearch",data);
-                        var lastSearchFeature = L.geoJson(data);
-                        var coordinatesRoom = data.features[0].geometry.coordinates[0][0][0];
-                        var currentMap = sharedProperties.getFloorMap();
-                        var currentLayers = [];
-                        currentMap.eachLayer(function(layer){
-                            currentLayers.push(layer);
-                        });
-                        currentLayers.forEach(function(layer,i){
-                            if (i !== 0) currentMap.removeLayer(layer);
-                        });
-                        lastSearchFeature.addTo(currentMap);
-                        currentMap.panTo(new L.LatLng(coordinatesRoom[1], coordinates[0]));
-                        sharedProperties.setFloorMap(currentMap);
-                        updatePOIs($scope, currentMap, sharedProperties);
-                        $ionicLoading.hide();
+                    try {
+                        if (data.features.length) {
+                            console.log("handleJsonLastSearch",data);
+                            var lastSearchFeature = L.geoJson(data);
+                            var coordinatesRoom = data.features[0].geometry.coordinates[0][0][0];
+                            var currentMap = sharedProperties.getFloorMap();
+                            var currentLayers = [];
+                            currentMap.eachLayer(function(layer){
+                                currentLayers.push(layer);
+                            });
+                            currentLayers.forEach(function(layer,i){
+                                if (i !== 0) currentMap.removeLayer(layer);
+                            });
+                            lastSearchFeature.addTo(currentMap);
+                            currentMap.panTo(new L.LatLng(coordinatesRoom[1], coordinatesRoom[0]));
+                            sharedProperties.setFloorMap(currentMap);
+                            updatePOIs($scope, currentMap, sharedProperties);
+                            $ionicLoading.hide();
+                        }
+                    } catch(err) {
+                        console.log("handleJsonLastSearch catch err", err);
+                        updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
                     }
                 }
 
