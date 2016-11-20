@@ -121,11 +121,11 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         infoService.getAllBuildings().then(
             function(buildings){
-                //Loads into map layer for contains all buildings markers for search
+                //Loads into map a layer for contain all buildings markers to search
                 var searchMarkersLayer = new L.LayerGroup();
                 $scope.map.addLayer(searchMarkersLayer,'Search');
 
-                //Populate layer with markers from sample data for search
+                //Populate layer with markers from data for search
                 for(i in buildings) {
                     var buildingName = buildings[i].buildingName,
                         pos = new L.latLng([buildings[i].y,buildings[i].x]),

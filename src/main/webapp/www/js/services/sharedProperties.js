@@ -6,10 +6,8 @@ UZCampusWebMapApp.service('sharedProperties', function () {
     var latUser = 0;
     var lngUser = 0;
     var option = undefined;
-    var reloadMap = true;
     var lastMarkers = [];
     var lastMapMarker = null;
-    var selectedBuilding = null;
 
     return ({
         getMap: getMap,
@@ -24,14 +22,10 @@ UZCampusWebMapApp.service('sharedProperties', function () {
         setLngUser: setLngUser,
         getOption: getOption,
         setOption: setOption,
-        getReloadMap: getReloadMap,
-        setReloadMap: setReloadMap,
         getLastMarkers: getLastMarkers,
         setLastMarkers: setLastMarkers,
         getLastMapMarker: getLastMapMarker,
-        setLastMapMarker: setLastMapMarker,
-        getSelectedBuilding: getSelectedBuilding,
-        setSelectedBuilding: setSelectedBuilding
+        setLastMapMarker: setLastMapMarker
     });
 
     function getMap(){
@@ -76,13 +70,6 @@ UZCampusWebMapApp.service('sharedProperties', function () {
         option = data;
     }
 
-    function getReloadMap(){
-        return reloadMap;
-    }
-    function setReloadMap(data){
-        reloadMap = data;
-    }
-
     function getLastMarkers(){
         return lastMarkers;
     }
@@ -95,12 +82,5 @@ UZCampusWebMapApp.service('sharedProperties', function () {
     }
     function setLastMapMarker(data){
         lastMapMarker = data;
-    }
-
-    function getSelectedBuilding(){
-        return selectedBuilding;
-    }
-    function setSelectedBuilding(data){
-        selectedBuilding = data;
     }
 });
