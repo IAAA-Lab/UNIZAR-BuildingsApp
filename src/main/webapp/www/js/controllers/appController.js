@@ -9,25 +9,17 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
         $scope.provincia = "";
 
         if (/firefox/i.test(userAgent)) {
-            alert($scope.translation.NAVEGADORNOCOMPATIBLE);
+            alert($scope.i18n.errors.browser_compatibility);
         }
 
-        $scope.loadMap = function(option, menu) {
-            var currentMap = sharedProperties.getMapa();
-            var currentOption = sharedProperties.getOpcion();
+        $scope.showSubMenu = false;
 
-            if (typeof currentMap === 'undefined' || currentOption !== option) {
-                sharedProperties.setOpcion(option);
-                sharedProperties.setReloadMap(true);
-            }
-            else sharedProperties.setReloadMap(false);
-            
-            if (menu === true && currentOption != option) {
-                switch (sharedProperties.getOpcion()) {
-                    case 0: geoService.localizarHuesca(); break;
-                    case 1: geoService.localizarZaragoza(); break;
-                    case 2: geoService.localizarTeruel(); break;
-                }
-            }
+        $scope.loadMap = function(option) {            
+            sharedProperties.setOption(option);
+            geoService.centerMap(option);
+        };
+
+        $scope.showHideSubMenu = function() {
+            $scope.showSubMenu = !$scope.showSubMenu;
         };
     });

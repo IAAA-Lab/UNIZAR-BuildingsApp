@@ -1,4 +1,4 @@
-#mapa {
+#map {
 
   /* GENERAL */
   width: 98%;
@@ -10,10 +10,14 @@
   margin-top:1%;
   margin-bottom:2%;
 
+  /* SEARCH BOX */
+  /*.leaflet-control-search.search-expt {
+    margin-left: -50%;
+  }*/
 
   /* MARKERS */
   .leaflet-popup {
-    bottom: 0px !important;
+    bottom: -40px !important;
   }
   .leaflet-popup-content {
     margin: 10px 10px !important;

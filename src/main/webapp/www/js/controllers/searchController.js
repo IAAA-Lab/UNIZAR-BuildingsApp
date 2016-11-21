@@ -11,20 +11,20 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
             });
         };
 
-        $scope.busquedaEspacios = function() {
-            $ionicLoading.show({ template: 'Cargando...'});
-            infoService.getEspacios().then(
+        // For advanced search --> get codes for all existing rooms
+        $scope.searchAllRoomsCodes = function() {
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.loading});
+            infoService.getAllRoomsCodes().then(
                 function (data) {
-                    console.log("Success on busquedaEspacios()", data);
+                    console.log("Success on searchAllRoomsCodes()", data);
                     $rootScope.codigoEspacios = data;
                     $ionicLoading.hide();
                 },
                 function(err){
-                    console.log("Error on busquedaEspacios", err);
+                    console.log("Error on searchAllRoomsCodes", err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error<br>';
-                    errorMsg += 'buscando los espacios</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.rooms+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                 }
             );
             //Mostar el select con el codigo de espacio después de pulsar el boton y rellenarlo
@@ -33,8 +33,8 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
 
         //Once a city is selected, search its Campus
         $scope.selectCampus = function(ciudad) {
-            $ionicLoading.show({ template: 'Cargando...'});
-            infoService.getCampus(ciudad).then(
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.loading});
+            infoService.getCityCampus(ciudad).then(
                 function (data) {
                     console.log("selectCampus(): Success on select " + ciudad + " campus", data);
                     $rootScope.Campus = data;
@@ -43,72 +43,68 @@ UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoServ
                 function(err){
                     console.log("selectCampus(): Error on select " + ciudad + " campus", err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
-                    errorMsg += 'los campus de la ciudad</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.campus+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                 }
             );
         };
 
         //Once a Campus is selected, search its buildings
         $scope.selectEdificio = function(campus) {
-            $ionicLoading.show({ template: 'Cargando...'});
-            infoService.getEdificio(campus).then(
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.loading});
+            infoService.getCampusBuildings(campus).then(
                 function (data) {
                     console.log("selectEdificio(): Success on select " + campus + " buildings", data);
-                    $rootScope.Edificio = data;
+                    $rootScope.buildings = data;
                     $ionicLoading.hide();
                 },
                 function(err){
                     console.log("selectEdificio(): Error on search " + campus + " buildings", err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
-                    errorMsg += 'los edificios del campus</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.buildings+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                 }
             );
         };
 
         //Once a Building is selected, search it number of floors
-        $scope.selectPlanta = function(edif) {
-            for (x=0;x<$rootScope.Edificio.length;x++){
-                if($rootScope.Edificio[x].ID_Edificio==edif){
-                    $rootScope.EdificioEscogido = edif;
-                    $rootScope.Planta = $rootScope.Edificio[x].plantas;
+        $scope.selectPlanta = function(buildingId) {
+            for (x=0;x<$rootScope.buildings.length;x++){
+                if($rootScope.buildings[x].ID_Edificio === buildingId){
+                    $rootScope.selectedBuilding = buildingId;
+                    $rootScope.floors = $rootScope.buildings[x].plantas;
                 }
             }
         };
 
         //Once a Floor is selected, search its rooms
-        $scope.selectEstancia = function(planta) {
-            $ionicLoading.show({ template: 'Cargando...'});
-            infoService.getAllEstancias($rootScope.EdificioEscogido+planta).then(
+        $scope.selectEstancia = function(floorId) {
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.loading});
+            infoService.getAllRooms($rootScope.selectedBuilding+floorId).then(
                 function (data) {
                     console.log("selectEstancia(): Success on select floor rooms", data);
-                    $rootScope.Estancias = data;
+                    $rootScope.rooms = data;
                     $ionicLoading.hide();
                 },
                 function(err){
                     console.log("selectEstancia(): Error on select floor rooms", err);
                     $ionicLoading.hide();
-                    var errorMsg = '<div class="text-center">Ha ocurrido un error buscando<br>';
-                    errorMsg += 'los espacios de la planta</div>';
-                    $scope.showInfoPopup('¡Error!', errorMsg);
+                    var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.floor+'</div>';
+                    $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
                 }
             );
         };
 
         //Go to room view and show information
-        $scope.busqueda = function() {
+        $scope.search = function() {
             if(($("#selectCiudad option:selected").text().trim() == "")||($("#selectCampus option:selected").text().trim() == "")||
                 ($("#selectEdificio option:selected").text().trim() == "")|| ($("#selectPlanta option:selected").text().trim() == "")||
                 ($("#selectEstancia option:selected").text().trim() == "")) {
-                var errorMsg = '<div class="text-center">Por favor, rellene<br>';
-                errorMsg += 'el formulario completo</div>';
-                $scope.showInfoPopup('¡Aviso!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.search.invalid_form+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.warning, errorMsg);
             }
             else{
-                localStorage.estancia = $("#selectEstancia option:selected").val().trim();
+                localStorage.room = $("#selectEstancia option:selected").val().trim();
                 $window.location = "#/app/roomDetails";
             }
         };

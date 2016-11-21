@@ -1,51 +1,45 @@
 UZCampusWebMapApp.service('sharedProperties', function () {
 
-    var mapa = undefined;
-    var plano = undefined;
+    var map = undefined;
+    var floorMap = undefined;
     var markerLayer = [];
     var latUser = 0;
-    var lonUser = 0;
-    var opcion = undefined;
-    var reloadMap = true;
+    var lngUser = 0;
+    var option = undefined;
     var lastMarkers = [];
     var lastMapMarker = null;
-    var selectedBuilding = null;
 
     return ({
-        getMapa: getMapa,
-        setMapa: setMapa,
-        getPlano: getPlano,
-        setPlano: setPlano,
+        getMap: getMap,
+        setMap: setMap,
+        getFloorMap: getFloorMap,
+        setFloorMap: setFloorMap,
         getMarkerLayer: getMarkerLayer,
         setMarkerLayer: setMarkerLayer,
         getLatUser: getLatUser,
         setLatUser: setLatUser,
-        getLonUser: getLonUser,
-        setLonUser: setLonUser,
-        getOpcion: getOpcion,
-        setOpcion: setOpcion,
-        getReloadMap: getReloadMap,
-        setReloadMap: setReloadMap,
+        getLngUser: getLngUser,
+        setLngUser: setLngUser,
+        getOption: getOption,
+        setOption: setOption,
         getLastMarkers: getLastMarkers,
         setLastMarkers: setLastMarkers,
         getLastMapMarker: getLastMapMarker,
-        setLastMapMarker: setLastMapMarker,
-        getSelectedBuilding: getSelectedBuilding,
-        setSelectedBuilding: setSelectedBuilding
+        setLastMapMarker: setLastMapMarker
     });
 
-    function getMapa(){
-        return mapa;
+    function getMap(){
+        return map;
     }
-    function setMapa(data){
-        mapa = data;
+    function setMap(data){
+        map = data;
     }
 
-    function getPlano(){
-        return plano;
+    function getFloorMap(){
+        return floorMap;
     }
-    function setPlano(data){
-        plano = data;
+    function setFloorMap(data){
+        floorMap = data;
     }
 
     function getMarkerLayer(){
@@ -62,25 +56,18 @@ UZCampusWebMapApp.service('sharedProperties', function () {
         latUser = data;
     }
 
-    function getLonUser(){
-        return lonUser;
+    function getLngUser(){
+        return lngUser;
     }
-    function setLonUser(data){
-        lonUser = data;
-    }
-
-    function getOpcion(){
-        return opcion;
-    }
-    function setOpcion(data){
-        opcion = data;
+    function setLngUser(data){
+        lngUser = data;
     }
 
-    function getReloadMap(){
-        return reloadMap;
+    function getOption(){
+        return option;
     }
-    function setReloadMap(data){
-        reloadMap = data;
+    function setOption(data){
+        option = data;
     }
 
     function getLastMarkers(){
@@ -95,12 +82,5 @@ UZCampusWebMapApp.service('sharedProperties', function () {
     }
     function setLastMapMarker(data){
         lastMapMarker = data;
-    }
-
-    function getSelectedBuilding(){
-        return selectedBuilding;
-    }
-    function setSelectedBuilding(data){
-        selectedBuilding = data;
     }
 });

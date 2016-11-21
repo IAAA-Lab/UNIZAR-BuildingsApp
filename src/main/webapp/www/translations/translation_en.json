@@ -1,46 +1,238 @@
 {
-  "INICIO":"Home",
-  "BUSQUEDA":"Search",
-  "BUSQUEDAAVANZADA": "Advanced Search",
-  "FAVORITOS":"Favourites",
-  "AJUSTES":"Settings",
-  "MAPA":"Map",
-  "VER_MAPA": "See map",
-  "PLANO":"Plane",
-  "SALIR":"Exit",
-  "INGLES":"English",
-  "PORTUGUES": "Portuguese",
-  "SELECCIONAR_IDIOMA":"Select app language",
-  "SELECCIONAR_CIUDAD":"City",
-  "SELECCIONAR_CAMPUS":"Campus",
-  "SELECCIONAR_EDIFICIO":"Building",
-  "SELECCIONAR_PLANTA":"Floor",
-  "SELECCIONAR_ESTANCIA":"Room",
-  "SELECCIONAR_CODIGO_ESPACIO":"Space code",
-  "SELECCIONAR_FOTO": "Select photo number",
-  "ALERT_SELECT": "Please, fill out all the form",
-  "DATOSESTANCIA": "Room Data",
-  "DATOSNOMBRE": "Name",
-  "DATOSTIPO": "Type",
-  "DATOSSUPERFICIE": "Area",
-  "PRIMERA" : "First",
-  "SEGUNDA": "Second",
-  "TERCERA": "Third",
-  "AULA": "Class",
-  "LABORATORIO": "Lab",
-  "DESPACHO": "Office",
-  "BUSCAR": "Search",
-  "MASINFO": "Info",
-  "ACCEDER": "Go",
-  "ESPANOL":"Spanish",
-  "CARGANDO": "Loading",
-  "NOPHOTO": "This room has no photo",
-  "BACK": "Back",
-  "PREVIOUS": "Previous",
-  "NEXT": "Next",
-  "PHOTO": "Photo",
-  "ADD_PHOTO": "Add photo",
-  "ADDFAVOURITE": "Favourite added",
-  "NAVEGADORNOCOMPATIBLE": "Your browser could be incompatible with this application.",
-  "HOWTOARRIVE": "How to arrive"
+  "home": {
+    "title": "Home",
+    "logo_alt": "Zaragoza University logo",
+    "map_alt": "Aragon provinces map"
+  },
+  "settings":{
+    "title": "Settings",
+    "select_language": "Select language",
+    "spanish": "Spanish",
+    "english": "English",
+    "portuguese": "Portuguese"
+  },
+  "map":{
+    "title": "Map",
+    "select_floor": "Floor",
+    "btn_howto": "Go to"
+  },
+  "search":{
+    "title": "Search",
+    "select_labels":{
+      "city": "City",
+      "campus": "Campus",
+      "building": "Building",
+      "floor": "Floor",
+      "room": "Room"
+    },
+    "search_btn": "Search"
+  },
+  "advanced_search":{
+    "title": "Advanced search",
+    "button_text": "Search by room code",
+    "select_text": "Room code",
+    "main_btn": "Search"
+  },
+  "favs":{
+    "title": "Favourites"
+  },
+  "floor": {
+    "title": "Floor",
+    "popups":{
+      "room":{
+        "button": "Room details"
+      },
+      "edit_poi":{
+        "button": "Edit",
+        "labels":{
+          "category": "Category",
+          "comments": "Comments"
+        }
+      }
+    }
+  },
+  "room_details":{
+    "title": "Room details",
+    "labels":{
+      "id": "ID",
+      "room": "Room name",
+      "type": "Type",
+      "area": "Area"
+    },
+    "buttons":{
+      "photo": "Photos",
+      "map": "Go to map"
+    }
+  },
+  "photos":{
+    "title": "Photos",
+    "buttons":{
+      "add": "Add photo"
+    },
+    "modals": {
+      "confirm_upload1":{
+        "title": "No photos found",
+        "title_upload": "Upload photo",
+        "text1": "No photos were found for the selected room.",
+        "text2": "Add a new photo?",
+        "text3": "The uploaded photo must be approved by an admin. If you want to be notified when the photo is approved or rejected, check the box and introduce an email:",
+        "notification": "Receive notification"
+      },
+      "confirm_upload2":{
+        "title": "No photos found",
+        "text1": "No photos were found for the selected room.",
+        "text2": "Add a new photo?",
+        "text3": "The uploaded photo must be approved by an admin. If you want to be notified when the photo is approved or rejected, check the box and introduce an email:",
+        "notification": "Receive notification"
+      },
+      "success_upload":{
+        "title": "Photo successfully uploaded",
+        "text": "The photo has been successfully uploaded. Remeber it must be first approved or rejected by an admin."
+      }
+    },
+    "legend":{
+      "photo": "Photo ",
+      "of": " of "
+    }
+  },
+  "pois":{
+    "modals":{
+      "creation":{
+        "title": "New Point of Interest",
+        "labels": {
+          "city": "City",
+          "campus": "Campus",
+          "building": "Building",
+          "address": "Address",
+          "floor": "Floor",
+          "room": "Room",
+          "category": "Category",
+          "comments": "Comments"
+        },
+        "buttons":{
+          "create": "Create Point of Interest"
+        },
+        "errors":{
+          "mandatory_field": {
+            "city": "City is a required field",
+            "campus": "Campus is a required field",
+            "building": "Building is a required field",
+            "address": "Address is a required field",
+            "floor": "Floor is a required field",
+            "room": "Room is a required field",
+            "category": "Category is a required field",
+            "comments": "Comments is a required field"
+          }
+        }
+      },
+      "confirm_creation":{
+        "title": "Confirm POI creation",
+        "text1": "If you confirm the Point of Interest creation, a request will be sent for approval by an admin.",
+        "text2": "If you want to be notified of such approval or rejection, check the box and introduce an email:",
+        "notification": "Receive notification",
+        "buttons":{
+          "ok": "Create",
+          "cancel": "Cancel"
+        }
+      },
+      "edition":{
+        "title": "Edit/Delete Point of Interest",
+        "labels": {
+          "city": "City",
+          "campus": "Campus",
+          "building": "Building",
+          "address": "Address",
+          "floor": "Floor",
+          "room": "Room",
+          "category": "Category",
+          "comments": "Comments"
+        },
+        "buttons":{
+          "save": "Save",
+          "delete": "Delete"
+        },
+        "errors":{
+          "mandatory_field": {
+            "city": "City is a required field",
+            "campus": "Campus is a required field",
+            "building": "Building is a required field",
+            "address": "Address is a required field",
+            "floor": "Floor is a required field",
+            "room": "Room is a required field",
+            "category": "Category is a required field",
+            "comments": "Comments is a required field"
+          }
+        }
+      },
+      "confirm_edition":{
+        "title": "Confirm POI edition",
+        "text1": "If you confirm the Point of Interest edition, a request will be sent for approval by an admin.",
+        "text2": "If you want to be notified of such approval or rejection, check the box and introduce an email:",
+        "notification": "Receive notification",
+        "buttons":{
+          "ok": "Save",
+          "cancel": "Cancel"
+        }
+      },
+      "confirm_delete":{
+        "title": "Confirm POI removal",
+        "text1": "If you confirm the Point of Interest removal, a request will be sent for approval by an admin.",
+        "text2": "If you want to be notified of such approval or rejection, check the box and introduce an email:",
+        "notification": "Receive notification",
+        "buttons":{
+          "ok": "Delete",
+          "cancel": "Cancel"
+        }
+      }
+    }
+  },
+  "errors":{
+    "error": "¡Error!",
+    "warning": "¡Warning!",
+    "browser_compatibility": "You may find some problems with the browser while using the app",
+    "info":{
+      "room": "There's been an error recovering<br>the room info",
+      "selected_room": "There's no available info<br>about the selected room",
+      "building": "There's been an error recovering<br>the building info",
+      "buildings": "There's been an error recovering<br>some of the buildings info"
+    },
+    "search":{
+      "room": "There's been an error<br>searching the room ",
+      "rooms": "There's been an error<br>searching the rooms data",
+      "campus": "There's been an error searching<br>the campus for selected city",
+      "buildings": "There's been an error searching<br>the buildings for selected campus",
+      "floor": "There's been an error searching<br>the rooms of selected floor",
+      "photos": "There's been an error searching<br>the photos for the selected room",
+      "invalid_form": "Please, fill all<br>the form fields"
+    },
+    "pois":{
+      "get_info": "There's been an error recovering<br>the Point of Interest data",
+      "creation": "There's been an error creating<br>the Point of Interest",
+      "edition": "There's been an error sending<br>the request for POI modification",
+      "delete": "There's been an error sending<br>the request for delete the POI",
+      "search": "There's been an error recovering<br>the Points of Interest"
+    }
+  },
+  "success":{
+    "success": "¡Success!",
+    "pois":{
+      "creation": "Request for create the POI successfully sent.",
+      "edition": "Request for modify the POI successfully sent.",
+      "delete": "Request for delete the POI successfully sent."
+    }
+  },
+  "loading_mask":{
+    "loading": "Loading...",
+    "sending": "Sending...",
+    "searching": "Searching...",
+    "invalid_mail": "Please enter a valid email",
+    "invalid_reason": "Please enter a reason",
+    "error_load_image": "Error loading the photo",
+    "sending_image": "Uploading photo...",
+    "error_send_image": "Error uploading photo",
+    "error_select_image": "Please select an image",
+    "error_invalid_image": "Please select a valid image",
+    "error_image_size": "The max allowed size is 1MB",
+    "invalid_form": "Form is invalid"
+  }
 }

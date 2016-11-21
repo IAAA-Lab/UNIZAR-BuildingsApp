@@ -1,4 +1,4 @@
-<ion-view id="room-details-view" title={{translation.INICIO}} xmlns="http://www.w3.org/1999/html">
+<ion-view id="room-details-view" title={{i18n.room_details.HOME}} xmlns="http://www.w3.org/1999/html">
 
     <ion-nav-buttons side="left">
         <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
@@ -7,26 +7,26 @@
     <ion-content >
         <div class="list">
             <label class="item item-input">
-                <span class="input-label">{{translation.DATOSNOMBRE}}:</span>
-                <input type="text" ng-model="data.city" disabled>
+                <span class="input-label">{{i18n.room_details.labels.id}}:</span>
+                <input type="text" ng-model="data.id" disabled>
             </label>
             <label class="item item-input">
-                <span class="input-label">{{translation.DATOSESTANCIA}}:</span>
-                <input type="text" ng-model="data.estancia" disabled>
+                <span class="input-label">{{i18n.room_details.labels.room}}:</span>
+                <input type="text" ng-model="data.room" disabled>
             </label>
             <label class="item item-input">
-                <span class="input-label">{{translation.DATOSTIPO}}:</span>
+                <span class="input-label">{{i18n.room_details.labels.type}}:</span>
                 <input type="text" ng-model="data.type" disabled>
             </label>
             <label class="item item-input">
-                <span class="input-label">{{translation.DATOSSUPERFICIE}}:</span>
+                <span class="input-label">{{i18n.room_details.labels.area}}:</span>
                 <input type="text" ng-model="data.area" disabled>
             </label>
             <button class="button button-full button-positive" ng-click="loadPhotos()">
-                {{translation.PHOTO}}
+                {{i18n.room_details.buttons.photo}}
             </button>
             <button class="button button-full button-positive" ng-click="goToRoomPlan()">
-                {{translation.VER_MAPA}}
+                {{i18n.room_details.buttons.map}}
             </button>
         </div>
     </ion-content>

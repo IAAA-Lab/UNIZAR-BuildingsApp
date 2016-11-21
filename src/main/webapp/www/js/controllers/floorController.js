@@ -2,7 +2,7 @@
  * PlanCtrl: Controlador del plano del edificio en  Leaflet
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $ionicLoading, $ionicPopup, geoService, infoService, poisService, sharedProperties, APP_CONSTANTS) {
+UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $ionicLoading, $ionicPopup, geoService, infoService, poisService, sharedProperties, APP_CONSTANTS) {
 
     //This code will be executed every time the controller view is loaded
     $scope.$on('$ionicView.beforeEnter', function(){
@@ -31,21 +31,20 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     });
 
     //Open the modal for add a POI and load data in the modal form
-    $scope.openCreatePOIModal = function(e) {
-        $ionicLoading.show({template: 'Cargando...'});
-        console.log("openCreatePOIModal", e, localStorage.building, localStorage.planta);
-        var id = e.target.feature.properties.et_id;
+    $scope.openCreatePOIModal = function(latlng, id) {
+        console.log("openCreatePOIModal", latlng, id, localStorage.building, localStorage.floor);
 
-        infoService.getInfoEstancia(id).then(
+        infoService.getRoomInfo(id).then(
             function (data) {
-                if (data.length === 0 || data == null) $ionicLoading.hide();
-                else {
-                    var floor = localStorage.planta;
+                if (data !== null && typeof(data)!=='undefined') {
+                    $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
+                    var floor = localStorage.floor;
                     $scope.existsCity = (data.ciudad != null && typeof data.ciudad !== 'undefined') ? true : false;
                     $scope.existsCampus = (data.campus != null && typeof data.campus !== 'undefined') ? true : false;
                     $scope.existsBuilding = (data.edificio != null && typeof data.edificio !== 'undefined') ? true : false;
                     $scope.existsAddress = (data.dir != null && typeof data.dir !== 'undefined') ? true : false;
                     $scope.existsFloor = (floor != null && typeof floor !== 'undefined') ? true : false;
+                    $scope.existsRoom = (data.ID_espacio != null && typeof data.ID_espacio !== 'undefined') ? true : false;
 
                     var city = data.ciudad.toLowerCase();
 
@@ -53,12 +52,13 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                         city: city.substr(0, 1).toUpperCase() + city.substr(1),
                         campus: data.campus,
                         building: data.edificio,
-                        roomId: data.ID_espacio,
-                        roomName: data.ID_centro,
                         address: data.dir,
                         floor: floor,
-                        latitude: e.latlng.lat,
-                        longitude: e.latlng.lng
+                        roomId: data.ID_espacio,
+                        roomName: data.ID_centro,
+                        room: data.ID_espacio + ' (' + data.ID_centro + ')',
+                        latitude: latlng.lat,
+                        longitude: latlng.lng
                     };
                     console.log("Data to modal",$scope.data);
                     $ionicLoading.hide();
@@ -69,10 +69,8 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
             },
             function(err){
                 console.log("Error on getInfoEstancia", err);
-                $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
-                errorMsg += 'la información de la estancia</div>';
-                $scope.showInfoPopup('¡Error!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.info.room+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
     };
@@ -81,11 +79,11 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
         var confirmCreatePOIpopup = $ionicPopup.show({
             templateUrl: 'templates/popups/confirmCreatePOI.html',
-            title: 'Confirmar creación de POI',
+            title: $scope.i18n.pois.modals.confirm_creation.title,
             scope: $scope,
             buttons: [
                 {
-                    text: '<b>Guardar</b>',
+                    text: '<b>'+$scope.i18n.pois.modals.confirm_creation.buttons.ok+'</b>',
                     type: 'button-positive',
                     onTap: function(e) {
                         e.preventDefault();
@@ -94,7 +92,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                             emailValid = infoService.isValidEmailAddress(email);
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
-                            $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
+                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_mail, duration: 1500});
                         }
                         else {
                             data.email = email;
@@ -104,7 +102,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                     }
                 },
                 { 
-                    text: 'Cancelar',
+                    text: $scope.i18n.pois.modals.confirm_creation.buttons.cancel,
                     type: 'button-assertive'
                 }
             ]
@@ -113,30 +111,28 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.finalSubmitCreatePOI = function(data) {
         console.log("finalSubmitCreatePOI form",data);
-        $ionicLoading.show({ template: 'Enviando...'});
+        $ionicLoading.show({ template: $scope.i18n.loading_mask.sending});
         poisService.createPOI(data).then(
             function(poi) {
                 console.log("Create POI success",poi);
                 $ionicLoading.hide();
-                var successMsg = '<div class="text-center">';
-                successMsg += 'Creación del punto de interés enviada con éxito</div>';
-                $scope.showInfoPopup('¡Éxito!', successMsg)
+                var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.creation+'</div>';
+                $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalCreatePOI.hide();
-                geoService.updatePOIs(sharedProperties.getPlano(), sharedProperties);
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on createPOI", err);
                 $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">Ha ocurrido un error creando<br>';
-                errorMsg += 'el punto de interés</div>';
-                $scope.showInfoPopup('¡Error!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.pois.creation+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
     };
 
     $scope.openEditPOIModal = function(id){
         console.log("openEditPOIModal", id);
-        $ionicLoading.show({template: 'Cargando...'});
+        $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
 
         poisService.getInfoPOI(id).then(
             function(poi) {
@@ -149,6 +145,9 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                     $scope.existsBuilding = (data.building != null && typeof data.building !== 'undefined') ? true : false;
                     $scope.existsAddress = (data.address != null && typeof data.address !== 'undefined') ? true : false;
                     $scope.existsFloor = (data.floor != null && typeof data.floor !== 'undefined') ? true : false;
+                    $scope.existsRoom = (data.roomId != null && typeof data.roomId !== 'undefined') ? true : false;
+
+                    data.room = data.roomId + ' (' + data.roomName + ')';
 
                     $scope.data = data;
 
@@ -162,9 +161,8 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
             function(err){
                 console.log("Error on get POI info", err);
                 $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">Ha ocurrido un error recuperando<br>';
-                errorMsg += 'los datos del puntos de interés</div>';
-                $scope.showInfoPopup('¡Error!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.pois.get_info+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
     };
@@ -176,11 +174,11 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     $scope.confirmEditPOI = function(data) {
         var confirmEditPOIpopup = $ionicPopup.show({
             templateUrl: 'templates/popups/confirmEditPOI.html',
-            title: 'Confirmar modificación',
+            title: $scope.i18n.pois.modals.confirm_creation.title,
             scope: $scope,
             buttons: [
                 {
-                    text: '<b>Guardar</b>',
+                    text: '<b>'+$scope.i18n.pois.modals.confirm_creation.buttons.ok+'</b>',
                     type: 'button-positive',
                     onTap: function(e) {
                         e.preventDefault();
@@ -189,7 +187,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                             emailValid = infoService.isValidEmailAddress(email);
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
-                            $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
+                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_mail, duration: 1500});
                         }
                         else {
                             data.email = email;
@@ -199,7 +197,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                     }
                 },
                 { 
-                    text: 'Cancelar',
+                    text: $scope.i18n.pois.modals.confirm_creation.buttons.cancel,
                     type: 'button-assertive'
                 }
             ]
@@ -208,7 +206,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.finalSubmitEditPOI = function(data) {
         console.log("finalSubmitEditPOI form",data);
-        $ionicLoading.show({ template: 'Enviando...'});
+        $ionicLoading.show({ template: $scope.i18n.loading_mask.sending});
         $ionicLoading.hide();
 
         data.comment = data.comments;
@@ -219,17 +217,16 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
             function(poi) {
                 console.log("Request modify POI success",poi);
                 $ionicLoading.hide();
-                var successMsg = '<div class="text-center">';
-                successMsg += 'Petición de modificación del punto de interés enviada con éxito</div>';
-                $scope.showInfoPopup('¡Éxito!', successMsg)
+                var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.edition+'</div>';
+                $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on finalSubmitEditPOI", err);
                 $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">Ha ocurrido un error enviando<br>';
-                errorMsg += 'la petición de modificación del punto de interés</div>';
-                $scope.showInfoPopup('¡Error!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.pois.edition+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
     };
@@ -237,11 +234,11 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
     $scope.confirmDeletePOI = function(data) {
         var confirmDeletePOI = $ionicPopup.show({
             templateUrl: 'templates/popups/confirmDeletePOI.html',
-            title: 'Confirmar modificación',
+            title: $scope.i18n.pois.modals.confirm_delete.title,
             scope: $scope,
             buttons: [
                 {
-                    text: '<b>Eliminar</b>',
+                    text: '<b>'+$scope.i18n.pois.modals.confirm_delete.buttons.ok+'</b>',
                     type: 'button-assertive',
                     onTap: function(e) {
                         e.preventDefault();
@@ -251,10 +248,10 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                             reason = $('#confirm-delete-poi-popup textarea').val();
 
                         if (emailChecked && (email.length==0 || email==null || typeof(email)=='undefined' || !emailValid)) {
-                            $ionicLoading.show({ template: 'Introduzca un email válido', duration: 1500});
+                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_mail, duration: 1500});
                         }
                         else if (reason.length==0 || reason==null || typeof(reason)=='undefined') {
-                            $ionicLoading.show({ template: 'Introduzca una razón', duration: 1500});   
+                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_reason, duration: 1500});   
                         }
                         else {
                             data.email = email;
@@ -265,7 +262,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
                     }
                 },
                 { 
-                    text: 'Cancelar',
+                    text: $scope.i18n.pois.modals.confirm_delete.buttons.cancel,
                     type: 'button-stable'
                 }
             ]
@@ -274,7 +271,7 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
 
     $scope.finalSubmitDeletePOI = function(data) {
         console.log("finalSubmitDeletePOI form",data);
-        $ionicLoading.show({ template: 'Enviando...'});
+        $ionicLoading.show({ template: $scope.i18n.loading_mask.sending});
         $ionicLoading.hide();
 
         data.type = "delete";
@@ -284,17 +281,16 @@ UZCampusWebMapApp.controller('PlanCtrl',function($scope, $http, $ionicModal, $io
             function(poi) {
                 console.log("Request delete POI success",poi);
                 $ionicLoading.hide();
-                var successMsg = '<div class="text-center">';
-                successMsg += 'Petición de eliminación del punto de interés enviada con éxito</div>';
-                $scope.showInfoPopup('¡Éxito!', successMsg)
+                var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.delete+'</div>';
+                $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
+                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
             },
             function(err){
                 console.log("Error on finalSubmitDeletePOI", err);
                 $ionicLoading.hide();
-                var errorMsg = '<div class="text-center">Ha ocurrido un error enviando<br>';
-                errorMsg += 'la petición de eliminación del punto de interés</div>';
-                $scope.showInfoPopup('¡Error!', errorMsg);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.pois.delete+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
     };
