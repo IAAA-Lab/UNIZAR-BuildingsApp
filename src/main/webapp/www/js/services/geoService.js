@@ -14,18 +14,27 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         sharedProperties.setOption(option);
 
         //Initial layers
-        var ggl = new L.Google('ROADMAP');
-        var satelite = new L.Google('SATELLITE');
-        var hybrid = new L.Google('HYBRID');
+        var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+        var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
         var openstreetmap = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             maxZoom:50,
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
 
         var baseMaps = {
-            "Google Roadmap": ggl,
-            "Google Satelite": satelite,
-            "Google Hibrida": hybrid,
+            "Google Roadmap": googleStreets,
+            "Google Satelite": googleSat,
+            "Google Hibrida": googleHybrid,
             "Open Street Map": openstreetmap
         };
 
@@ -35,7 +44,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             ,{
                 crs: L.CRS.EPSG3857,
                 zoomControl: false,
-                layers: [openstreetmap]
+                layers: [googleStreets]
             }
         ).setView([centerMapTo.lat, centerMapTo.lng], centerMapTo.zoom);
         $scope.map.attributionControl.setPrefix('');
