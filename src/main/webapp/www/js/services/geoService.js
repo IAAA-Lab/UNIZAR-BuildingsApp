@@ -40,6 +40,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
         var centerMapTo = APP_CONSTANTS.datosMapa[option];
 
+        // Create map
         $scope.map = L.map('map'
             ,{
                 crs: L.CRS.EPSG3857,
@@ -52,7 +53,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         //Add controls to map
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
         L.control.zoom({position: 'topright'}).addTo($scope.map);
-        L.control.locate({position: 'topright'}).addTo($scope.map);
+        L.control.locate({
+            position: 'topright',
+            keepCurrentZoomLevel: true
+        }).addTo($scope.map);
 
         //Loads into map the layer with UNIZAR buildings
         var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", {
