@@ -119,7 +119,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.creation+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalCreatePOI.hide();
-                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
+                geoService.updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
             },
             function(err){
                 console.log("Error on createPOI", err);
@@ -220,7 +220,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.edition+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
-                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
+                geoService.updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
             },
             function(err){
                 console.log("Error on finalSubmitEditPOI", err);
@@ -284,7 +284,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 var successMsg = '<div class="text-center">'+$scope.i18n.success.pois.delete+'</div>';
                 $scope.showInfoPopup($scope.i18n.success.success, successMsg)
                 $scope.modalEditPOI.hide();
-                geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
+                geoService.updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
             },
             function(err){
                 console.log("Error on finalSubmitDeletePOI", err);
@@ -293,6 +293,50 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                 $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
+    };
+
+    $scope.filterPOI = function(category) {
+        console.log("filterPOI", category);
+        var filteredPOICategories = sharedProperties.getFilteredPOICategories();
+        var checkbox = $('.check-'+category);
+
+        if (checkbox.is(':checked')) {
+            filteredPOICategories.push(category);
+        } else {
+            newFilteredPOICategories = [];
+            filteredPOICategories.forEach(function(cat){
+                if (cat !== category) newFilteredPOICategories.push(cat);
+            });
+            filteredPOICategories = newFilteredPOICategories;
+        }
+
+        sharedProperties.setFilteredPOICategories(filteredPOICategories);
+        geoService.updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
+    };
+
+    $scope.filterAllPOI = function(value){
+        //Uncheck all
+        if (value === true) {
+            $('.legend-checkAll span').html($scope.i18n.floor.legend.selectAll);
+            sharedProperties.setFilteredPOICategories([]);
+            APP_CONSTANTS.pois.forEach(function(poi){
+                $('.legend [type=checkbox]').each(function(i,e){
+                    if (i!==0) $(this).prop("checked", false);
+                });
+            });
+        //Check all
+        } else {
+            $('.legend-checkAll span').html($scope.i18n.floor.legend.deselectAll);
+            var selectedCategories = [];
+            APP_CONSTANTS.pois.forEach(function(poi){
+                selectedCategories.push(poi.value);
+                $('.legend [type=checkbox]').each(function(i,e){
+                    if (i!==0) $(this).prop("checked", true);
+                });
+            });
+            sharedProperties.setFilteredPOICategories(selectedCategories);
+        }
+        geoService.updatePOIs($scope, sharedProperties.getFloorMap(), sharedProperties);
     };
 
     $scope.showInfoPopup = function(title, msg){

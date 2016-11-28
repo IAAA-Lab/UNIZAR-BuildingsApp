@@ -92,5 +92,15 @@
         var scope = angular.element($('#plan')).scope();
         scope.openEditPOIModal(id);
     }
+
+    //Change on POI category checks
+    function filterPOI(poiCategorySelect){
+        var scope = angular.element($('#plan')).scope();
+        scope.filterPOI(poiCategorySelect.value);
+    }
+    function filterAllPOI(){
+        var scope = angular.element($('#plan')).scope();
+        scope.filterAllPOI($('.legend-checkAll input').is(':checked'));
+    }
 </script>
 </html>
