@@ -10022,10 +10022,18 @@ img[usemap] {
     float: right; }
   #plan [class^="flaticon-"]:before, #plan [class*=" flaticon-"]:before, #plan [class^="flaticon-"]:after, #plan [class*=" flaticon-"]:after {
     margin-right: 10px;
+    margin-left: 10px;
     line-height: 1.5; }
   #plan .button-small.icon:before, #plan .button-small.icon-left:before, #plan .button-small.icon-right:before {
     font-size: 30px !important;
     line-height: 20px !important; }
+  #plan .legend .legend-checkAll input {
+    margin-bottom: 10px; }
+  #plan .legend .legend-checkAll span {
+    margin-left: 10px;
+    font-weight: bold;
+    vertical-align: text-bottom;
+    font-size: 13px; }
 
 #photos-view #roomImage {
   text-align: center; }
