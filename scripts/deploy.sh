@@ -150,13 +150,17 @@ git pull origin $BRANCH
 # REPLACE DEV VARS TO PRODUCTION VARS
 if [ "$TEST" = true ]
 then
-	sed -i 's/localhost:8080/155.210.14.31:8080\/mapa_test/g' $BASE_DIR/src/main/webapp/www/js/constants.js
-	sed -i 's/localhost:8080/155.210.14.31:8080\/mapa_test/g' $BASE_DIR/src/main/webapp/www/js/constants.js
-	sed -i 's/PROD_API_URL/http:\/\/155.210.14.31:8080\/mapa_test/g'  $BASE_DIR/admin/dist/js/config.js
+        sed -i 's/localhost:8080/155.210.14.31:8080\/mapa_test/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/localhost:8080/155.210.14.31:8080\/mapa_test/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/localhost\/photos/155.210.14.31\/photos/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/PROD_API_URL/http:\/\/155.210.14.31:8080\/mapa_test/g'  $BASE_DIR/admin/dist/js/config.js
+        sed -i 's/PHOTOS_URL/http:\/\/155.210.14.31/g'  $BASE_DIR/admin/dist/js/config.js
 else
-	sed -i 's/localhost:8080/155.210.14.31:8080\/mapa/g' $BASE_DIR/src/main/webapp/www/js/constants.js	
-	sed -i 's/localhost:8080/155.210.14.31:8080\/mapa/g' $BASE_DIR/src/main/webapp/www/js/constants.js
-	sed -i 's/PROD_API_URL/http:\/\/155.210.14.31:8080\/mapa/g'  $BASE_DIR/admin/dist/js/config.js
+        sed -i 's/localhost:8080/155.210.14.31:8080\/mapa/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/localhost:8080/155.210.14.31:8080\/mapa/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/localhost\/photos/155.210.14.31\/photos/g' $BASE_DIR/src/main/webapp/www/js/constants.js
+        sed -i 's/PROD_API_URL/http:\/\/155.210.14.31:8080\/mapa/g'  $BASE_DIR/admin/dist/js/config.js
+        sed -i 's/PHOTOS_URL/http:\/\/155.210.14.31/g'  $BASE_DIR/admin/dist/js/config.js
 fi
 sed -i 's/DB_UZAPP_HOST/155.210.14.31/g' $BASE_DIR/src/main/resources/config.properties
 sed -i 's/DB_UZAPP_NAME/uzapp/' $BASE_DIR/src/main/resources/config.properties
