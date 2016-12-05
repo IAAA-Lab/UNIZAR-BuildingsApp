@@ -479,42 +479,38 @@ public class Photos {
   }
 
   /**
-	* API: Upload single file using Spring Controller
+	* API: Insert new photo info into database table
 	*/
 	@RequestMapping(
 					value = "/insert", 
 					method = RequestMethod.POST)
 	public ResponseEntity<?> insertPhoto(@RequestParam("name") String name)
 	{
-		if (!file.isEmpty()) {
-			Connection connection = null;
-			try 
-			{
-				connection = ConnectionManager.getConnection();
-				String[] photoNameParts = name.split("_");
-				String roomId = photoNameParts[0];
+		Connection connection = null;
+		try 
+		{
+			connection = ConnectionManager.getConnection();
+			String[] photoNameParts = name.split("_");
+			String roomId = photoNameParts[0];
 
-				Photo photoRequest = createRequestObject(name, null, "admin", connection);
+			Photo photoRequest = createRequestObject(name, null, "admin", connection);
 
-				if (photoRequest != null) {
-					ResponseEntity<?> response = insertPhotoRequest(photoRequest, connection);
-					connection.close();
-					return response;
-				}
-				else {
-					return new ResponseEntity<>("Photo upload failed because data for room with ID " + roomId + " wasn't found", HttpStatus.INTERNAL_SERVER_ERROR);
-				}
+			if (photoRequest != null) {
+				ResponseEntity<?> response = insertPhotoRequest(photoRequest, connection);
+				connection.close();
+				return response;
 			}
-			catch (Exception e) {
-				e.printStackTrace();
-				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			else {
+				return new ResponseEntity<>("Photo upload failed because data for room with ID " + roomId + " wasn't found", HttpStatus.INTERNAL_SERVER_ERROR);
 			}
-			finally {
-	      try { if (connection != null) connection.close(); }
-	      catch (Exception excep) { excep.printStackTrace(); }
-			}
-		} else {
-			return new ResponseEntity<>("Photo upload failed because file " + name + " was empty", HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
 
