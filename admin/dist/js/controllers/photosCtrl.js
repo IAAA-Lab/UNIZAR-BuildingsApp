@@ -449,7 +449,7 @@ $(function() {
     });
 
     $('#preview-delete-photo-btn').on('click', function() {
-        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-photo-name').val();
+        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#delete-photo-name').val();
         var tempImage = new Image();
         tempImage.src = imagePath;
         tempImage.onload = function() {

@@ -162,7 +162,6 @@ public class Photos {
     logger.info("Service: changePhotoName");
 
 		//String appPath = context.getRealPath("");
-		//String fullPathOrig = appPath + File.separator + photosPath + File.separator + oldName;
 		String fullPathOrig = photosPath + File.separator + oldName;
 		logger.info("File orig path", fullPathOrig);
 
@@ -318,15 +317,6 @@ public class Photos {
 					if (response.getStatusCode() == HttpStatus.OK) {
 						byte[] bytes = file.getBytes();
 
-						// get absolute path of the application
-						//String appPath = context.getRealPath("");
-						//System.out.println("appPath = " + appPath);
-
-						// construct the complete absolute path of the file
-						//String fullPath = appPath + File.separator + photosPath;
-						//System.out.println("fullPath = " + fullPath);
-
-						//logger.info("File path", fullPath + File.separator);
 						logger.info("File path", photosPath + File.separator);
 						File dir = new File(photosPath + File.separator);
 
@@ -444,8 +434,6 @@ public class Photos {
 			}
 
 			//Delete photo from disk
-			//String appPath = context.getRealPath("");
-			//String fullPathFile = appPath + File.separator + photosPath + File.separator + name;
 			String fullPathFile = photosPath + File.separator + name;
 			logger.info("File path to delete", fullPathFile);
 
