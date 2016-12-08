@@ -484,7 +484,7 @@ public class Photos {
 	@RequestMapping(
 					value = "/insert", 
 					method = RequestMethod.POST)
-	public ResponseEntity<?> insertPhoto(@RequestParam("name") String name)
+	public ResponseEntity<?> insertPhoto(@RequestBody String name)
 	{
 		Connection connection = null;
 		try 
