@@ -53,7 +53,7 @@ public class Photos {
 	private static final Logger logger = LoggerFactory.getLogger(Photos.class);
 
 	// Base path
-	private String photosPath = "www/images/photos/";
+	private String photosPath = "/var/www/html/photos/";
 
 	@Autowired
 	private ServletContext context;
@@ -161,8 +161,9 @@ public class Photos {
   {
     logger.info("Service: changePhotoName");
 
-		String appPath = context.getRealPath("");
-		String fullPathOrig = appPath + File.separator + photosPath + File.separator + oldName;
+		//String appPath = context.getRealPath("");
+		//String fullPathOrig = appPath + File.separator + photosPath + File.separator + oldName;
+		String fullPathOrig = photosPath + File.separator + oldName;
 		logger.info("File orig path", fullPathOrig);
 
 		Path source = Paths.get(fullPathOrig);
@@ -318,15 +319,16 @@ public class Photos {
 						byte[] bytes = file.getBytes();
 
 						// get absolute path of the application
-						String appPath = context.getRealPath("");
-						System.out.println("appPath = " + appPath);
+						//String appPath = context.getRealPath("");
+						//System.out.println("appPath = " + appPath);
 
 						// construct the complete absolute path of the file
-						String fullPath = appPath + File.separator + photosPath;
+						//String fullPath = appPath + File.separator + photosPath;
 						System.out.println("fullPath = " + fullPath);
 
-						logger.info("File path", fullPath + File.separator);
-						File dir = new File(fullPath + File.separator);
+						//logger.info("File path", fullPath + File.separator);
+						logger.info("File path", photosPath + File.separator);
+						File dir = new File(photosPath + File.separator);
 
 						if (!dir.exists())
 							dir.mkdirs();
@@ -442,8 +444,9 @@ public class Photos {
 			}
 
 			//Delete photo from disk
-			String appPath = context.getRealPath("");
-			String fullPathFile = appPath + File.separator + photosPath + File.separator + name;
+			//String appPath = context.getRealPath("");
+			//String fullPathFile = appPath + File.separator + photosPath + File.separator + name;
+			String fullPathFile = photosPath + File.separator + name;
 			logger.info("File path to delete", fullPathFile);
 
 			File fileToDelete = new File(fullPathFile);
