@@ -324,7 +324,7 @@ public class Photos {
 
 						// construct the complete absolute path of the file
 						//String fullPath = appPath + File.separator + photosPath;
-						System.out.println("fullPath = " + fullPath);
+						//System.out.println("fullPath = " + fullPath);
 
 						//logger.info("File path", fullPath + File.separator);
 						logger.info("File path", photosPath + File.separator);
