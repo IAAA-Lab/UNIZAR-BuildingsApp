@@ -28,6 +28,41 @@ public class Database {
 
     private static final Logger logger = LoggerFactory.getLogger(Database.class);
 
+    // Database connection vars
+    private static String db_host_orig = "";
+    private static String db_name_orig = "";
+    private static String db_user_orig = "";
+    private static String db_pwd_orig =  "";
+    private static String db_host_dest = "";
+    private static String db_name_dest = "";
+    private static String db_user_dest = "";
+    private static String db_pwd_dest = "";
+    private static String script = "";
+
+    // Initalize database connection vars from config properties file
+    static {
+        try {
+            InputStream input = Database.class.getClassLoader().getResourceAsStream("config.properties");
+            Properties prop = new Properties();
+            prop.load(input);
+            db_host_orig = prop.getProperty("dbhost_sigeuz");
+            db_name_orig = prop.getProperty("db_sigeuz");
+            db_user_orig = prop.getProperty("dbuser_sigeuz");
+            db_pwd_orig = prop.getProperty("dbpassword_sigeuz");
+            db_host_dest = prop.getProperty("dbhost");
+            db_name_dest = prop.getProperty("db");
+            db_user_dest = prop.getProperty("dbsuperuser");
+            db_pwd_dest = prop.getProperty("dbsuperuser_password");
+            script = prop.getProperty("script_update_database");
+        }
+        catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
+    }
+
+    /**
+     * Returns all the database tables
+    */
     @RequestMapping(
             value = "/tables",
             method = RequestMethod.GET)
@@ -40,8 +75,8 @@ public class Database {
             connection = ConnectionManager.getConnection();
 
             String query = "SELECT table_name FROM information_schema.tables ";
-            query += "WHERE table_schema='public' AND (table_name LIKE 'tb_%' OR table_name LIKE 'TB_%') ";
-            query += "  ORDER BY table_name";
+            query += "WHERE table_schema='public' AND table_name NOT LIKE 'csf_%' ";
+            query += "ORDER BY table_name";
             preparedStmt = connection.prepareStatement(query);
             ResultSet rs = preparedStmt.executeQuery();
 
@@ -65,29 +100,17 @@ public class Database {
         }
     }
 
+    /**
+     * Updates database
+    */
     @RequestMapping(
             value = "/update",
             method = RequestMethod.PUT)
     public ResponseEntity<?> update(@RequestBody String tables){
         logger.info("Servicio: update database");
         String result = null;
-        try {
-            InputStream input = Database.class.getClassLoader().getResourceAsStream("config.properties");
-            Properties prop = new Properties();
-            prop.load(input);
-
-            String db_host_orig = prop.getProperty("dbhost_sigeuz");
-            String db_name_orig = prop.getProperty("db_sigeuz");
-            String db_user_orig = prop.getProperty("dbuser_sigeuz");
-            String db_pwd_orig = prop.getProperty("dbpassword_sigeuz");
-
-            String db_host_dest = prop.getProperty("dbhost");
-            String db_name_dest = prop.getProperty("db");
-            String db_user_dest = prop.getProperty("dbsuperuser");
-            String db_pwd_dest = prop.getProperty("dbsuperuser_password");
-
-            String script = "/tmp/scripts/database/update_db.sh";
-
+        try
+        {
             String[] cmd = {"bash", script, db_host_orig, db_name_orig, db_user_orig, db_pwd_orig, db_host_dest, db_name_dest, db_user_dest, db_pwd_dest, tables};
 
             Runtime r = Runtime.getRuntime();                    

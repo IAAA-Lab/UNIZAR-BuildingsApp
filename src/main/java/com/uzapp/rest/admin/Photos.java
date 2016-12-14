@@ -12,17 +12,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.google.gson.Gson;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.lang.Character;
@@ -52,11 +48,21 @@ public class Photos {
 
 	private static final Logger logger = LoggerFactory.getLogger(Photos.class);
 
-	// Base path
-	private String photosPath = "/var/www/html/photos/";
+	// Base photos path
+	private static String photosPath = "";
 
-	@Autowired
-	private ServletContext context;
+	// Initalize photos base path var from config properties file
+	static {
+		try {
+			InputStream input = Photos.class.getClassLoader().getResourceAsStream("config.properties");
+			Properties prop = new Properties();
+			prop.load(input);
+			photosPath = prop.getProperty("photos_path");
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.err);
+		}
+	}
 
 	/**
 	* Create Photo request object from photo name
@@ -161,7 +167,6 @@ public class Photos {
   {
     logger.info("Service: changePhotoName");
 
-		//String appPath = context.getRealPath("");
 		String fullPathOrig = photosPath + File.separator + oldName;
 		logger.info("File orig path", fullPathOrig);
 
