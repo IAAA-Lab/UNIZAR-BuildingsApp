@@ -593,7 +593,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         button += '<i class="icon ion-ios-help-outline"></i>';
                         button += '</button>';
                         var legend = '<div class="legend">';
-                        legend += '<div class="legend-checkAll"><input type="checkbox" onclick="filterAllPOI(this)"><span>'+$scope.i18n.floor.legend.deselectAll+'</span></div>'; 
+                        legend += '<div class="legend-checkAll"><input type="checkbox" onclick="filterAllPOI(this)"><span onclick="selectAllPOI()">'+$scope.i18n.floor.legend.deselectAll+'</span></div>'; 
                         APP_CONSTANTS.pois.forEach(function(poi){
                             categoryName = $scope.i18n.floor.legend.categories[poi.value];
                             categorySelect = '<input class="check-'+poi.value+'" type="checkbox" value="'+poi.value+'" checked onclick="filterPOI(this)">';

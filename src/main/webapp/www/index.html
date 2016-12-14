@@ -98,6 +98,10 @@
         var scope = angular.element($('#plan')).scope();
         scope.filterPOI(poiCategorySelect.value);
     }
+    function selectAllPOI(){
+        console.log("selectAllPOI");
+        $('.legend-checkAll input').click();
+    }
     function filterAllPOI(){
         var scope = angular.element($('#plan')).scope();
         scope.filterAllPOI($('.legend-checkAll input').is(':checked'));

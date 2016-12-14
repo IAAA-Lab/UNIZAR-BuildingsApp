@@ -64,13 +64,25 @@
     line-height: 20px !important;
 	}
 
-  .legend .legend-checkAll input {
-    margin-bottom: 10px;
-  }
-  .legend .legend-checkAll span {
-    margin-left: 10px;
-    font-weight: bold;
-    vertical-align: text-bottom;
-    font-size: 13px;
+  .legend .legend-checkAll {
+      text-align: center;
+      margin-bottom: 10px;
+
+      input {
+        margin-bottom: 10px;
+        display: none;
+      }
+
+      span {
+        margin-left: 10px;
+        font-weight: bold;
+        font-size: 13px;
+        padding: 5px;
+        border-radius: 10px;
+        border: 0;
+        background: #387EF5;
+        color: white;
+        cursor: pointer;
+      }
   }
 }
