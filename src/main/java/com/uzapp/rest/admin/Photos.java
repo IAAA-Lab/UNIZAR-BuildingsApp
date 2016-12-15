@@ -12,17 +12,13 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import com.google.gson.Gson;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.BufferedOutputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.lang.Character;
@@ -52,11 +48,21 @@ public class Photos {
 
 	private static final Logger logger = LoggerFactory.getLogger(Photos.class);
 
-	// Base path
-	private String photosPath = "www/images/photos/";
+	// Base photos path
+	private static String photosPath = "";
 
-	@Autowired
-	private ServletContext context;
+	// Initalize photos base path var from config properties file
+	static {
+		try {
+			InputStream input = Photos.class.getClassLoader().getResourceAsStream("config.properties");
+			Properties prop = new Properties();
+			prop.load(input);
+			photosPath = prop.getProperty("photos_path");
+		}
+		catch (IOException e) {
+			e.printStackTrace(System.err);
+		}
+	}
 
 	/**
 	* Create Photo request object from photo name
@@ -161,8 +167,7 @@ public class Photos {
   {
     logger.info("Service: changePhotoName");
 
-		String appPath = context.getRealPath("");
-		String fullPathOrig = appPath + File.separator + photosPath + File.separator + oldName;
+		String fullPathOrig = photosPath + File.separator + oldName;
 		logger.info("File orig path", fullPathOrig);
 
 		Path source = Paths.get(fullPathOrig);
@@ -317,16 +322,8 @@ public class Photos {
 					if (response.getStatusCode() == HttpStatus.OK) {
 						byte[] bytes = file.getBytes();
 
-						// get absolute path of the application
-						String appPath = context.getRealPath("");
-						System.out.println("appPath = " + appPath);
-
-						// construct the complete absolute path of the file
-						String fullPath = appPath + File.separator + photosPath;
-						System.out.println("fullPath = " + fullPath);
-
-						logger.info("File path", fullPath + File.separator);
-						File dir = new File(fullPath + File.separator);
+						logger.info("File path", photosPath + File.separator);
+						File dir = new File(photosPath + File.separator);
 
 						if (!dir.exists())
 							dir.mkdirs();
@@ -442,8 +439,7 @@ public class Photos {
 			}
 
 			//Delete photo from disk
-			String appPath = context.getRealPath("");
-			String fullPathFile = appPath + File.separator + photosPath + File.separator + name;
+			String fullPathFile = photosPath + File.separator + name;
 			logger.info("File path to delete", fullPathFile);
 
 			File fileToDelete = new File(fullPathFile);
@@ -477,6 +473,42 @@ public class Photos {
       catch (Exception excep) { excep.printStackTrace(); }
 		}
   }
+
+  /**
+	* API: Insert new photo info into database table
+	*/
+	@RequestMapping(
+					value = "/insert", 
+					method = RequestMethod.POST)
+	public ResponseEntity<?> insertPhoto(@RequestBody String name)
+	{
+		Connection connection = null;
+		try 
+		{
+			connection = ConnectionManager.getConnection();
+			String[] photoNameParts = name.split("_");
+			String roomId = photoNameParts[0];
+
+			Photo photoRequest = createRequestObject(name, null, "admin", connection);
+
+			if (photoRequest != null) {
+				ResponseEntity<?> response = insertPhotoRequest(photoRequest, connection);
+				connection.close();
+				return response;
+			}
+			else {
+				return new ResponseEntity<>("Photo upload failed because data for room with ID " + roomId + " wasn't found", HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		finally {
+      try { if (connection != null) connection.close(); }
+      catch (Exception excep) { excep.printStackTrace(); }
+		}
+	}
 
   @RequestMapping(
         value = "/**",

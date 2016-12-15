@@ -14,28 +14,38 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         sharedProperties.setOption(option);
 
         //Initial layers
-        var ggl = new L.Google('ROADMAP');
-        var satelite = new L.Google('SATELLITE');
-        var hybrid = new L.Google('HYBRID');
+        var googleStreets = L.tileLayer('http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+        var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
+        var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+            maxZoom: 50,
+            subdomains:['mt0','mt1','mt2','mt3']
+        });
         var openstreetmap = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             maxZoom:50,
             attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         });
 
         var baseMaps = {
-            "Google Roadmap": ggl,
-            "Google Satelite": satelite,
-            "Google Hibrida": hybrid,
+            "Google Roadmap": googleStreets,
+            "Google Satelite": googleSat,
+            "Google Hibrida": googleHybrid,
             "Open Street Map": openstreetmap
         };
 
         var centerMapTo = APP_CONSTANTS.datosMapa[option];
 
+        // Create map
         $scope.map = L.map('map'
             ,{
                 crs: L.CRS.EPSG3857,
                 zoomControl: false,
-                layers: [openstreetmap]
+                layers: [googleStreets]
             }
         ).setView([centerMapTo.lat, centerMapTo.lng], centerMapTo.zoom);
         $scope.map.attributionControl.setPrefix('');
@@ -43,7 +53,10 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
         //Add controls to map
         L.control.layers(baseMaps, {}, {position: 'bottomleft'}).addTo($scope.map);
         L.control.zoom({position: 'topright'}).addTo($scope.map);
-        L.control.locate({position: 'topright'}).addTo($scope.map);
+        L.control.locate({
+            position: 'topright',
+            keepCurrentZoomLevel: true
+        }).addTo($scope.map);
 
         //Loads into map the layer with UNIZAR buildings
         var buildingsLayer = new L.TileLayer.WMS(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", {
@@ -185,11 +198,9 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                     }
                     html_select+='</select>';
 
-                    var redireccion = "'https://maps.google.es/maps?saddr=" +
-                        sharedProperties.getLatUser() + "," + sharedProperties.getLngUser() +
-                        "&daddr=" + point.lng + ',' + point.lat +"&output=embed'";
-
-                    var html_button='<button class="button button-small button-positive button-how" onclick="location.href='+redireccion+'">'+$scope.i18n.map.btn_howto+'</button></div>';
+                    var redireccion = "'http://maps.google.com?saddr=Current+Location&daddr="+point.lat+','+point.lng+"'";
+                    var event_onclick = "window.open("+redireccion+",'popUpWindow','scrollbars=yes,menubar=no'); return false";
+                    var html_button='<button class="button button-small button-positive button-how" onclick="'+event_onclick+'">'+$scope.i18n.map.btn_howto+'</button></div>';
                     var html = html_header + html_select + html_button;
                     var myIcon = L.icon({
                         iconUrl: '',
@@ -367,6 +378,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         success : handleJsonContextMenu
                     });
                 });
+
+                //Init array of POI categories selected for filter
+                var selectedCategories = [];
+                APP_CONSTANTS.pois.forEach(function(poi){
+                    selectedCategories.push(poi.value);
+                });
+                sharedProperties.setFilteredPOICategories(selectedCategories);
 
                 //If last searched room matches with the building of the floor loaded 
                 //  --> Remark on the map the last searched room
@@ -575,8 +593,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         button += '<i class="icon ion-ios-help-outline"></i>';
                         button += '</button>';
                         var legend = '<div class="legend">';
+                        legend += '<div class="legend-checkAll"><input type="checkbox" onclick="filterAllPOI(this)"><span onclick="selectAllPOI()">'+$scope.i18n.floor.legend.deselectAll+'</span></div>'; 
                         APP_CONSTANTS.pois.forEach(function(poi){
-                           legend += '<i class="'+poi.class+'">'+poi.label+'</i></br>';
+                            categoryName = $scope.i18n.floor.legend.categories[poi.value];
+                            categorySelect = '<input class="check-'+poi.value+'" type="checkbox" value="'+poi.value+'" checked onclick="filterPOI(this)">';
+                            categoryIcon = '<i class="'+poi.class+'">'+categoryName+'</i></br>';
+                            legend += categorySelect + categoryIcon;
                         });
                         legend += '</div>';
                         div.innerHTML = button + '<br>' + legend;
@@ -603,25 +625,30 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
             floor = localStorage.floor,
             markers = [];
 
+        var selectedPOICategories = sharedProperties.getFilteredPOICategories();
+        console.log("POI categories to filter", selectedPOICategories);
+
         poisService.getRoomPOIs(building, floor).then(
             function(pois) {
                 console.log("Get room POIs success",pois);
                 pois.forEach(function(poi){
-                    var iconClass = $.grep(APP_CONSTANTS.pois, function(e) { return e.value == poi.category })[0].class;
-                    var poiLabel = $.grep(APP_CONSTANTS.pois, function(e) { return e.value == poi.category })[0].label;
-                    var icon = L.divIcon({className: iconClass});
+                    if (selectedPOICategories.indexOf(poi.category) >=0) {
+                        var iconClass = $.grep(APP_CONSTANTS.pois, function(e) { return e.value == poi.category })[0].class;
+                        var poiLabel = $.grep(APP_CONSTANTS.pois, function(e) { return e.value == poi.category })[0].label;
+                        var icon = L.divIcon({className: iconClass});
 
-                    var translation = $scope.i18n.floor.popups.edit_poi;
+                        var translation = $scope.i18n.floor.popups.edit_poi;
 
-                    var html = '<div class="text-center">';
-                    html += '<b>'+translation.labels.category+':</b> '+poiLabel+'</br>';
-                    html += '<b>'+translation.labels.comments+':</b> '+poi.comments+'</div>';
-                    html += '<div class="edit-btn-div">';
-                    html += '<button class="button button-small button-positive button-edit-poi" onclick="editPOI()" data-id="'+poi.id+'">'+translation.button+'</button></div>';
-                    var marker = new L.marker([poi.latitude, poi.longitude], {icon: icon})
-                    markers.push(marker);
-                    marker.addTo(floorMap)
-                    marker.bindPopup(html);
+                        var html = '<div class="text-center">';
+                        html += '<b>'+translation.labels.category+':</b> '+poiLabel+'</br>';
+                        html += '<b>'+translation.labels.comments+':</b> '+poi.comments+'</div>';
+                        html += '<div class="edit-btn-div">';
+                        html += '<button class="button button-small button-positive button-edit-poi" onclick="editPOI()" data-id="'+poi.id+'">'+translation.button+'</button></div>';
+                        var marker = new L.marker([poi.latitude, poi.longitude], {icon: icon})
+                        markers.push(marker);
+                        marker.addTo(floorMap)
+                        marker.bindPopup(html);
+                    }
                 });
 
                 sharedProperties.getLastMarkers().forEach(function(marker){

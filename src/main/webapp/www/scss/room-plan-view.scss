@@ -55,6 +55,7 @@
 
   [class^="flaticon-"]:before, [class*=" flaticon-"]:before, [class^="flaticon-"]:after, [class*=" flaticon-"]:after {
     margin-right: 10px;
+    margin-left: 10px;
     line-height: 1.5;
 	}
 
@@ -63,4 +64,25 @@
     line-height: 20px !important;
 	}
 
+  .legend .legend-checkAll {
+      text-align: center;
+      margin-bottom: 10px;
+
+      input {
+        margin-bottom: 10px;
+        display: none;
+      }
+
+      span {
+        margin-left: 10px;
+        font-weight: bold;
+        font-size: 13px;
+        padding: 5px;
+        border-radius: 10px;
+        border: 0;
+        background: #387EF5;
+        color: white;
+        cursor: pointer;
+      }
+  }
 }

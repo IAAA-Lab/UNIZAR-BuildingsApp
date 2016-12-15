@@ -8,6 +8,7 @@ UZCampusWebMapApp.service('sharedProperties', function () {
     var option = undefined;
     var lastMarkers = [];
     var lastMapMarker = null;
+    var filterPOICategories = [];
 
     return ({
         getMap: getMap,
@@ -25,7 +26,9 @@ UZCampusWebMapApp.service('sharedProperties', function () {
         getLastMarkers: getLastMarkers,
         setLastMarkers: setLastMarkers,
         getLastMapMarker: getLastMapMarker,
-        setLastMapMarker: setLastMapMarker
+        setLastMapMarker: setLastMapMarker,
+        getFilteredPOICategories: getFilteredPOICategories,
+        setFilteredPOICategories: setFilteredPOICategories
     });
 
     function getMap(){
@@ -82,5 +85,12 @@ UZCampusWebMapApp.service('sharedProperties', function () {
     }
     function setLastMapMarker(data){
         lastMapMarker = data;
+    }
+
+    function getFilteredPOICategories(){
+        return filterPOICategories;
+    }
+    function setFilteredPOICategories(data){
+        filterPOICategories = data;
     }
 });

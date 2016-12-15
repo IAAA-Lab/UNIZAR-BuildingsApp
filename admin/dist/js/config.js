@@ -1,11 +1,11 @@
 var constants_dev = {
     'API_URL':'http://localhost:8080',
-    'PHOTOS_BASE_URL':'http://localhost:8080/www/images/photos/'
+    'PHOTOS_BASE_URL':'http://localhost/photos/'
 };
 
 var constants_prod = {
     'API_URL':'PROD_API_URL',
-    'PHOTOS_BASE_URL':'PROD_API_URL/www/images/photos/'
+    'PHOTOS_BASE_URL':'PHOTOS_URL/photos/'
 };
 
 var constants;

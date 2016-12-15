@@ -49,6 +49,26 @@
           "comments": "Comments"
         }
       }
+    },
+    "legend":{
+      "selectAll": "Check all",
+      "deselectAll": "Uncheck all",
+      "categories":{
+        "secretaria": "Secretary",
+        "bathroom": "Baths",
+        "cafeteria": "Coffee",
+        "reprografia": "Reprography",
+        "conserjeria": "Reception",
+        "biblioteca": "Library",
+        "mini-punto-limpio": "Clean point",
+        "cajero": "ATM",
+        "departamento": "Departments",
+        "acceso-minusvalidos": "Disabled acces",
+        "ascensor": "Elevator",
+        "aparcamiento-haz-dedo": "'Haz Dedo' parking",
+        "aparcamiento-minusvalido": "Disabled parking",
+        "aparcamiento-bicicletas": "Bicycles parking"
+      }
     }
   },
   "room_details":{

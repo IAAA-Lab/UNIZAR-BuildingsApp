@@ -1,7 +1,7 @@
 UZCampusWebMapApp.constant('APP_CONSTANTS', {
     URI_API: 'http://localhost:8080/',
     URI_Geoserver: 'http://155.210.14.31:8080/geoserver/',
-    URI_Photos: 'http://localhost:8080/www/images/photos/',
+    URI_Photos: 'http://localhost/photos/',
     URI_Sigeuz_Geoserver: 'http://155.210.21.36:8080/geoserver/',
     photosWidth: 640,
     photosHeight: 350,
@@ -50,13 +50,13 @@ UZCampusWebMapApp.constant('APP_CONSTANTS', {
         { value: 'reprografia', label: 'Reprografía' ,class: 'flaticon-technology'},
         { value: 'conserjeria', label: 'Conserjería' ,class: 'flaticon-key-silhouette-security-tool-interface-symbol-of-password'},
         { value: 'biblioteca', label: 'Biblioteca' ,class: 'flaticon-open-book-icon'},
-        { value: 'mini-punto-limpio', label: 'Mini puntos limpios' ,class: 'flaticon-arrows'},
+        { value: 'mini-punto-limpio', label: 'Mini punto limpio' ,class: 'flaticon-arrows'},
         { value: 'cajero', label: 'Cajero automático' ,class: 'flaticon-money'},
         { value: 'departamento', label: 'Departamentos' ,class: 'flaticon-business-person-silhouette-wearing-tie'},
         { value: 'acceso-minusvalidos', label: 'Acceso especial minusválidos' ,class: 'flaticon-shapes'},
         { value: 'ascensor', label: 'Ascensores' ,class: 'flaticon-elevator-with-a-occupant'},
         { value: 'aparcamiento-haz-dedo', label: 'Aparcamiento Haz Dedo' ,class: 'flaticon-thumbs-up'},
-        { value: 'aparcamiento-minusvalido', label: 'Aparcamiento minusválido' ,class: 'flaticon-accessibility'},
+        { value: 'aparcamiento-minusvalido', label: 'Aparcamiento minusválidos' ,class: 'flaticon-accessibility'},
         { value: 'aparcamiento-bicicletas', label: 'Aparcamiento bicicletas' ,class: 'flaticon-bycicle'},
     ]
 });

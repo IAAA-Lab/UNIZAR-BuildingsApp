@@ -49,6 +49,26 @@
           "comments": "Comentarios"
         }
       }
+    },
+    "legend":{
+      "selectAll": "Seleccionar todos",
+      "deselectAll": "Deseleccionar todos",
+      "categories":{
+        "secretaria": "Secretaría",
+        "bathroom": "Baños",
+        "cafeteria": "Cafetería",
+        "reprografia": "Reprografía",
+        "conserjeria": "Conserjería",
+        "biblioteca": "Biblioteca",
+        "mini-punto-limpio": "Mini punto limpio",
+        "cajero": "Cajero automático",
+        "departamento": "Departamentos",
+        "acceso-minusvalidos": "Acceso minusválidos",
+        "ascensor": "Ascensor",
+        "aparcamiento-haz-dedo": "Aparcamiento 'Haz Dedo'",
+        "aparcamiento-minusvalido": "Aparcamiento minusávidos",
+        "aparcamiento-bicicletas": "Aparcamiento bicicletas"
+      }
     }
   },
   "room_details":{
