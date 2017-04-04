@@ -41,48 +41,58 @@ public class TokenAuthenticationService {
     public Authentication getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
 
+        System.out.println("HELLO? - token:" + token);
+
         if (token != null) {
 
+          // Splits the string to get rid of 'Bearer ' prefix
+          if (token.startsWith("Bearer ")) {
+            token = token.split(" ")[1];
+          }
+
         	// parse the token.
+          System.out.println("Gonna parse this shit");
         	JwtInfo tokenInfo = new JwtUtil().parseToken(token);
+
+          System.out.println("TokenInfo: " + tokenInfo);
 
         	if (tokenInfo != null) {
 
 	        	String username = tokenInfo.getUsername();
 	        	String role = tokenInfo.getRole();
 
-	        	// Checks if the user exists in the database
-	            if (username != null) {
+	        	// // Checks if the user exists in the database
+	          //   if (username != null) {
+            //
+	          //   	String dbUsername = Users.getUsername();
+            //
+            //     System.out.println("dbUsername: " + dbUsername);
+            //
+	          //   	if (username.equals(dbUsername)) {
 
-	            	String dbUsername = Users.getUsername();
-	            	if (username.equals(dbUsername)) {
+        		System.out.println("Usuario: " + username + ", Rol: " + role);
 
-	            		System.out.println("Usuario: " + username + ", Rol: " + role);
+        		// we managed to retrieve a user
+        		AuthenticatedUser user = new AuthenticatedUser(username);
 
-	            		// we managed to retrieve a user
-	            		AuthenticatedUser user = new AuthenticatedUser(username);
+        		// adds roles to authenticated user
+        		Collection<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
+        		String[] roles = role.split(",");
+        		for (int i = 0; i < roles.length; i++) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + roles[i]));
+				    }
 
-	            		// adds roles to authenticated user
-	            		Collection<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
-	            		String[] roles = role.split(",");
-	            		for (int i = 0; i < roles.length; i++) {
-							authorities.add(new SimpleGrantedAuthority("ROLE_" + roles[i]));
-						}
-
-	            		user.setAuthenticated(role.contains("ADMIN"));
-	            		return user;
-	            	}
-	            	else {
-	            		// user not found
-	            	}
-
-	            }
-        	}
-        	else {
-        		// error while parsing token, not valid
-        		throw new JwtMalformedException("Token not valid");
+        		user.setAuthenticated(role.contains("ADMIN"));
+        		return user;
         	}
         }
-        return null;
+      	else {
+
+          System.out.println("PETADA AL PARSEAR");
+
+      		// error while parsing token, not valid
+      		throw new JwtMalformedException("Token not valid");
+    	   }
+         return null;
     }
 }

@@ -37,8 +37,6 @@ public class TokenController {
           token = token.split(" ")[1];
         }
 
-        System.out.println("TOKEN: " + token);
-
     		JwtInfo jwtInfo = jwt.parseToken(token);
     		if (jwtInfo == null) {
 

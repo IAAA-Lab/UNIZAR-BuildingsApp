@@ -37,6 +37,7 @@
     "bootstrap-social": "~4.8.0",
     "flot.tooltip": "~0.8.4",
     "datatables.net": "^1.10.12",
-    "datatables.net-bs": "^1.10.12"
+    "datatables.net-bs": "^1.10.12",
+    "jquery": "2.2.4"
   }
 }
