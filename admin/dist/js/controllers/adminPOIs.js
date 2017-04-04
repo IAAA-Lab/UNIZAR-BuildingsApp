@@ -1,10 +1,11 @@
 $(function() {
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
-            if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
-                $('body').mask('Loading...');
-                window.location.href = 'login.html';
-            }
+            // if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
+            //     $('body').mask('Loading...');
+            //     window.location.href = 'login.html';
+            // }
+            checkToken();
         }
     };
 
@@ -144,7 +145,7 @@ $(function() {
                 selCategory = $('#'+mode+'-poi-category');
 
             if (mode==='edit' && !reload) {
-                
+
                 $('#'+mode+'-poi-modal-title').text('');
                 $('#'+mode+'-poi-modal-title').text('Editar punto de interés - ID: ' + poiData.id);
 
@@ -213,7 +214,7 @@ $(function() {
                         $('#admin-pois-error').hide();
                 }, 30000);
             }
-            $('body').unmask(); 
+            $('body').unmask();
         };
 
         selCity.change(function(){

@@ -1,14 +1,14 @@
 function login(data, success, error){
     console.log('login', arguments);
     $.ajax({
-        url : getConstants('API_URL') + '/users/login',
+        url : getConstants('API_URL') + '/login',
         type: 'POST',
         data : data,
         contentType: 'application/json',
         success: function(data, textStatus, jqXHR)
         {
             console.log('Success on login',data);
-            success(data);
+            success(data, textStatus, jqXHR);
         },
         error: function (jqXHR, textStatus, errorThrown)
         {
@@ -16,7 +16,7 @@ function login(data, success, error){
             error(jqXHR, textStatus, errorThrown);
         }
     });
-};
+}
 
 function createUser(data, success, error){
     console.log('createUser', arguments);

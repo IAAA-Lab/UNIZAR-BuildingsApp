@@ -1,10 +1,11 @@
 $(function() {
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
-            if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
-                $('body').mask('Loading...');
-                window.location.href = "login.html";
-            }
+            // if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
+            //     $('body').mask('Loading...');
+            //     window.location.href = "login.html";
+            // }
+            checkToken();
         }
     };
 
@@ -158,7 +159,7 @@ $(function() {
 
     //Define action on click 'Aceptar'/'Rechazar' button for modify/delete a POI
     $('#request-btn').click(function(){
-        
+
         $('body').mask("Enviando...");
 
         var requestData = $('#dataTable-requests').DataTable().rows({ selected: true }).data()[0];
