@@ -97,7 +97,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 format_options : 'callback:getJson',
                 SrsName : 'EPSG:4326'
             };
-            
+
             var customParams = {
                 cql_filter:'DWithin(geom, POINT(' + p.x + ' ' + p.y + '), 0.1, meters)'
             };
@@ -243,13 +243,13 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
     //Creates map with the view of the selected building floor
     function crearPlano($scope, $http, infoService, sharedProperties, poisService, createModal) {
-        
+
         $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
 
         //Close opened popup on previous map
         var map = sharedProperties.getMap();
         if (typeof(map) != 'undefined') map.closePopup();
-        
+
         //Recover building and floor id's
         var building = localStorage.building.indexOf('building') == -1 ? localStorage.building : JSON.parse(localStorage.building).building,
             floor = localStorage.floor,
@@ -285,14 +285,14 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 }
 
                 //Create building floor image layer
-                var buildingImageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms", 
+                var buildingImageLayer = new L.tileLayer.wms(APP_CONSTANTS.URI_Sigeuz_Geoserver + "sigeuz/wms",
                 {
                     layers: 'sigeuz:vista_plantas',
                     viewparams : 'PLANTA:'+floor_id,
                     format: 'image/png',
                     attribution: floor_id,
                     transparent: true,
-                    maxZoom: 25, 
+                    maxZoom: 25,
                     zIndex: 5
                 });
 
@@ -324,7 +324,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         format_options : 'callback:getJson',
                         SrsName : 'EPSG:4326'
                     };
-                    
+
                     console.log(pRoom.x, pRoom.y);
                     var customParams = {
                         cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
@@ -361,7 +361,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         format_options : 'callback:getJson',
                         SrsName : 'EPSG:4326'
                     };
-                    
+
                     var customParams = {
                         cql_filter:'DWithin(geom, POINT(' + pRoom.x + ' ' + pRoom.y + '), 0.1, meters)',
                         viewparams:'PLANTA:'+floor_id
@@ -386,7 +386,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                 });
                 sharedProperties.setFilteredPOICategories(selectedCategories);
 
-                //If last searched room matches with the building of the floor loaded 
+                //If last searched room matches with the building of the floor loaded
                 //  --> Remark on the map the last searched room
                 if (typeof(localStorage.lastSearch)!=='undefined') {
                     if (localStorage.lastSearch.split('.').slice(0, -1).join('.') === floor_id) {
@@ -405,7 +405,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                                     format_options : 'callback:getJson',
                                     SrsName : 'EPSG:4326'
                                 };
-                                
+
                                 var customParams = {
                                     cql_filter:'DWithin(geom, POINT(' + centerCoord[0] + ' ' + centerCoord[1] + '), 0.1, meters)',
                                     viewparams:'PLANTA:'+floor_id
@@ -423,7 +423,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                             },
                             function(err){
                                 console.log("Center point for room "+localStorage.lastSearch+" not found");
-                            } 
+                            }
                         )
                     } else {
                         updatePOIs($scope, floorMap, sharedProperties);
@@ -568,8 +568,12 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                                 var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
                                 html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
                                 html_list = html_list + html_list_items + '</ul></div>';
-                                var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="getRoomInfo(this)">'+$scope.i18n.floor.popups.room.button+' </button></div>';
-                                var html =  html_list + html_button;
+                                var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="getRoomInfo(this)">'+$scope.i18n.floor.popups.room.button.info+' </button></div>';
+
+                                var html_button_cambio = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 1)">'+$scope.i18n.floor.popups.room.button.cambio+' </button></div>';
+                                var html_button_incidencia = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 2)">'+$scope.i18n.floor.popups.room.button.incidencia+' </button></div>';
+
+                                var html =  html_list + html_button + html_button_cambio + html_button_incidencia;
 
                                 var currentMap = sharedProperties.getFloorMap();
                                 L.popup().setLatLng(roomLatLng).setContent(html).openOn(currentMap);
@@ -593,7 +597,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                         button += '<i class="icon ion-ios-help-outline"></i>';
                         button += '</button>';
                         var legend = '<div class="legend">';
-                        legend += '<div class="legend-checkAll"><input type="checkbox" onclick="filterAllPOI(this)"><span onclick="selectAllPOI()">'+$scope.i18n.floor.legend.deselectAll+'</span></div>'; 
+                        legend += '<div class="legend-checkAll"><input type="checkbox" onclick="filterAllPOI(this)"><span onclick="selectAllPOI()">'+$scope.i18n.floor.legend.deselectAll+'</span></div>';
                         APP_CONSTANTS.pois.forEach(function(poi){
                             categoryName = $scope.i18n.floor.legend.categories[poi.value];
                             categorySelect = '<input class="check-'+poi.value+'" type="checkbox" value="'+poi.value+'" checked onclick="filterPOI(this)">';

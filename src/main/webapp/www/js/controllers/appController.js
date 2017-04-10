@@ -2,7 +2,8 @@
  * AppCtrl: Controlador principal de la aplicación.
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, sharedProperties, $window, $state, $stateParams) {
+UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService,
+  sharedProperties, $window, $state, $stateParams, loginService) {
 
         var userAgent = $window.navigator.userAgent;
 
@@ -14,12 +15,20 @@ UZCampusWebMapApp.controller('AppCtrl',function($scope, $rootScope, geoService, 
 
         $scope.showSubMenu = false;
 
-        $scope.loadMap = function(option) {            
+        $scope.loadMap = function(option) {
             sharedProperties.setOption(option);
             geoService.centerMap(option);
         };
 
         $scope.showHideSubMenu = function() {
             $scope.showSubMenu = !$scope.showSubMenu;
+        };
+
+        $scope.logout = function() {
+          loginService.logout();
+        };
+
+        $scope.isUserLoggedIn = function() {
+          return loginService.checkUserLoggedIn();
         };
     });

@@ -1,0 +1,27 @@
+<ion-view title={{i18n.changes.title}} id="changes-view">
+
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+
+  <ion-content class="padding">
+    <ion-list>
+      <ion-item ng-repeat="cambio in data">
+        <ion-card ng-class="cambio.validado == 1 ? 'card-yellow' : 'card-red'">
+          <ion-card-header>
+            <span style="float:left">{{cambio.espacio}}</span>
+            <span style="float:right">{{cambio.fecha}}</span>
+          </ion-card-header>
+        <br><br>
+          <ion-card-content>
+            {{cambio.descripcion}}
+            <br>
+            <!-- <button class="button button-block button-positive icon-only ion-button">
+              <i class="px14 icon ion-chevron-down"></i>
+            </button> -->
+          </ion-card-content>
+        </ion-card>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-view>

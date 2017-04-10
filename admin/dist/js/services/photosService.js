@@ -16,7 +16,7 @@ function updatePhoto(sendData, success, error){
             error(jqXHR, textStatus, errorThrown);
         }
     });
-};
+}
 
 function deletePhoto(id, success, error){
     console.log('deletePhoto', arguments);
@@ -35,7 +35,7 @@ function deletePhoto(id, success, error){
             error(jqXHR, textStatus, errorThrown);
         }
     });
-};
+}
 
 function uploadPhoto(data, success, error){
     console.log('uploadPhoto', arguments);
@@ -57,4 +57,4 @@ function uploadPhoto(data, success, error){
             error(jqXHR, textStatus, errorThrown);
         }
     });
-};
+}

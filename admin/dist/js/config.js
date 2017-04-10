@@ -62,6 +62,20 @@ constants.photo_status = [
         { label: 'Rechazada', value: 'Rejected', id: 3}
     ];
 
+constants.cambio_status = [
+        { label: 'Pendiete', value: 'Pendiente', id: 1},
+        { label: 'Aprobado', value: 'Aprobado', id: 2},
+        { label: 'Rechazado', value: 'Rechazado', id: 3},
+        { label: 'Pendiente del usuario', value: 'Pendiente del usuario', id: 4}
+    ];
+
+constants.incidencia_status = [
+        { label: 'Pendiente', value: 'Pendiente', id: 1},
+        { label: 'Aprobada', value: 'Aprobado', id: 2},
+        { label: 'Rechazada', value: 'Rechazado', id: 3},
+        { label: 'Pendiente del usuario', value: 'Pendiente del usuario', id: 4}
+    ];
+
 function getConstants(key){
     return constants[key];
-};
+}

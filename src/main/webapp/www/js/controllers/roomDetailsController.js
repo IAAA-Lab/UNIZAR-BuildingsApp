@@ -2,7 +2,9 @@
  * RoomDetailsCtrl: Controlador encargado de la página de información de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, infoService, photosService, translationService, APP_CONSTANTS){
+UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope,
+    $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, $http, infoService,
+    photosService, translationService, APP_CONSTANTS){
 
         translationService.getTranslation($scope, localStorage.selectedLanguage);
 
@@ -48,7 +50,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             var floorData = {
                 floor: idEspacioArray[2],
                 building: idEspacioArray.splice(0,idEspacioArray.length-2).join('.') + '.'
-            }
+            };
             goToFloorMap(floorData);
         };
 
@@ -130,7 +132,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                                 }
                             }
                         },
-                        { 
+                        {
                             text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
                             type: 'button-assertive'
                         }
@@ -156,7 +158,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                                 }
                             }
                         },
-                        { 
+                        {
                             text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
                             type: 'button-assertive'
                         }
@@ -214,7 +216,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
             options.params = params;
 
             var ft = new FileTransfer();
-            ft.upload(fileURL, serverURL, 
+            ft.upload(fileURL, serverURL,
                 function(){
                     console.log("Success uploading photo to server", arguments);
                     popup.close();
@@ -252,17 +254,27 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                 $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
             }
             else {
+
+                // var params = {
+                //   file: file,
+                //   name: [localStorage.room, new Date().getTime()].join('_') + '.jpg',
+                //   email: email,
+                //   mode: 'user'
+                // };
+
                 var formData = new FormData();
                 formData.append('file', file);
                 formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
                 formData.append('email', email);
                 formData.append('mode', 'user');
                 console.log("formData", formData);
-                $.ajax({
+                $http({
                     url :  APP_CONSTANTS.URI_API + 'photos/upload/',
-                    type: "POST",
-                    data : formData,
-                    contentType: false,
+                    method: "POST",
+                    data: formData,
+                    headers: {
+                      'Content-Type': undefined,
+                    },
                     cache: false,
                     processData: false,
                     success: function(data, textStatus, jqXHR)
@@ -286,7 +298,7 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope, $ti
                         $ionicLoading.hide();
                         $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
                     }
-                });     
+                });
             }
         };
 

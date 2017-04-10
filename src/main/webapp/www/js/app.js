@@ -23,7 +23,7 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
             templateUrl: "templates/map.html"
         });
     }])
-    .config(function($stateProvider, $urlRouterProvider) {
+    .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
       $stateProvider
           .state('app', {
             url: "/app",
@@ -71,6 +71,24 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
               'menuContent':{
                 templateUrl: "templates/settings.html",
                 controller: 'AppCtrl'
+              }
+            }
+          })
+          .state('app.login', {
+            url: "/login",
+            views: {
+              'menuContent':{
+                templateUrl: "templates/login.html",
+                controller: 'LoginCtrl'
+              }
+            }
+          })
+          .state('app.changes', {
+            url: "/changes",
+            views: {
+              'menuContent':{
+                templateUrl: "templates/changes.html",
+                controller: 'ChangesCtrl'
               }
             }
           })/*
@@ -124,7 +142,7 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
 
           // if none of the above states are matched, use this as the fallback
           $urlRouterProvider.otherwise('/app/home');
-
+          $httpProvider.interceptors.push('apiService');
     });
     /*.config(['$routeProvider', function($routeProvider) {
         $routeProvider.

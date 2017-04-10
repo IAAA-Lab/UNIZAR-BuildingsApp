@@ -27,9 +27,6 @@
           <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/settings">
             <i class="icon ion-settings"></i><span>{{i18n.settings.title}}</span>
           </ion-item>
-          <!--<ion-item item-type="item-icon-left" nav-clear menu-close href=>
-            <i class="icon ion-log-in"></i><span>{{i18n.login.title}}</span>
-          </ion-item>-->
           <ion-item class="menu-level1" item-type="item-icon-left" ng-click="showHideSubMenu()">
             <i class="icon ion-map"></i><span>Zaragoza</span>
             <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(0)" ui-sref="app.map" ng-show="showSubMenu">
@@ -51,6 +48,21 @@
           <ion-item item-type="item-icon-left" nav-clear menu-close ng-click="loadMap(5)" ui-sref="app.map">
             <i class="icon ion-map"></i><span>Teruel</span>
           </ion-item>
+
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/login"
+                    ng-hide="isUserLoggedIn()">
+            <i class="icon ion-log-in"></i><span>{{i18n.login.title}}</span>
+          </ion-item>
+
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/changes"
+                    ng-show="isUserLoggedIn()">
+            <i class="icon ion-person"></i><span>{{i18n.changes.title}}</span>
+          </ion-item>
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/home"
+                    ng-show="isUserLoggedIn()" ng-click="logout()">
+            <i class="icon ion-log-out"></i><span>{{i18n.logout.title}}</span>
+          </ion-item>
+
         </ion-list>
       </div>
 

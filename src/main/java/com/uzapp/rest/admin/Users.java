@@ -1,5 +1,7 @@
 package com.uzapp.rest.admin;
 
+import com.uzapp.security.jwt.utils.JwtInfo;
+import com.uzapp.security.jwt.utils.JwtUtil;
 import com.uzapp.bd.ConnectionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.uzapp.dominio.User;
+
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,6 +70,61 @@ public class Users {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
         finally {
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+        }
+    }
+
+    @RequestMapping(
+            value = "/info",
+            method = RequestMethod.GET)
+    public ResponseEntity<?> getInfo(
+          @RequestHeader(value="Authorization", defaultValue="") String token){
+        logger.info("Servicio: get user info, token: " + token);
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            JwtUtil jwt = new JwtUtil();
+            User user = new User();
+
+            if (token.length() != 0) {
+
+              // Splits the string to get rid of 'Bearer ' prefix
+              if (token.startsWith("Bearer ")) {
+                token = token.split(" ")[1];
+              }
+
+              // Obtains username from token to retrieve the
+              // user's email
+          		JwtInfo jwtInfo = jwt.parseToken(token);
+              String username = jwtInfo.getUsername();
+
+              String query = "SELECT email FROM users " +
+                              "WHERE username = '" + username + "'";
+              preparedStmt = connection.prepareStatement(query);
+              ResultSet rs = preparedStmt.executeQuery();
+
+              if (rs.next()) {
+                user.setUsername(username);
+                user.setEmail(rs.getString("email"));
+
+                return new ResponseEntity<>(user, HttpStatus.OK);
+              }
+              else {
+                return new ResponseEntity<>("Error obtaining user", HttpStatus.INTERNAL_SERVER_ERROR);
+              }
+            }
+            else {
+              return new ResponseEntity<>("No token provided", HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
             try { if (connection != null) connection.close(); }
             catch (Exception excep) { excep.printStackTrace(); }
         }

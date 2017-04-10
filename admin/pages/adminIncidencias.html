@@ -1,40 +1,39 @@
 <!-- Controller && Services -->
-<script src="../dist/js/controllers/cambiosController.js"></script>
+<script src="../dist/js/controllers/incidenciasController.js"></script>
 <script src="../dist/js/services/infoService.js"></script>
 <script src="../dist/js/services/notificationService.js"></script>
 <script src="../dist/js/services/networkService.js"></script>
 
-<div class="alert alert-success alert-dismissible" role="alert" id="admin-cambios-success">
+<div class="alert alert-success alert-dismissible" role="alert" id="admin-incidencias-success">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <span id="admin-cambios-success-text"></span>
+    <span id="admin-incidencias-success-text"></span>
 </div>
 
-<div class="alert alert-danger alert-dismissible" role="alert" id="admin-cambios-error">
+<div class="alert alert-danger alert-dismissible" role="alert" id="admin-incidencias-error">
     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <span id="admin-cambios-error-text"></span>
+    <span id="admin-incidencias-error-text"></span>
 </div>
 
 <div class="row">
     <div class="col-lg-12">
-        <h2 class="page-header">Administración de cambios en los espacios</h2>
+        <h2 class="page-header">Administración de incidencias en los espacios</h2>
     </div>
 </div>
-<div class="row" id="admin-cambios-explanation">
+<div class="row" id="admin-incidencias-explanation">
     <div class="col-lg-8">
-        En la tabla inferior se muestran los datos de todas los cambios realizados en los espacios. Se podrán llevar a cabo las siguientes acciones seleccionando una fila de la tabla:
+        En la tabla inferior se muestran los datos de todas las incidencias notificadas en los espacios. Se podrán llevar a cabo las siguientes acciones seleccionando una fila de la tabla:
         <ul>
-            <li>Revisar los datos relativos a un cambio</li>
-            <li>Aprobar/rechazar un cambio pendiente</li>
-            <li>Solicitar la revisión de un cambio</li>
-            <li>Añadir una aclaración acerca de la decisión tomada sobre un cambio</li>
-            <li>Eliminar un cambio</li>
+            <li>Revisar los datos relativos a una incidencia</li>
+            <li>Aprobar/rechazar una incidencia pendiente</li>
+            <li>Añadir una aclaración acerca de la decisión tomada sobre la incidencia</li>
+            <li>Eliminar una incidencia</li>
         </ul>
     </div>
 </div>
 <div class="row">
     <div class="col-lg-12">
         <div class="dataTable_wrapper">
-            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTable-cambios">
+            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTable-incidencias">
                 <thead>
                     <tr>
                         <th>ID</th>
@@ -55,131 +54,131 @@
     </div>
 </div>
 
-<div class="modal fade" id="edit-cambio-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="edit-incidencia-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="edit-cambio-modal-title">Editar datos del cambio</h4>
+                <h4 class="modal-title" id="edit-incidencia-modal-title">Editar datos de la incidencia</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
                     <div class="form-group">
                         <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-ciudad"></select>
+                            <select class="form-control" id="edit-incidencia-ciudad"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="campus" class="col-sm-2 control-label">Campus</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-campus"></select>
+                            <select class="form-control" id="edit-incidencia-campus"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="edificio" class="col-sm-2 control-label">Edificio</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-edificio"></select>
+                            <select class="form-control" id="edit-incidencia-edificio"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="planta" class="col-sm-2 control-label">Planta</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-planta"></select>
+                            <select class="form-control" id="edit-incidencia-planta"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="espacio" class="col-sm-2 control-label">Espacio</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-espacio"></select>
+                            <select class="form-control" id="edit-incidencia-espacio"></select>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="estado" class="col-sm-2 control-label">Estado</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-estado"></select>
+                            <select class="form-control" id="edit-incidencia-estado"></select>
                         </div>
                     </div>
-                    <div class="form-group" id="edit-cambio-comentario_admin-form-group">
+                    <div class="form-group" id="edit-incidencia-comentario_admin-form-group">
                         <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" id="edit-cambio-comentario_admin"></textarea>
+                            <textarea class="form-control" id="edit-incidencia-comentario_admin"></textarea>
                         </div>
                     </div>
                     <div class="form-group" style="text-align: center">
-                        <button type="button" class="btn btn-default" id="preview-edit-cambio-photo-btn"
+                        <button type="button" class="btn btn-default" id="preview-edit-incidencia-photo-btn"
                                 data-toggle="popover">Ver foto</button>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="edit-cambio-btn">Guardar</button>
+                <button type="button" class="btn btn-primary" id="edit-incidencia-btn">Guardar</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
 </div>
 
-<div class="modal fade" id="delete-cambio-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal fade" id="delete-incidencia-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete-cambio-modal-title">Eliminar cambio</h4>
+                <h4 class="modal-title" id="delete-incidencia-modal-title">Eliminar incidencia</h4>
             </div>
             <div class="modal-body">
                 <div class="panel panel-default">
-                    <div class="panel-body" id="delete-cambio-modal-panel">
-                        ¿Está seguro de eliminar el cambio seleccionado?
+                    <div class="panel-body" id="delete-incidencia-modal-panel">
+                        ¿Está seguro de eliminar la incidencia seleccionada?
                     </div>
                     <form class="form-horizontal">
                         <div class="form-group">
                             <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-ciudad" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-ciudad" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="campus" class="col-sm-2 control-label">Campus</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-campus" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-campus" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="edificio" class="col-sm-2 control-label">Edificio</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-edificio" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-edificio" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="planta" class="col-sm-2 control-label">Planta</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-planta" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-planta" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="espacio" class="col-sm-2 control-label">Espacio</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-espacio" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-espacio" disabled>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="estado" class="col-sm-2 control-label">Estado</label>
                             <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-estado" disabled>
+                                <input type="text" class="form-control" id="delete-incidencia-estado" disabled>
                             </div>
                         </div>
                         <div class="form-group" style="display:none">
-                            <input type="text" class="form-control" id="delete-cambio-name">
+                            <input type="text" class="form-control" id="delete-incidencia-name">
                         </div>
                         <div class="form-group" style="text-align: center">
-                            <button type="button" class="btn btn-default" id="preview-delete-cambio-btn">Ver foto</button>
+                            <button type="button" class="btn btn-default" id="preview-delete-incidencia-btn">Ver foto</button>
                         </div>
                     </form>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="delete-cambio-btn">Eliminar</button>
+                <button type="button" class="btn btn-primary" id="delete-incidencia-btn">Eliminar</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
             </div>
         </div>

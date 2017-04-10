@@ -85,8 +85,8 @@ public class Photos {
     logger.info("Room passed: " + room);
     ResultSet info = estanciasRestController.getRoomInfo(connection, room);
     if (info.next()){
-			photo = new Photo(LocalDateTime.now(), 
-										name, 
+			photo = new Photo(LocalDateTime.now(),
+										name,
 										info.getString("ciudad"),
 										info.getString("campus"),
 										info.getString("edificio"),
@@ -201,17 +201,17 @@ public class Photos {
     preparedStmt.setTimestamp(10, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
     preparedStmt.setString(11, photo.getEmail());
     preparedStmt.setInt(12, photo.getId());
-    
+
     int rowsUpdated = preparedStmt.executeUpdate();
     preparedStmt.close();
     return rowsUpdated;
-	} 
+	}
 
 	/**
 	 * ALL: Returns all the photos names given a room ID
 	 */
 	@RequestMapping(
-					value = "/approved/{roomId}", 
+					value = "/approved/{roomId}",
 					method = RequestMethod.GET)
 	public ResponseEntity<?> getRoomApprovedPhotos(@PathVariable("roomId") String roomId)
 	{
@@ -245,7 +245,7 @@ public class Photos {
 	 * API: Returns all the photos names given a room ID
 	 */
 	@RequestMapping(
-					value = "/", 
+					value = "/",
 					method = RequestMethod.GET)
 	public ResponseEntity<?> getAllPhotos()
 	{
@@ -298,16 +298,18 @@ public class Photos {
 	* API: Upload single file using Spring Controller
 	*/
 	@RequestMapping(
-					value = "/upload", 
+					value = "/upload",
 					method = RequestMethod.POST)
 	public ResponseEntity<?> uploadFileHandler(@RequestParam("name") String name,
 																						@RequestParam("email") String email,
 																						@RequestParam("mode") String mode,
 																						@RequestParam("file") MultipartFile file)
 	{
+    logger.info("Started upload photo service");
+
 		if (!file.isEmpty()) {
 			Connection connection = null;
-			try 
+			try
 			{
 				connection = ConnectionManager.getConnection();
 				String[] photoNameParts = name.split("_");
@@ -365,7 +367,7 @@ public class Photos {
   {
   	Connection connection = null;
   	PreparedStatement preparedStmt = null;
-    try 
+    try
     {
     	logger.info("Service: UPDATE PHOTO");
     	connection = ConnectionManager.getConnection();
@@ -383,7 +385,7 @@ public class Photos {
 			int rowsUpdated = 0;
 			String newName = photo.getName();
 			boolean changeName = (oldRoomId != null && !oldRoomId.equals(photo.getRoomId()));
-			
+
 			if (changeName){
 				changePhotoName(oldName, newName);
 				rowsUpdated = updatePhotoData(photo);
@@ -478,12 +480,12 @@ public class Photos {
 	* API: Insert new photo info into database table
 	*/
 	@RequestMapping(
-					value = "/insert", 
+					value = "/insert",
 					method = RequestMethod.POST)
 	public ResponseEntity<?> insertPhoto(@RequestBody String name)
 	{
 		Connection connection = null;
-		try 
+		try
 		{
 			connection = ConnectionManager.getConnection();
 			String[] photoNameParts = name.split("_");

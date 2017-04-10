@@ -36,11 +36,27 @@
   "favs":{
     "title": "Favoritos"
   },
+  "login":{
+    "title": "Iniciar sesión",
+    "username": "Nombre de usuario",
+    "password": "Contraseña",
+    "account": "Mi cuenta"
+  },
+  "logout":{
+    "title": "Cerrar sesión"
+  },
+  "changes":{
+    "title": "Mis cambios"
+  },
   "floor": {
     "title": "Planta",
     "popups":{
       "room":{
-        "button": "Más información"
+        "button":{
+          "info": "Más información",
+          "cambio": "Notificar cambio",
+          "incidencia": "Notificar incidencia"
+          }
       },
       "edit_poi":{
         "button": "Editar",
@@ -81,7 +97,23 @@
     },
     "buttons":{
       "photo": "Ver fotos",
-      "map": "Ver mapa"
+      "map": "Ver mapa",
+      "change": "Modificar espacio"
+    }
+  },
+  "room_change":{
+    "title": "Cambios en el espacio",
+    "labels":{
+      "id": "Identificador",
+      "room": "Espacio",
+      "type": "Tipo",
+      "area": "Superficie"
+    },
+    "buttons":{
+      "photo": "Ver fotos",
+      "map": "Ver mapa",
+      "accept": "Aceptar",
+      "cancel": "Cancelar"
     }
   },
   "photos":{
@@ -207,6 +239,48 @@
       }
     }
   },
+  "notifications":{
+    "modals":{
+      "creation":{
+        "title":{
+           "cambio": "Nuevo Cambio",
+           "incidencia": "Nueva Incidencia"
+        },
+        "labels": {
+          "room": "Espacio",
+          "comments": "Descripción",
+          "photo": "Foto",
+          "email": "Email"
+        },
+        "buttons":{
+          "create":{
+            "cambio": "Enviar cambio",
+            "incidencia": "Enviar incidencia"
+          }
+        },
+        "errors":{
+          "mandatory_field": {
+            "room": "Espacio es un campo obligatorio",
+            "comments": "La descripción es un campo obligatorio"
+          }
+        }
+      },
+      "confirm_creation":{
+        "title":{
+          "cambio": "Confirmar envío de cambio",
+          "incidencia": "Confirmar envío de incidencia"
+        },
+        "text1":{
+          "cambio": "Al confirmar el cambio, los datos se enviarán y serán revisados por un administrador.",
+          "incidencia": "Al confirmar la incidencia, los datos se enviarán y serán revisados por un administrador."
+        },
+          "buttons":{
+          "ok": "Enviar",
+          "cancel": "Cancelar"
+        }
+      }
+    }
+  },
   "errors":{
     "error": "¡Error!",
     "warning": "¡Aviso!",
@@ -232,6 +306,12 @@
       "edition": "Ha ocurrido un error enviando<br>la petición de modificación del punto de interés",
       "delete": "Ha ocurrido un error enviando<br>la petición de eliminación del punto de interés",
       "search": "Ha ocurrido un error recuperando<br>los puntos de interés"
+    },
+    "notifications":{
+      "creation":{
+        "cambio": "Ha ocurrido un error al enviar el cambio",
+        "incidencia": "Ha ocurrido un error al enviar la incidencia"
+      }
     }
   },
   "success":{
@@ -240,6 +320,12 @@
       "creation": "Creación del punto de interés enviada con éxito",
       "edition": "Petición de modificación del punto de interés enviada con éxito",
       "delete": "Petición de eliminación del punto de interés enviada con éxito"
+    },
+    "notifications":{
+      "creation":{
+          "cambio": "Cambio enviado con éxito",
+          "incidencia": "Incidencia enviada con éxito"
+        }
     }
   },
   "loading_mask":{

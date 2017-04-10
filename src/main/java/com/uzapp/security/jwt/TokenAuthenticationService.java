@@ -41,8 +41,6 @@ public class TokenAuthenticationService {
     public Authentication getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(tokenHeader);
 
-        System.out.println("HELLO? - token:" + token);
-
         if (token != null) {
 
           // Splits the string to get rid of 'Bearer ' prefix
@@ -51,11 +49,7 @@ public class TokenAuthenticationService {
           }
 
         	// parse the token.
-          System.out.println("Gonna parse this shit");
         	JwtInfo tokenInfo = new JwtUtil().parseToken(token);
-
-          System.out.println("TokenInfo: " + tokenInfo);
-
         	if (tokenInfo != null) {
 
 	        	String username = tokenInfo.getUsername();
@@ -70,7 +64,7 @@ public class TokenAuthenticationService {
             //
 	          //   	if (username.equals(dbUsername)) {
 
-        		System.out.println("Usuario: " + username + ", Rol: " + role);
+        		// System.out.println("Usuario: " + username + ", Rol: " + role);
 
         		// we managed to retrieve a user
         		AuthenticatedUser user = new AuthenticatedUser(username);
@@ -87,8 +81,6 @@ public class TokenAuthenticationService {
         	}
         }
       	else {
-
-          System.out.println("PETADA AL PARSEAR");
 
       		// error while parsing token, not valid
       		throw new JwtMalformedException("Token not valid");

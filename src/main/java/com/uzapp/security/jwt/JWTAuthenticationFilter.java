@@ -22,11 +22,12 @@ public class JWTAuthenticationFilter extends GenericFilterBean{
 
     	// Checks if the token provided is valid
     	try {
-    		Authentication authentication = new TokenAuthenticationService().getAuthentication((HttpServletRequest) request);
 
-        System.out.println("Authentication: " + authentication);
-
-    		SecurityContextHolder.getContext().setAuthentication(authentication);
+        if (((HttpServletRequest) request).getHeader("Authorization") != null) {
+          Authentication authentication = new TokenAuthenticationService().getAuthentication((HttpServletRequest) request);
+          System.out.println("Authentication: " + authentication);
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
     		filterChain.doFilter(request,response);
     	}
     	catch (JwtMalformedException ex) {

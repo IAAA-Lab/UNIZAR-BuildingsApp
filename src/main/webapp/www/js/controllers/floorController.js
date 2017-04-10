@@ -2,7 +2,9 @@
  * PlanCtrl: Controlador del plano del edificio en  Leaflet
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $ionicLoading, $ionicPopup, geoService, infoService, poisService, sharedProperties, APP_CONSTANTS) {
+UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
+      $ionicLoading, $ionicPopup, geoService, infoService, poisService,
+      sharedProperties, loginService, notificationService, APP_CONSTANTS) {
 
     //This code will be executed every time the controller view is loaded
     $scope.$on('$ionicView.beforeEnter', function(){
@@ -24,6 +26,14 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.modalEditPOI = modal;
+    });
+
+    //Define Ionic Modal for add a new Notification
+    $ionicModal.fromTemplateUrl('templates/addNotification.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.modalCreateNotification = modal;
     });
 
     $scope.$on('modal.hidden', function(event, modal) {
@@ -65,11 +75,107 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                     $scope.modalCreatePOI.show().then(function(){
                         $('#add-poi-modal .form-error').each(function(el) { $(this).hide()});
                     });
-                } 
+                }
             },
             function(err){
                 console.log("Error on getInfoEstancia", err);
                 var errorMsg = '<div class="text-center">'+$scope.i18n.errors.info.room+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
+            }
+        );
+    };
+
+    //Open the modal for add a POI and load data in the modal form
+    $scope.openCreateNotificationModal = function(id,tipoNotificacion) {
+        console.log("openCreateNotificationModal", id);
+
+        infoService.getRoomInfo(id).then(
+            function (data) {
+                if (data !== null && typeof(data)!=='undefined') {
+                    $ionicLoading.show({template: $scope.i18n.loading_mask.loading});
+
+                    $scope.existsRoom = (data.ID_espacio !== null && typeof data.ID_espacio !== 'undefined') ? true : false;
+                    $scope.existsEmail = false;
+                    var user;
+
+                    // Obtains user info so it can show its email
+                    loginService.getUserInfo().then(function(_user) {
+                      user = _user;
+                      $scope.existsEmail = true;
+                      dataToModal();
+                    })
+                    .catch(function() {
+                      user = {
+                        username: undefined,
+                        email: undefined
+                      };
+                      dataToModal();
+                    });
+
+                    var dataToModal = function() {
+                      $scope.data = {
+                        roomId: data.ID_espacio,
+                        roomName: data.ID_centro,
+                        room: data.ID_espacio + ' (' + data.ID_centro + ')',
+
+                        username: user.username,
+                        email: user.email,
+                        type: tipoNotificacion
+                      };
+                      console.log("Data to modal",$scope.data);
+                      $ionicLoading.hide();
+                      $scope.modalCreateNotification.show().then(function(){
+                        $('#add-notification-modal .form-error').each(function(el) {
+                          $(this).hide();
+                        });
+                      });
+                    };
+                }
+            },
+            function(err){
+                console.log("Error on getInfoEstancia", err);
+                var errorMsg = '<div class="text-center">'+$scope.i18n.errors.info.room+'</div>';
+                $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
+            }
+        );
+    };
+
+    $scope.confirmCreateNotification = function(data) {
+        console.log("confirmCreateNotification form",data);
+        $ionicLoading.show({ template: $scope.i18n.loading_mask.sending});
+        notificationService.createNotification(data).then(
+            function() {
+
+                if (data.foto !== null) {
+
+                  // notificationService.selectPicture();
+
+                  console.log("Create notification success");
+                  $ionicLoading.hide();
+
+                  var successMsg = '';
+                  if (data.type == 1) {
+                    successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.cambio+'</div>';
+                  }
+                  else {
+                    successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.incidencia+'</div>';
+                  }
+
+                  $scope.showInfoPopup($scope.i18n.success.success, successMsg);
+                  $scope.modalCreateNotification.hide();
+                }
+            },
+            function(err){
+                console.log("Error on create notification", err);
+                $ionicLoading.hide();
+
+                var errorMsg = '';
+                if (data.type == 1) {
+                  errorMsg = '<div class="text-center">'+$scope.i18n.errors.notifications.creation.cambio+'</div>';
+                }
+                else {
+                  errorMsg = '<div class="text-center">'+$scope.i18n.errors.notifications.creation.incidencia+'</div>';
+                }
                 $scope.showInfoPopup($scope.i18n.errors.error, errorMsg);
             }
         );
@@ -101,7 +207,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                         }
                     }
                 },
-                { 
+                {
                     text: $scope.i18n.pois.modals.confirm_creation.buttons.cancel,
                     type: 'button-assertive'
                 }
@@ -156,7 +262,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                     $scope.modalEditPOI.show().then(function(){
                         $('#edit-poi-modal .form-error').each(function(el) { $(this).hide()});
                     });
-                } 
+                }
             },
             function(err){
                 console.log("Error on get POI info", err);
@@ -196,7 +302,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                         }
                     }
                 },
-                { 
+                {
                     text: $scope.i18n.pois.modals.confirm_creation.buttons.cancel,
                     type: 'button-assertive'
                 }
@@ -251,7 +357,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                             $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_mail, duration: 1500});
                         }
                         else if (reason.length==0 || reason==null || typeof(reason)=='undefined') {
-                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_reason, duration: 1500});   
+                            $ionicLoading.show({ template: $scope.i18n.loading_mask.invalid_reason, duration: 1500});
                         }
                         else {
                             data.email = email;
@@ -261,7 +367,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal, $i
                         }
                     }
                 },
-                { 
+                {
                     text: $scope.i18n.pois.modals.confirm_delete.buttons.cancel,
                     type: 'button-stable'
                 }
