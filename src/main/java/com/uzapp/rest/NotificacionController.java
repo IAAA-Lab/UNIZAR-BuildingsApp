@@ -640,10 +640,21 @@ public class NotificacionController {
     	logger.info("Service: update notificacion");
     	connection = ConnectionManager.getConnection();
 
-    	String query = "UPDATE tb_notificaciones" +
-                          " SET tipo_notificacion=?, id_espacio=?, descripcion=?," +
-                          " id_usuario=?, id_admin_validador=?, estado=?," +
-                          " foto=?, email_usuario=?, comentario_admin=?" +
+      // COALESCE: tiene 2 parametros, aplica el primero que no sea null,
+      // de esta forma, los atributos de la nueva peticion de actualizacion
+      // que sean null no se insertan en la base de datos, ya que utiliza
+      // el segunda parametro que representa el dato existente en la base de
+      // datos
+    	String query = "UPDATE tb_notificaciones SET" +
+                          " tipo_notificacion = COALESCE(?,tipo_notificacion)," +
+                          " id_espacio = COALESCE(?,id_espacio)," +
+                          " descripcion = COALESCE(?,descripcion)," +
+                          " id_usuario = COALESCE(?,id_usuario)," +
+                          " id_admin_validador = COALESCE(?,id_admin_validador)," +
+                          " estado = COALESCE(?,estado)," +
+                          " foto = COALESCE(?,foto)," +
+                          " email_usuario = COALESCE(?,email_usuario)," +
+                          " comentario_admin = COALESCE(?,comentario_admin)" +
                           " WHERE id_notificacion = '" + id_notificacion + "'" +
                           " AND tipo_notificacion = '" + tipoNotificacion + "'";
 

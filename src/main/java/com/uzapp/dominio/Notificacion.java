@@ -34,7 +34,8 @@ public class Notificacion {
 											@JsonProperty("id_usuario") String id_usuario,
 											@JsonProperty("estado") String estado,
 											@JsonProperty("foto") String foto,
-											@JsonProperty("email_usuario") String email_usuario) {
+											@JsonProperty("email_usuario") String email_usuario,
+											@JsonProperty("comentario_admin") String comentario_admin) {
 
 		this.id_espacio = id_espacio;
 		this.descripcion = descripcion;
@@ -42,49 +43,8 @@ public class Notificacion {
 		this.estado = estado;
 		this.foto = foto;
 		this.email_usuario = email_usuario;
+		this.comentario_admin = comentario_admin;
 	}
-
-	// public Notificacion(String id_espacio, String descripcion,
-	// String id_usuario, String estado, String email_usuario) {
-	// 	this.id_espacio = id_espacio;
-	// 	this.descripcion = descripcion;
-	// 	this.id_usuario = id_usuario;
-	// 	this.estado = estado;
-	// 	this.email_usuario = email_usuario;
-	// }
-	//
-	// public Notificacion(String id_espacio, String descripcion,
-	// 		String estado, String foto, String email_usuario) {
-	// 	this.id_espacio = id_espacio;
-	// 	this.descripcion = descripcion;
-	// 	this.estado = estado;
-	// 	this.foto = foto;
-	// 	this.email_usuario = email_usuario;
-	// }
-	//
-	//
-	// public Notificacion(String id_espacio, String descripcion,
-	// 		int estado, String email_usuario) {
-	// 	this.id_espacio = id_espacio;
-	// 	this.descripcion = descripcion;
-	// 	this.estado = estado;
-	// 	this.email_usuario = email_usuario;
-	// }
-	//
-	// public Notificacion(String id_espacio, String descripcion,
-	// 		String foto, int estado) {
-	// 	this.id_espacio = id_espacio;
-	// 	this.descripcion = descripcion;
-	// 	this.estado = estado;
-	// 	this.foto = foto;
-	// }
-	//
-	// public Notificacion(String id_espacio, String descripcion,
-	// 		int estado) {
-	// 	this.id_espacio = id_espacio;
-	// 	this.descripcion = descripcion;
-	// 	this.estado = estado;
-	// }
 
 	public int getId_notificacion() {
 		return id_notificacion;

@@ -13,7 +13,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
 
       // Fills the data structure with notifications info
       angular.forEach($scope.cambios, function(value, key){
-        
+
         // If a day or month are lower than 10, then it adds a '0'
         // first so it looks better
         var day = value.fecha.date.day < 10 ?
