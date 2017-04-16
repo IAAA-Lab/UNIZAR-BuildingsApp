@@ -91,3 +91,33 @@ function deleteIncidencia(id, success, error){
         }
     });
 }
+
+function getFoto(id_foto, success, error){
+    console.log('getFoto', JSON.stringify(arguments));
+
+    $.ajax({
+        url : getConstants('API_URL') + '/notificacion/imagen/' + id_foto,
+        type: 'GET',
+        success: function(data, textStatus, jqXHR)
+        {
+            console.log('Success getFoto');
+            success(data);
+        },
+        error: function (jqXHR, textStatus, errorThrown)
+        {
+            console.log('Error getFoto', jqXHR, errorThrown);
+            error(jqXHR, textStatus, errorThrown);
+        }
+    });
+}
+
+function sendEmail(emailData) {
+  console.log('sendEmail', JSON.stringify(arguments));
+
+  $.ajax({
+      url : getConstants('API_URL') + '/mail',
+      type: 'POST',
+      data: JSON.stringify(emailData),
+      contentType: 'application/json',
+  });
+}

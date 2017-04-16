@@ -1,17 +1,17 @@
 #changes-view {
-  i.px14::before{
-    font-size:14px;
+  .list .item.item-accordion {
+    line-height: 38px;
+    padding-top: 0;
+    padding-bottom: 0;
+    transition: 0.09s all linear;
   }
-  .card-yellow .item{
-    background: yellow;
+
+  .list .item.item-accordion.ng-hide {
+    line-height: 0px;
   }
-  .card-green .item{
-    background: green;
-  }
-  .card-red .item{
-    background: red;
-  }
-  .card-orange .item{
-    background: orange;
+
+  .list .item.item.accordion.ng-hide-add,
+  .list .item.item.accordion.ng-hide-remove, {
+    display: block !important;
   }
 }

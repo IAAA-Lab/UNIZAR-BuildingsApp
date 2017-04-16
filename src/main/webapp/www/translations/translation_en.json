@@ -47,6 +47,9 @@
   "changes":{
     "title": "My changes"
   },
+  "changeDetails":{
+    "title": "Edit change"
+  },
   "floor": {
     "title": "Floor",
     "popups":{
@@ -262,6 +265,16 @@
         }
       }
     }
+  },
+  "cambios":{
+    "success_upload":{
+      "title": "Change successfully uploaded",
+      "text": "The change has been successfully uploaded. Remember it must be first approved or rejected by an admin."
+    }
+  },
+  "panoramas":{
+    "title": "View panoramic image",
+    "menu": "Test 360 images"
   },
   "errors":{
     "error": "¡Error!",

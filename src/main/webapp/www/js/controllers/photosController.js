@@ -2,7 +2,7 @@
  * PhotosCtrl: Controlador encargado de las acciones de la vista de fotos de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window, infoService, $ionicLoading, $ionicPopup, $cordovaCamera, APP_CONSTANTS){
+UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window, $http, infoService, $ionicLoading, $ionicPopup, $cordovaCamera, APP_CONSTANTS){
 
         var photos = $rootScope.photos,
             numPhotos = photos.length,
@@ -297,11 +297,21 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                 formData.append('email', email);
                 formData.append('mode', 'user');
                 console.log("formData", formData);
+
+                // var name = [localStorage.room, new Date().getTime()].join('_') + '.jpg';
+                // var newParams = {
+                //   "name": name,
+                //   "file": file,
+                //   "email": email,
+                //   "mode": "user"
+                // };
                 $http({
                     url :  APP_CONSTANTS.URI_API + 'photos/upload/',
                     method: "POST",
                     data : formData,
-                    contentType: false,
+                    headers: {
+                      'Content-Type': undefined,
+                    },
                     cache: false,
                     processData: false,
                     success: function(data, textStatus, jqXHR)

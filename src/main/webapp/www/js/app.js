@@ -91,6 +91,15 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
                 controller: 'ChangesCtrl'
               }
             }
+          })
+          .state('app.changeDetails', {
+              url: "/changeDetails/:cambio",
+              views: {
+                  'menuContent':{
+                      templateUrl: "templates/changeDetails.html",
+                      controller: 'ChangeDetailsCtrl'
+                  }
+              }
           })/*
           .state('app.favs', {
             url: "/favs",
@@ -125,6 +134,15 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
                   'menuContent':{
                       templateUrl: "templates/photos.html",
                       controller: 'PhotosCtrl'
+                  }
+              }
+          })
+          .state('app.panorama', {
+              url: "/panorama",
+              views: {
+                  'menuContent':{
+                      templateUrl: "templates/panoramaView.html",
+                      controller: 'PanoramaCtrl'
                   }
               }
           })

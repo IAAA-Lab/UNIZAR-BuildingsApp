@@ -314,7 +314,7 @@ $(function() {
                   var vistaEstado = data;
                   if (data == 'Aprobado') vistaEstado = 'Aprobada';
                   else if (data == 'Rechazado') vistaEstado = 'Rechazada';
-                  return vistaEstado; 
+                  return vistaEstado;
                 }},
                 { data: 'descripcion', defaultContent: '' },
                 { data: 'fecha', defaultContent: 'No disponible', render: function(data, type, full, meta){
@@ -327,6 +327,7 @@ $(function() {
                         time = [hour,minute,second].join(':');
                     return date + ' ' + time;
                 }},
+                { data: 'foto' , defaultContent: 'No disponible'},
                 { data: 'ciudad' , defaultContent: 'No disponible', render: function(data, type, full, meta){
                     if (data !== undefined) {
                       return data[0] + data.toLowerCase().substr(1);
@@ -337,7 +338,8 @@ $(function() {
                 { data: 'planta', type: 'num', defaultContent: 'No disponible' },
                 { data: 'espacio', defaultContent: 'No disponible' },
                 { data: 'id_espacio', defaultContent: '' },
-                { data: 'direccion', defaultContent: 'No disponible' }
+                { data: 'direccion', defaultContent: 'No disponible' },
+                { data: 'email_usuario', defaultContent: 'Anónimo'}
             ]
         });
     });
@@ -370,6 +372,17 @@ $(function() {
                 $('#admin-incidencias-success-text').text('Información de la incidencia actualizada correctamente');
                 $('#admin-incidencias-success').show();
                 $('body').unmask();
+
+                // Envía un correo al usuario creador de la incidencia para avisarle
+                // de su resolucion (si se ha cambiado el estado de la misma)
+                if (sendData.estado != originalIncidenciaData.estado &&
+                    originalIncidenciaData.email_usuario !== undefined) {
+                      
+                  sendEmail({
+                    "mensaje": sendData.comentario_admin,
+                    "destinatario": originalIncidenciaData.email_usuario
+                  });
+                }
             },
             function(jqXHR, textStatus, errorThrown){
                 $('body').unmask();

@@ -260,18 +260,36 @@ $(function() {
                     action: function ( e, dt, node, config ) {
                         if ($('#dataTable-cambios').DataTable().rows({ selected: true })[0].length == 1) {
                             var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
-                            var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
-                            var tempImage = new Image();
-                            tempImage.src = imagePath;
-                            tempImage.onload = function() {
-                                console.log('tempImage ', tempImage.width, tempImage.height);
-                                var resizedImage = resizeImage(tempImage.width, tempImage.height);
-                                console.log('resizedImage', resizedImage);
-                                $('#image-preview-modal').modal('show');
-                                $('#image-preview').css('width', resizedImage.width);
-                                $('#image-preview').css('height',resizedImage.height);
-                                $('#image-preview').attr('src', imagePath);
-                            };
+
+                            // Obtiene la imagen asociada a ese cambio si es que existe
+                            if (cambioData.foto !== undefined) {
+
+                              getFoto(cambioData.foto,
+                                function(imageData) {
+                                  // var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
+                                  var tempImage = new Image();
+                                  tempImage.src = 'data:image/jpg;base64,' + imageData;
+                                  tempImage.onload = function() {
+                                      console.log('tempImage ', tempImage.width, tempImage.height);
+                                      var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                                      console.log('resizedImage', resizedImage);
+                                      $('#image-preview-modal').modal('show');
+                                      $('#image-preview').css('width', resizedImage.width);
+                                      $('#image-preview').css('height',resizedImage.height);
+                                      $('#image-preview').attr('src', tempImage.src);
+                                  };
+                                },
+                                function(jqXHR, textStatus, errorThrown){
+                                    $('body').unmask();
+                                    // $('#edit-cambio-modal .close').click();
+                                    $('#admin-cambios-error-text').text('Error obteniendo la imagen del cambio: ' + jqXHR.responseText);
+                                    $('#admin-cambios-error').show();
+                                    setTimeout(function(){
+                                        if ($('#admin-cambios-error').is(':visible'))
+                                            $('#admin-cambios-error').hide();
+                                    }, 30000);
+                                });
+                              }
                         }
                     }
                 },
@@ -326,6 +344,7 @@ $(function() {
                         time = [hour,minute,second].join(':');
                     return date + ' ' + time;
                 }},
+                { data: 'foto' , defaultContent: 'No disponible'},
                 { data: 'ciudad' , defaultContent: 'No disponible', render: function(data, type, full, meta){
                     if (data !== undefined) {
                       return data[0] + data.toLowerCase().substr(1);
@@ -420,29 +439,69 @@ $(function() {
         };
     };
 
-    $('#preview-edit-cambio-btn').on('click', function() {
-        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-cambio-name').val();
-        var tempImage = new Image();
-        tempImage.src = imagePath;
-        tempImage.onload = function() {
-            var resizedImage = resizeImage(tempImage.width, tempImage.height);
-            $('#image-preview-modal').modal('show');
-            $('#image-preview').css('width', resizedImage.width);
-            $('#image-preview').css('height',resizedImage.height);
-            $('#image-preview').attr('src', imagePath);
-        };
+    $('#preview-edit-cambio-photo-btn').on('click', function() {
+      var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
+
+      // Obtiene la imagen asociada a ese cambio si es que existe
+      if (cambioData.foto !== undefined) {
+
+        getFoto(cambioData.foto,
+          function(imageData) {
+            // var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
+            var tempImage = new Image();
+            tempImage.src = 'data:image/jpg;base64,' + imageData;
+            tempImage.onload = function() {
+                console.log('tempImage ', tempImage.width, tempImage.height);
+                var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                console.log('resizedImage', resizedImage);
+                $('#image-preview-modal').modal('show');
+                $('#image-preview').css('width', resizedImage.width);
+                $('#image-preview').css('height',resizedImage.height);
+                $('#image-preview').attr('src', tempImage.src);
+            };
+          },
+          function(jqXHR, textStatus, errorThrown){
+              $('body').unmask();
+              $('#admin-cambios-error-text').text('Error obteniendo la imagen del cambio: ' + jqXHR.responseText);
+              $('#admin-cambios-error').show();
+              setTimeout(function(){
+                  if ($('#admin-cambios-error').is(':visible'))
+                      $('#admin-cambios-error').hide();
+              }, 30000);
+          });
+        }
     });
 
-    $('#preview-delete-cambio-btn').on('click', function() {
-        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#delete-cambio-name').val();
-        var tempImage = new Image();
-        tempImage.src = imagePath;
-        tempImage.onload = function() {
-            var resizedImage = resizeImage(tempImage.width, tempImage.height);
-            $('#image-preview-modal').modal('show');
-            $('#image-preview').css('width', resizedImage.width);
-            $('#image-preview').css('height',resizedImage.height);
-            $('#image-preview').attr('src', imagePath);
-        };
+    $('#preview-delete-cambio-photo-btn').on('click', function() {
+      var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
+
+      // Obtiene la imagen asociada a ese cambio si es que existe
+      if (cambioData.foto !== undefined) {
+
+        getFoto(cambioData.foto,
+          function(imageData) {
+            // var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
+            var tempImage = new Image();
+            tempImage.src = 'data:image/jpg;base64,' + imageData;
+            tempImage.onload = function() {
+                console.log('tempImage ', tempImage.width, tempImage.height);
+                var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                console.log('resizedImage', resizedImage);
+                $('#image-preview-modal').modal('show');
+                $('#image-preview').css('width', resizedImage.width);
+                $('#image-preview').css('height',resizedImage.height);
+                $('#image-preview').attr('src', tempImage.src);
+            };
+          },
+          function(jqXHR, textStatus, errorThrown){
+              $('body').unmask();
+              $('#admin-cambios-error-text').text('Error obteniendo la imagen del cambio: ' + jqXHR.responseText);
+              $('#admin-cambios-error').show();
+              setTimeout(function(){
+                  if ($('#admin-cambios-error').is(':visible'))
+                      $('#admin-cambios-error').hide();
+              }, 30000);
+          });
+        }
     });
 });

@@ -144,11 +144,10 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
         console.log("confirmCreateNotification form",data);
         $ionicLoading.show({ template: $scope.i18n.loading_mask.sending});
         notificationService.createNotification(data).then(
-            function() {
+            function(id_notificacion) {
 
                 if (data.foto !== null) {
-
-                  // notificationService.selectPicture();
+                  $scope.uploadPictureFromInput(id_notificacion);
 
                   console.log("Create notification success");
                   $ionicLoading.hide();
@@ -450,5 +449,73 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
             title: title,
             template: msg
         });
+    };
+
+    // Upload picture to server
+    $scope.uploadPictureFromInput = function(id_notificacion) {
+        $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
+        var file = $('input[name=photo]')[0].files[0];
+
+        if (typeof(file) == 'undefined') {
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.error_select_image, duration: 1500});
+        }
+        else if (file.type.indexOf("image") == -1) {
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.error_invalid_image, duration: 1500});
+        }
+        else if (file.size > 1048576) {
+            //TODO: [DGP] Delete condition when bug fixed on server side
+            $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
+        }
+        else {
+            var formData = new FormData();
+            formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
+            formData.append('file', file);
+            formData.append('id_notificacion', id_notificacion);
+
+            $http({
+                url :  APP_CONSTANTS.URI_API + 'notificacion/photo',
+                method: "POST",
+                data : formData,
+                headers: {
+                  'Content-Type': undefined,
+                },
+                cache: false,
+                processData: false,
+                success: function(data, textStatus, jqXHR)
+                {
+                    console.log("Success uploading photo to server", arguments);
+                    popup.close();
+                    $ionicLoading.hide();
+                    var alertPopup = $ionicPopup.alert({
+                        title: $scope.i18n.photos.modals.success_upload.title,
+                        template: '<p>'+$scope.i18n.photos.modals.success_upload.text+'</p>'
+                    });
+                    alertPopup.then(function(res){
+                        if ($('.popup-container').length > 0) {
+                            $('.popup-container').remove();
+                        }
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    console.log("Error uploading photo to server", arguments);
+                    $ionicLoading.hide();
+                    $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
+                }
+            })
+            .then(function() {
+              console.log("Success uploading photo to server", arguments);
+              $ionicLoading.hide();
+              var alertPopup = $ionicPopup.alert({
+                  title: $scope.i18n.cambios.success_upload.title,
+                  template: '<p>'+$scope.i18n.cambios.success_upload.text+'</p>'
+              });
+              alertPopup.then(function(res){
+                  if ($('.popup-container').length > 0) {
+                      $('.popup-container').remove();
+                  }
+              });
+            });
+        }
     };
 });

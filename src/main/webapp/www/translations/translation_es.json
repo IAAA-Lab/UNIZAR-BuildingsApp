@@ -48,6 +48,9 @@
   "changes":{
     "title": "Mis cambios"
   },
+  "changeDetails":{
+    "title": "Editar cambio"
+  },
   "floor": {
     "title": "Planta",
     "popups":{
@@ -280,6 +283,16 @@
         }
       }
     }
+  },
+  "cambios":{
+    "success_upload":{
+      "title": "Cambio subido con éxito",
+      "text": "El cambio se ha enviado con éxito. Recuerde que primero deberá ser aprobado por un administrador"
+    }
+  },
+  "panoramas":{
+    "title": "Ver imagen panorámica",
+    "menu": "Probar imágenes en 360"
   },
   "errors":{
     "error": "¡Error!",

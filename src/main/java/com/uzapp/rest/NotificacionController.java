@@ -3,6 +3,7 @@ package com.uzapp.controller;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.Properties;
+import java.util.Base64;
 
 import com.google.gson.Gson;
 
@@ -42,6 +44,8 @@ import com.uzapp.dominio.Notificacion;
 import com.uzapp.dominio.User;
 import com.uzapp.security.jwt.utils.JwtInfo;
 import com.uzapp.security.jwt.utils.JwtUtil;
+
+import javax.servlet.http.HttpServletResponse;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -286,7 +290,56 @@ public class NotificacionController {
         return updateNotificationPhoto(name, file, id_notificacion);
   }
 
+  /**
+  * API: Download single file using Spring Controller
+  */
+  @RequestMapping(
+          value = "/imagen/{id_imagen}",
+          method = RequestMethod.GET)
+  public ResponseEntity<?> getPhoto(
+      @PathVariable("id_imagen") String id_imagen,
+      HttpServletResponse response) {
+
+        logger.info("Service: obtain a photo by name");
+        return getPhotoByName(id_imagen, response);
+  }
+
   // NO MORE ENDPOINTS BELOW //
+
+  private ResponseEntity<?> getPhotoByName(String name, HttpServletResponse response) {
+
+    if(!name.equals("")){
+      try
+      {
+        String imageString = null;
+        String fullName = photosPath + name + ".jpg";
+
+        // // Creates a byte[] with photo name
+        logger.info("Photo name", fullName);
+        File file = new File(fullName);
+        byte[] image = new byte[(int) file.length()];
+
+        // Reads image bytes into 'bytesArray'
+        FileInputStream fis = new FileInputStream(file);
+        fis.read(image);
+
+        // Converts image to base64
+        Base64.Encoder encoder = Base64.getEncoder();
+        imageString = encoder.encodeToString(image);
+
+        // Sets contentType
+        // response.setContentType("image/png");
+        // response.setContentType("image/jpg");
+        return new ResponseEntity<>(imageString, HttpStatus.OK);
+      }
+      catch (Exception e) {
+        e.printStackTrace();
+        return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+    } else {
+      return new ResponseEntity<>("Photo download failed because name " + name + " was empty", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   private ResponseEntity<?> updateNotificationPhoto(String name,
         MultipartFile file, int id_notificacion) {
@@ -601,18 +654,18 @@ public class NotificacionController {
         notificacion.setComentario_admin(rs.getString("comentario_admin"));
 
         // Obtiene informacion adicional sobre el espacio
-        // Estancias estanciasRestController = new Estancias();
-        // ResultSet info = estanciasRestController.getRoomInfo(
-        //   connection, notificacion.getId_espacio());
-        //
-        // if (info.next()){
-        //   notificacion.setCiudad(info.getString("ciudad"));
-        //   notificacion.setCampus(info.getString("campus"));
-        //   notificacion.setEdificio(info.getString("edificio"));
-        //   notificacion.setPlanta(info.getString("floors"));
-        //   notificacion.setEspacio(info.getString("id_centro"));
-        //   notificacion.setDireccion(info.getString("dir"));
-        // }
+        Estancias estanciasRestController = new Estancias();
+        ResultSet info = estanciasRestController.getRoomInfo(
+          connection, notificacion.getId_espacio());
+
+        if (info.next()){
+          notificacion.setCiudad(info.getString("ciudad"));
+          notificacion.setCampus(info.getString("campus"));
+          notificacion.setEdificio(info.getString("edificio"));
+          notificacion.setPlanta(info.getString("floors"));
+          notificacion.setEspacio(info.getString("id_centro"));
+          notificacion.setDireccion(info.getString("dir"));
+        }
 
         notificaciones.add(notificacion);
       }

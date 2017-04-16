@@ -1,0 +1,66 @@
+<ion-view title={{i18n.changeDetails.title}} id="change-details">
+
+  <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons>
+
+  <ion-content>
+
+      <!-- Información detallada de un cambio -->
+      <ion-card>
+        <ion-item ng-style="{'background' : true ? getCambioRGBA() : 'none'}">
+          <span style="float:left">{{cambio.espacio}}</span>
+          <span style="float:right">{{cambio.fecha}}</span>
+        </ion-item>
+
+        <!-- Muestra la imagen del cambio -->
+        <div id="imageDiv"></div>
+        <div id="imagePreview"></div>
+
+        <!-- Add image -->
+        <label class="item item-input">
+            <span class="input-label">{{i18n.notifications.modals.creation.labels.photo}}</span>
+            <input type="file" ng-file-select="onFileSelect($files)" name="photo" ng-model="cambio.imageInput" resizable="false">
+        </label>
+
+        <!-- <label class="item item-input">
+          <span class="input-label">Tu descripción</span>
+        </label>
+
+        <label class="item item-input">
+          <textarea name="descripcion" ng-model="cambio.descripcion"
+          class="item-text-wrap">
+        </label>
+
+        <label class="item item-input">
+          <span class="input-label">Comentario del administrador</span>
+        </label>
+
+        <label class="item item-input">
+          <textarea name="comentario_admin" ng-model="cambio.comentario_admin"
+          class="item-text-wrap">
+        </label>
+
+        <ion-card>
+          <ion-card-header>
+            Tu descripción
+          </ion-card-header>
+          <ion-card-content class="item-text-wrap">
+            <br>
+            {{cambio.descripcion | limitTo:200}}{{cambio.descripcion.length > 200 ? '...' : ''}}
+            <br><br>
+          </ion-card-content>
+        </ion-card> -->
+
+        <ion-card>
+          <ion-card-content class="item-text-wrap">
+            <br>
+            Comentario del administrador: {{cambio.comentario_admin | limitTo:200}}{{cambio.comentario_admin.length > 200 ? '...' : ''}}
+            <br><br>
+            <span class="button button-positive" style="float:left" ng-click="updateCambio()">Guardar y enviar</span>
+            <span class="button button-assertive" style="float:right" ng-click="showListaCambios()">Cancelar</span>
+          </ion-card-content>
+        </ion-card>
+      </ion-card>
+  </ion-content>
+</ion-view>
