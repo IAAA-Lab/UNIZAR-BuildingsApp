@@ -40,8 +40,8 @@
                         <th>ID</th>
                         <th>Estado</th>
                         <th>Descripción</th>
-                        <th>Fecha creación</th>
-                        <th>Foto</th>
+                        <th>Fecha de creación</th>
+                        <th>Última modificación</th>
                         <th>Ciudad</th>
                         <th>Campus</th>
                         <th>Edificio</th>
@@ -61,61 +61,50 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="edit-cambio-modal-title">Editar datos del cambio</h4>
+                <h4 class="modal-title" id="edit-cambio-modal-title">Revisar datos del cambio</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-ciudad"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="campus" class="col-sm-2 control-label">Campus</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-campus"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edificio" class="col-sm-2 control-label">Edificio</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-edificio"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="planta" class="col-sm-2 control-label">Planta</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-planta"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label for="espacio" class="col-sm-2 control-label">Espacio</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-espacio"></select>
+                            <input class="form-control" id="edit-cambio-espacio" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group" id="edit-cambio-descripcion-form-group">
+                        <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control" id="edit-cambio-descripcion"
+                                    style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="estado" class="col-sm-2 control-label">Estado</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-cambio-estado"></select>
+                            <input class="form-control" id="edit-cambio-estado" disabled></input>
                         </div>
                     </div>
                     <div class="form-group" id="edit-cambio-comentario_admin-form-group">
                         <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" id="edit-cambio-comentario_admin"></textarea>
+                            <textarea class="form-control" id="edit-cambio-comentario_admin"
+                                      style="height:10em;max-height:15em;resize:vertical"></textarea>
                         </div>
                     </div>
                     <div class="form-group" style="text-align: center">
                         <button type="button" class="btn btn-default" id="preview-edit-cambio-photo-btn"
                                 data-toggle="popover">Ver foto</button>
+                        <button type="button" class="btn btn-default" id="preview-edit-cambio-photo-unavailable-btn"
+                                  disabled>No hay foto disponible</button>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="edit-cambio-btn">Guardar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+              <button type="button" style="float:left" class="btn btn-primary" id="edit-cambio-approve-btn">Aprobar</button>
+              <button type="button" style="float:left" class="btn btn-info" id="edit-cambio-revise-btn">Pedir revisión</button>
+              <button type="button" style="float:left" class="btn btn-info" id="edit-cambio-update-revision-btn">Actualizar petición</button>
+              <button type="button" style="float:left" class="btn btn-danger" id="edit-cambio-reject-btn">Rechazar</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -129,59 +118,44 @@
                 <h4 class="modal-title" id="delete-cambio-modal-title">Eliminar cambio</h4>
             </div>
             <div class="modal-body">
-                <div class="panel panel-default">
-                    <div class="panel-body" id="delete-cambio-modal-panel">
-                        ¿Está seguro de eliminar el cambio seleccionado?
+              <form class="form-horizontal">
+                <div class="form-group">
+                    <label for="espacio" class="col-sm-2 control-label">Espacio</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="delete-cambio-espacio" disabled></input>
                     </div>
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-ciudad" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="campus" class="col-sm-2 control-label">Campus</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-campus" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="edificio" class="col-sm-2 control-label">Edificio</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-edificio" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="planta" class="col-sm-2 control-label">Planta</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-planta" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="espacio" class="col-sm-2 control-label">Espacio</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-espacio" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="estado" class="col-sm-2 control-label">Estado</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-cambio-estado" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group" style="display:none">
-                            <input type="text" class="form-control" id="delete-cambio-name">
-                        </div>
-                        <div class="form-group" style="text-align: center">
-                            <button type="button" class="btn btn-default" id="preview-delete-cambio-photo-btn">Ver foto</button>
-                        </div>
-                    </form>
                 </div>
+                <div class="form-group" id="delete-cambio-descripcion-form-group">
+                    <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                    <div class="col-sm-10">
+                      <textarea class="form-control" id="delete-cambio-descripcion"
+                                style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="estado" class="col-sm-2 control-label">Estado</label>
+                    <div class="col-sm-10">
+                        <input class="form-control" id="delete-cambio-estado" disabled></input>
+                    </div>
+                </div>
+                <div class="form-group" id="delete-cambio-comentario_admin-form-group">
+                    <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
+                    <div class="col-sm-10">
+                        <textarea class="form-control" id="delete-cambio-comentario_admin"
+                                  style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
+                    </div>
+                </div>
+                <div class="form-group" style="text-align: center">
+                    <button type="button" class="btn btn-default" id="preview-delete-cambio-photo-btn"
+                            data-toggle="popover">Ver foto</button>
+                    <button type="button" class="btn btn-default" id="preview-delete-cambio-photo-unavailable-btn"
+                              disabled>No hay foto disponible</button>
+                </div>
+              </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="delete-cambio-btn">Eliminar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+                <button type="button" style="float:left" class="btn btn-danger" id="delete-cambio-btn">Eliminar</button>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>

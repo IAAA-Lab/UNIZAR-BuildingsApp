@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "myApp: An Ionic project",
   "dependencies": {
+    "angular-content-editable": "^1.1.2",
     "gulp": "^3.9.1",
     "gulp-clean-css": "^2.0.6",
     "gulp-concat": "^2.6.0",

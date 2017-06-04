@@ -1,0 +1,96 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "angular-content-editable",
+        "scope": null,
+        "escapedName": "angular-content-editable",
+        "name": "angular-content-editable",
+        "rawSpec": "",
+        "spec": "latest",
+        "type": "tag"
+      },
+      "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp"
+    ]
+  ],
+  "_from": "angular-content-editable@latest",
+  "_id": "angular-content-editable@1.1.2",
+  "_inCache": true,
+  "_location": "/angular-content-editable",
+  "_nodeVersion": "6.9.2",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/angular-content-editable-1.1.2.tgz_1492455875892_0.2392333811149001"
+  },
+  "_npmUser": {
+    "name": "codekraft-studio",
+    "email": "info@codekraft.it"
+  },
+  "_npmVersion": "4.5.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "angular-content-editable",
+    "scope": null,
+    "escapedName": "angular-content-editable",
+    "name": "angular-content-editable",
+    "rawSpec": "",
+    "spec": "latest",
+    "type": "tag"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/angular-content-editable/-/angular-content-editable-1.1.2.tgz",
+  "_shasum": "4b8c2bd13c5b8390acfe48d344cfef49a8a5bd53",
+  "_shrinkwrap": null,
+  "_spec": "angular-content-editable",
+  "_where": "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp",
+  "author": {
+    "name": "codekraft-studio"
+  },
+  "bugs": {
+    "url": "https://github.com/codekraft-studio/angular-content-editable/issues"
+  },
+  "dependencies": {},
+  "description": "modify in real time any html tag you want",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-uglify": "^0.9.2",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-ng-annotate": "^3.0.0"
+  },
+  "directories": {
+    "example": "example"
+  },
+  "dist": {
+    "shasum": "4b8c2bd13c5b8390acfe48d344cfef49a8a5bd53",
+    "tarball": "https://registry.npmjs.org/angular-content-editable/-/angular-content-editable-1.1.2.tgz"
+  },
+  "gitHead": "24ef972631c8187f4531a332e6f74de796f22831",
+  "homepage": "https://github.com/codekraft-studio/angular-content-editable#readme",
+  "keywords": [
+    "angular",
+    "directive"
+  ],
+  "license": "ISC",
+  "main": "dist/angular-content-editable.js",
+  "maintainers": [
+    {
+      "name": "codekraft-studio",
+      "email": "info@codekraft.it"
+    }
+  ],
+  "name": "angular-content-editable",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codekraft-studio/angular-content-editable.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.1.2"
+}

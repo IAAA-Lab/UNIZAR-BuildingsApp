@@ -25,8 +25,12 @@ public class TokenAuthenticationService {
      */
     public void addAuthentication(HttpServletResponse response, String username) {
 
-        // We generate a token now.
-    	JwtInfo tokenInfo = new JwtInfo((long) 1, username, "ADMIN");
+      // Obtains role from database based on provided username
+      String role = Users.getRole(username);
+      System.out.println("(addAuthentication) ROL DEL USUARIO (" + username + "): " + role);
+
+      // We generate a token now.
+    	JwtInfo tokenInfo = new JwtInfo((long) 1, username, role);
     	String JWT = new JwtUtil().generateToken(tokenInfo);
 
         response.addHeader(tokenHeader, tokenPrefix + " " + JWT);
@@ -55,28 +59,30 @@ public class TokenAuthenticationService {
 	        	String username = tokenInfo.getUsername();
 	        	String role = tokenInfo.getRole();
 
-	        	// // Checks if the user exists in the database
-	          //   if (username != null) {
-            //
-	          //   	String dbUsername = Users.getUsername();
-            //
-            //     System.out.println("dbUsername: " + dbUsername);
-            //
-	          //   	if (username.equals(dbUsername)) {
-
-        		// System.out.println("Usuario: " + username + ", Rol: " + role);
-
-        		// we managed to retrieve a user
-        		AuthenticatedUser user = new AuthenticatedUser(username);
+            System.out.println("(getAuthentication) ROL DEL USUARIO: " + role);
 
         		// adds roles to authenticated user
         		Collection<GrantedAuthority> authorities = new LinkedList<GrantedAuthority>();
-        		String[] roles = role.split(",");
-        		for (int i = 0; i < roles.length; i++) {
-                authorities.add(new SimpleGrantedAuthority("ROLE_" + roles[i]));
-				    }
 
-        		user.setAuthenticated(role.contains("ADMIN"));
+            if (role.contains(",")) {
+
+              // El usuario tiene mas de un rol
+              String[] roles = role.split(",");
+              for (int i = 0; i < roles.length; i++) {
+                authorities.add(new SimpleGrantedAuthority("ROLE_" + roles[i]));
+              }
+            }
+            else {
+
+              // Solo tiene un rol
+              authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+            }
+
+            // we managed to retrieve a user
+        		AuthenticatedUser user = new AuthenticatedUser(username);
+            user.setAuthorities(authorities);
+
+        		user.setAuthenticated(role.contains("ADMIN") || role.contains("USER"));
         		return user;
         	}
         }

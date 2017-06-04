@@ -51,4 +51,46 @@ public class TokenController {
 
     	}
     }
+
+    @RequestMapping("/checkAdmin")
+    public void checkAdmin(
+    		@RequestHeader(value="Authorization", defaultValue="") String token,
+    		HttpServletResponse response) {
+
+    	JwtUtil jwt = new JwtUtil();
+    	if (token.length() == 0) {
+
+    		// There is no token
+    		response.setStatus(400);
+    	}
+    	else {
+
+        // Splits the string to get rid of 'Bearer ' prefix
+        if (token.startsWith("Bearer ")) {
+          token = token.split(" ")[1];
+        }
+
+    		JwtInfo jwtInfo = jwt.parseToken(token);
+    		if (jwtInfo == null) {
+
+    			// Invalid token
+    			response.setStatus(401);
+    		}
+    		else {
+
+          String role = jwtInfo.getRole();
+          if (role.contains("ADMIN")) {
+
+            // Valid token
+            response.setStatus(200);
+          }
+          else {
+
+            // Invalid token
+      			response.setStatus(401);
+          }
+    		}
+
+    	}
+    }
 }

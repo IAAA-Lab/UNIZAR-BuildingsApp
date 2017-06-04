@@ -46,7 +46,13 @@
     "title": "Cerrar sesión"
   },
   "changes":{
-    "title": "Mis cambios"
+    "title": "Mis cambios",
+    "modals":{
+      "success_upload":{
+        "title": "Cambio actualizado con éxito",
+        "text": "El cambio se ha actualizado con éxito. Un administrador se encargará de revisarlo."
+      }
+    }
   },
   "changeDetails":{
     "title": "Editar cambio"
@@ -100,8 +106,8 @@
     },
     "buttons":{
       "photo": "Ver fotos",
-      "map": "Ver mapa",
-      "change": "Modificar espacio"
+      "pano": "Ver foto panorámica",
+      "map": "Ver mapa"
     }
   },
   "room_change":{

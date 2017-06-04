@@ -3,8 +3,10 @@
  ***********************************************************************/
 
 UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope,
-    $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, $http, infoService,
-    photosService, translationService, APP_CONSTANTS){
+    $timeout, $ionicLoading, $ionicPopup, $cordovaCamera, $http, $window,
+    $ionicSideMenuDelegate, infoService, photosService, translationService, APP_CONSTANTS){
+
+        $ionicSideMenuDelegate.canDragContent(true);
 
         translationService.getTranslation($scope, localStorage.selectedLanguage);
 
@@ -13,6 +15,18 @@ UZCampusWebMapApp.controller('RoomDetailsCtrl', function($scope, $rootScope,
                 title: title,
                 template: msg
             });
+        };
+
+        $scope.loadPano = function() {
+          $window.location = '#/app/panorama';
+        };
+
+        $scope.existsPano = function() {
+          if ($scope.data !== undefined) {
+
+            // Foto panoramica solo en el PASILLO de la segunda planta de ada byron
+            return $scope.data.id == 'CRE.1200.02.180';
+          }
         };
 
         //This code will be executed every time the controller view is loaded

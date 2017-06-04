@@ -1,27 +1,107 @@
-<ion-view title={{i18n.home.title}} xmlns="http://www.w3.org/1999/html">
+<ion-view id="home-view" title={{i18n.home.title}} xmlns="http://www.w3.org/1999/html">
+    <ion-content class="card-background-page">
 
-    <ion-nav-buttons side="left">
-        <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-buttons>
-
-    <ion-content >
-
-        <img id ="img-logo" src="images/logo_uz.png" alt={{i18n.home.logo_alt}}> </img>
-
-        <div>
-          <img class ="aragon"  id="aragonMapImg" usemap="#aragonMap" src="images/mapa_Aragon_mobile.png" border="0" 
-            width="300" height="335" orgWidth="300" orgHeight="335" alt={{i18n.home.map_alt}}> </img>
+      <!-- Version movil -->
+      <div class="smallScreen">
+        <div class="row">
+          <div class="map-card col col-100">
+              <img src="images/campus/huesca.jpg" style="width:100%"
+                    ng-click="loadMap(4)" ui-sref="app.map"></img>
+              <div class="card-title">Huesca</div>
+              <div class="card-subtitle">1 Campus</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="map-card col col-100">
+              <img src="images/campus/zaragoza.jpg" style="width:100%"
+                    ng-click="loadMap(0)" ui-sref="app.map"></img>
+              <div class="card-title">Zaragoza</div>
+              <div class="card-subtitle">4 Campus</div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="map-card col col-top col-100">
+              <img src="images/campus/teruel.jpg" style="width:100%"
+                    ng-click="loadMap(5)" ui-sref="app.map"></img>
+              <div class="card-title">Teruel</div>
+              <div class="card-subtitle">1 Campus</div>
+          </div>
         </div>
 
-        <map name="aragonMap" id="aragonMap">
+        <div class="row">
+          <img id ="img-logo" src="images/logo_uz.png" alt={{i18n.home.logo_alt}}></img>
+        </div>
+      </div>
 
-            <area id="HuescaImgMap" shape="poly" coords="139,8,172,14,196,30,249,28,257,38,253,89,246,119,227,133,233,149,225,163,213,167,205,174,184,146,163,131,146,109,133,103,133,73,127,26" ng-click="loadMap(4)" ui-sref="app.map" title="Huesca" alt="Huesca"/>
+      <!-- Para pantallas grandes -->
+      <div class="bigScreen">
 
-            <area id="ZaragozaImgMap" shape="poly" coords="128,25,139,68,133,106,172,142,208,171,225,163,232,181,215,199,201,202,163,182,149,195,75,216,30,186,54,106,110,36" ng-click="loadMap(0)" ui-sref="app.map" title="Zaragoza" alt="Zaragoza"/>
+        <div class="row">
+          <img id ="img-logo" src="images/logo_uz.png" alt={{i18n.home.logo_alt}}></img>
+        </div>
 
-            <area id="TeruelImgMap" shape="poly" coords="159,173,222,207,222,230,202,239,185,237,178,247,175,280,133,332,109,319,56,273,75,217,115,194" 
-              ng-click="loadMap(5)" ui-sref="app.map" title="Teruel" alt="Teruel"/>
+        <div class="row">
+          <ion-card style="width:33%;margin-right:auto">
+            <div class="map-card">
+              <img src="images/campus/huesca.jpg" style="width:100%"> </img>
+              <div class="card-title">Huesca</div>
+              <div class="card-subtitle">1 Campus</div>
+            </div>
 
-        </map>
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(4)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus de Huesca</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+          </ion-card>
+
+          <ion-card style="width:33%;margin-right:auto">
+            <div class="map-card">
+              <img src="images/campus/zaragoza.jpg" style="width:100%"> </img>
+              <div class="card-title">Zaragoza</div>
+              <div class="card-subtitle">4 Campus</div>
+            </div>
+
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(0)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus San Francisco</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(1)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus Río Ebro</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(2)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus Empresariales</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(3)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus Miguel Servet</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+          </ion-card>
+
+          <ion-card style="width:33%;margin-right:auto">
+            <div class="map-card">
+              <img src="images/campus/teruel.jpg" style="width:100%"> </img>
+              <div class="card-title">Teruel</div>
+              <div class="card-subtitle">1 Campus</div>
+            </div>
+
+            <div class="item item-icon-left item-icon-right" ng-click="loadMap(5)" ui-sref="app.map">
+              <i class="icon ion-map"></i>
+              <h2>Campus de Teruel</h2>
+              <i class="icon positive ion-arrow-right-c"></i>
+            </div>
+          </ion-card>
+        </div>
+
+      </div>
     </ion-content>
 </ion-view>

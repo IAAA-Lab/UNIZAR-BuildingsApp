@@ -1,0 +1,14 @@
+html, body { width: 100%; min-height: 100%; position: relative; margin: 0;height: 100%;padding: 0; font-family: 'r', sans-serif; color: #555; }
+
+article header {margin-bottom: 20px;color: #23282E;padding: 20px 0;width: 100%;border-bottom: 3px solid #337ab7;background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);}
+article header h1, article header h2 {margin: 0;padding: 0;vertical-align: middle;color: whitesmoke;outline: black;}
+article section {padding: 0px 10%;}
+section h3 { font-size: 1.4em; }
+section p { font-size: 1.2em; }
+h1 { font-weight: 700;font-size: 3em;}
+h2 {font-weight: 600;font-size: 2em; font-family: 'rs';}
+div.hcont {width: 80%;margin: 0 auto;position: relative;}
+
+.editable:hover{ background-color: #eee; }
+.editable-custom{font-size: 1.5rem;}
+.editable-custom:hover{background-color: #28e7fb;color: white;}

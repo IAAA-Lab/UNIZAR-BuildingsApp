@@ -12,6 +12,7 @@ public class Notificacion {
 	private String id_espacio;
 	private String descripcion;
 	private LocalDateTime fecha;
+	private LocalDateTime fechaUltimaModificacion;
 	private String id_usuario;
 	private String id_admin_validador;
 	private String estado;
@@ -75,6 +76,12 @@ public class Notificacion {
 	}
 	public void setFecha(LocalDateTime fecha) {
 		this.fecha = fecha;
+	}
+	public LocalDateTime getFechaUltimaModificacion() {
+		return fechaUltimaModificacion;
+	}
+	public void setFechaUltimaModificacion(LocalDateTime fechaUltimaModificacion) {
+		this.fechaUltimaModificacion = fechaUltimaModificacion;
 	}
 	public String getId_usuario() {
 		return id_usuario;

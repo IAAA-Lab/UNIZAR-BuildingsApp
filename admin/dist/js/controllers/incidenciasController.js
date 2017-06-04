@@ -130,58 +130,63 @@ $(function() {
 
         var fillModal = function(mode, reload, incidenciaData, callback){
 
-            console.log("Filling modal");
+          console.log("Filling modal");
 
-            var selCity = $('#'+mode+'-incidencia-ciudad'),
-                selCampus = $('#'+mode+'-incidencia-campus'),
-                selStatus = $('#'+mode+'-incidencia-estado');
+          $('#'+mode+'-incidencia-espacio').val(incidenciaData.espacio + ' (' + incidenciaData.id_espacio + ')');
+          $('#'+mode+'-incidencia-descripcion').val(incidenciaData.descripcion);
 
-            if (mode === 'edit' && !reload) {
+          // Rellena el estado
+          var estado = 'No disponible';
+          if (incidenciaData.estado == 'Aprobado') estado = 'Aprobada';
+          else if (incidenciaData.estado == 'Rechazado') estado = 'Rechazada';
+          else if (incidenciaData.estado == 'Pendiente') estado = 'Pendiente';
+          else if (incidenciaData.estado == 'Pendiente del usuario') estado = 'Pendiente del usuario';
+          $('#'+mode+'-incidencia-estado').val(estado);
 
-                $('#'+mode+'-incidencia-modal-title').text('');
-                $('#'+mode+'-incidencia-modal-title').text('Revisar datos del incidencia - ID: ' + incidenciaData.id_notificacion);
+          // Muestra el correo del usuario si se ha proporcionado alguno
+          var usuario = 'Anónimo';
+          if (incidenciaData.email_usuario !== undefined) usuario = incidenciaData.email_usuario;
+          $('#'+mode+'-incidencia-usuario').val(usuario);
 
-                selCity.empty();
-                getConstants('cities').forEach(function(city){
-                    selCity.append('<option value="' + city.value + '">' + city.label + '</option>');
-                });
-                selStatus.empty();
-                getConstants('incidencia_status').forEach(function(status){
-                    selStatus.append('<option value="' + status.value + '">' + status.label + '</option>');
-                });
-            } else if (mode === 'delete' && !reload) {
-                $('#'+mode+'-incidencia-modal-title').text('');
-                $('#'+mode+'-incidencia-modal-title').text('Eliminar incidencia - ID: ' + incidenciaData.id_notificacion);
+          $('#'+mode+'-incidencia-comentario_admin').val(incidenciaData.comentario_admin);
+
+          // Muestra el boton para visualizar la foto si esta existe
+          if (incidenciaData.foto !== undefined) {
+            $('#preview-'+mode+'-incidencia-photo-btn').show();
+            $('#preview-'+mode+'-incidencia-photo-unavailable-btn').hide();
+          }
+          else {
+            $('#preview-'+mode+'-incidencia-photo-btn').hide();
+            $('#preview-'+mode+'-incidencia-photo-unavailable-btn').show();
+          }
+
+          // Si si quiere pedir más informacion hay que escribir algo en
+          // el espacio para el comentario del administrador
+          if (mode == 'edit') {
+
+            $('#edit-incidencia-comentario_admin').keyup(function(){
+              var comentario_admin = $('edit-incidencia-comentario_admin').val();
+            });
+
+            if (incidenciaData.estado == 'Pendiente') {
+              // Se muestran todas las acciones disponibles
+              $('#'+mode+'-incidencia-comentario_admin').prop("disabled", false);
+              $('#edit-incidencia-approve-btn').show();
+              $('#edit-incidencia-reject-btn').show();
             }
-
-            //Load data into selects fields
-            if (!reload) {
-                for (var key in incidenciaData) {
-                    if ($('#'+mode+'-incidencia-'+key).length > 0){
-
-                        if (key == 'espacio') {
-                            $('#'+mode+'-incidencia-'+key).val(incidenciaData.espacio + ' ('+incidenciaData.id_espacio+')');
-                        }
-                        else if (key == 'campus'){
-                            var campus = null;
-                            campusArray.forEach(function(c){
-                                if (c.campus === incidenciaData.campus) {
-                                    campus = (mode === 'edit') ? c.ID : c.campus;
-                                }
-                            });
-                            selCampus.val(campus);
-                        }
-                        else if (key == 'ciudad') {
-                            selCity.val(incidenciaData.ciudad[0] + incidenciaData.ciudad.substr(1).toLowerCase());
-                        }
-                        else {
-                          $('#'+mode+'-incidencia-'+key).val(incidenciaData[key]);
-                        }
-                    }
-                }
+            else if (incidenciaData.estado == 'Aprobado') {
+              $('#'+mode+'-incidencia-comentario_admin').prop("disabled", true);
+              $('#edit-incidencia-approve-btn').hide();
+              $('#edit-incidencia-reject-btn').hide();
             }
+            else if (incidenciaData.estado == 'Rechazado') {
+              $('#'+mode+'-incidencia-comentario_admin').prop("disabled", true);
+              $('#edit-incidencia-approve-btn').hide();
+              $('#edit-incidencia-reject-btn').hide();
+            }
+          }
 
-            if (callback !== null) callback();
+          if (callback !== null) callback();
         };
 
         var selCity = $('#edit-incidencia-ciudad'),
@@ -251,26 +256,26 @@ $(function() {
                         $('#dataTable-incidencias').DataTable().ajax.reload();
                     }
                 },
-                {
-                    text: 'Ver foto',
-                    action: function ( e, dt, node, config ) {
-                        if ($('#dataTable-incidencias').DataTable().rows({ selected: true })[0].length == 1) {
-                            var incidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0];
-                            var imagePath = getConstants('PHOTOS_BASE_URL') + incidenciaData.name;
-                            var tempImage = new Image();
-                            tempImage.src = imagePath;
-                            tempImage.onload = function() {
-                                console.log('tempImage ', tempImage.width, tempImage.height);
-                                var resizedImage = resizeImage(tempImage.width, tempImage.height);
-                                console.log('resizedImage', resizedImage);
-                                $('#image-preview-modal').modal('show');
-                                $('#image-preview').css('width', resizedImage.width);
-                                $('#image-preview').css('height',resizedImage.height);
-                                $('#image-preview').attr('src', imagePath);
-                            };
-                        }
-                    }
-                },
+                // {
+                //     text: 'Ver foto',
+                //     action: function ( e, dt, node, config ) {
+                //         if ($('#dataTable-incidencias').DataTable().rows({ selected: true })[0].length == 1) {
+                //             var incidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0];
+                //             var imagePath = getConstants('PHOTOS_BASE_URL') + incidenciaData.name;
+                //             var tempImage = new Image();
+                //             tempImage.src = imagePath;
+                //             tempImage.onload = function() {
+                //                 console.log('tempImage ', tempImage.width, tempImage.height);
+                //                 var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                //                 console.log('resizedImage', resizedImage);
+                //                 $('#image-preview-modal').modal('show');
+                //                 $('#image-preview').css('width', resizedImage.width);
+                //                 $('#image-preview').css('height',resizedImage.height);
+                //                 $('#image-preview').attr('src', imagePath);
+                //             };
+                //         }
+                //     }
+                // },
                 {
                     text: 'Revisar',
                     action: function ( e, dt, node, config ) {
@@ -316,7 +321,15 @@ $(function() {
                   else if (data == 'Rechazado') vistaEstado = 'Rechazada';
                   return vistaEstado;
                 }},
-                { data: 'descripcion', defaultContent: '' },
+                { data: 'descripcion', defaultContent: '', render: function(data){
+                    var limite = 80;
+                    var descripcion = data.substring(0, limite);
+                    if (data.length > limite) {
+                      descripcion += '...';
+                    }
+                    return descripcion;
+                  }
+                },
                 { data: 'fecha', defaultContent: 'No disponible', render: function(data, type, full, meta){
                     var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
                         day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
@@ -327,7 +340,6 @@ $(function() {
                         time = [hour,minute,second].join(':');
                     return date + ' ' + time;
                 }},
-                { data: 'foto' , defaultContent: 'No disponible'},
                 { data: 'ciudad' , defaultContent: 'No disponible', render: function(data, type, full, meta){
                     if (data !== undefined) {
                       return data[0] + data.toLowerCase().substr(1);
@@ -344,8 +356,8 @@ $(function() {
         });
     });
 
-    //Define action on click Save button for modify incidencia data
-    $('#edit-incidencia-btn').click(function(){
+    //Define action on clicking 'Approve' button
+    $('#edit-incidencia-approve-btn').click(function(){
         $('body').mask('Enviando...');
 
         var originalIncidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0],
@@ -354,9 +366,15 @@ $(function() {
         //Fill data to send
         for (var key in originalIncidenciaData) {
             if ($('#edit-incidencia-'+key).length > 0){
-                sendData[key] = $('#edit-incidencia-'+key).val();
-            }else
-                sendData[key] = originalIncidenciaData[key];
+              sendData[key] = $('#edit-incidencia-'+key).val();
+            }else {
+              sendData[key] = originalIncidenciaData[key];
+            }
+
+            // Modifies cambio state
+            if (key == 'estado') {
+              sendData[key] = 'Aprobado';
+            }
         }
 
         // Adds the commentary of the admin if there is one
@@ -367,7 +385,7 @@ $(function() {
         updateIncidencia(
             sendData,
             function(data){
-                $('#dataTable-incidencias').DataTable().ajax.reload();
+                $('#dataTable-inidencias').DataTable().ajax.reload();
                 $('#edit-incidencia-modal .close').click();
                 $('#admin-incidencias-success-text').text('Información de la incidencia actualizada correctamente');
                 $('#admin-incidencias-success').show();
@@ -377,7 +395,65 @@ $(function() {
                 // de su resolucion (si se ha cambiado el estado de la misma)
                 if (sendData.estado != originalIncidenciaData.estado &&
                     originalIncidenciaData.email_usuario !== undefined) {
-                      
+
+                  sendEmail({
+                    "mensaje": sendData.comentario_admin,
+                    "destinatario": originalIncidenciaData.email_usuario
+                  });
+                }
+            },
+            function(jqXHR, textStatus, errorThrown){
+                $('body').unmask();
+                $('#edit-incidencia-modal .close').click();
+                $('#admin-incidencias-error-text').text('Error editando la información de la incidencia: ' + jqXHR.responseText);
+                $('#admin-incidencias-error').show();
+                setTimeout(function(){
+                    if ($('#admin-incidencias-error').is(':visible'))
+                        $('#admin-incidencias-error').hide();
+                }, 30000);
+            });
+    });
+
+    //Define action on clicking 'Reject' button
+    $('#edit-incidencia-reject-btn').click(function(){
+        $('body').mask('Enviando...');
+
+        var originalIncidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0],
+            sendData = {};
+
+        //Fill data to send
+        for (var key in originalIncidenciaData) {
+            if ($('#edit-incidencia-'+key).length > 0){
+              sendData[key] = $('#edit-incidencia-'+key).val();
+            }else {
+              sendData[key] = originalIncidenciaData[key];
+            }
+
+            // Modifies cambio state
+            if (key == 'estado') {
+              sendData[key] = 'Rechazado';
+            }
+        }
+
+        // Adds the commentary of the admin if there is one
+        if ($('#edit-incidencia-comentario_admin').val().length > 0) {
+          sendData.comentario_admin = $('#edit-incidencia-comentario_admin').val();
+        }
+
+        updateIncidencia(
+            sendData,
+            function(data){
+                $('#dataTable-inidencias').DataTable().ajax.reload();
+                $('#edit-incidencia-modal .close').click();
+                $('#admin-incidencias-success-text').text('Información de la incidencia actualizada correctamente');
+                $('#admin-incidencias-success').show();
+                $('body').unmask();
+
+                // Envía un correo al usuario creador de la incidencia para avisarle
+                // de su resolucion (si se ha cambiado el estado de la misma)
+                if (sendData.estado != originalIncidenciaData.estado &&
+                    originalIncidenciaData.email_usuario !== undefined) {
+
                   sendEmail({
                     "mensaje": sendData.comentario_admin,
                     "destinatario": originalIncidenciaData.email_usuario
@@ -434,29 +510,69 @@ $(function() {
         };
     };
 
-    $('#preview-edit-incidencia-btn').on('click', function() {
-        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#edit-incidencia-name').val();
-        var tempImage = new Image();
-        tempImage.src = imagePath;
-        tempImage.onload = function() {
-            var resizedImage = resizeImage(tempImage.width, tempImage.height);
-            $('#image-preview-modal').modal('show');
-            $('#image-preview').css('width', resizedImage.width);
-            $('#image-preview').css('height',resizedImage.height);
-            $('#image-preview').attr('src', imagePath);
-        };
+    $('#preview-edit-incidencia-photo-btn').on('click', function() {
+      var incidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0];
+
+      // Obtiene la imagen asociada a ese cambio si es que existe
+      if (incidenciaData.foto !== undefined) {
+
+        getFoto(incidenciaData.foto,
+          function(imageData) {
+            // var imagePath = getConstants('PHOTOS_BASE_URL') + incidenciaData.name;
+            var tempImage = new Image();
+            tempImage.src = 'data:image/jpg;base64,' + imageData;
+            tempImage.onload = function() {
+                console.log('tempImage ', tempImage.width, tempImage.height);
+                var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                console.log('resizedImage', resizedImage);
+                $('#image-preview-modal').modal('show');
+                $('#image-preview').css('width', resizedImage.width);
+                $('#image-preview').css('height',resizedImage.height);
+                $('#image-preview').attr('src', tempImage.src);
+            };
+          },
+          function(jqXHR, textStatus, errorThrown){
+              $('body').unmask();
+              $('#admin-incidencias-error-text').text('Error obteniendo la imagen de la incidencia: ' + jqXHR.responseText);
+              $('#admin-incidencias-error').show();
+              setTimeout(function(){
+                  if ($('#admin-incidencias-error').is(':visible'))
+                      $('#admin-incidencias-error').hide();
+              }, 30000);
+          });
+        }
     });
 
-    $('#preview-delete-incidencia-btn').on('click', function() {
-        var imagePath = getConstants('PHOTOS_BASE_URL') + $('#delete-incidencia-name').val();
-        var tempImage = new Image();
-        tempImage.src = imagePath;
-        tempImage.onload = function() {
-            var resizedImage = resizeImage(tempImage.width, tempImage.height);
-            $('#image-preview-modal').modal('show');
-            $('#image-preview').css('width', resizedImage.width);
-            $('#image-preview').css('height',resizedImage.height);
-            $('#image-preview').attr('src', imagePath);
-        };
+    $('#preview-delete-incidencia-photo-btn').on('click', function() {
+      var incidenciaData = $('#dataTable-incidencias').DataTable().rows({ selected: true }).data()[0];
+
+      // Obtiene la imagen asociada a ese cambio si esta existe
+      if (incidenciaData.foto !== undefined) {
+
+        getFoto(incidenciaData.foto,
+          function(imageData) {
+            // var imagePath = getConstants('PHOTOS_BASE_URL') + incidenciaData.name;
+            var tempImage = new Image();
+            tempImage.src = 'data:image/jpg;base64,' + imageData;
+            tempImage.onload = function() {
+                console.log('tempImage ', tempImage.width, tempImage.height);
+                var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                console.log('resizedImage', resizedImage);
+                $('#image-preview-modal').modal('show');
+                $('#image-preview').css('width', resizedImage.width);
+                $('#image-preview').css('height',resizedImage.height);
+                $('#image-preview').attr('src', tempImage.src);
+            };
+          },
+          function(jqXHR, textStatus, errorThrown){
+              $('body').unmask();
+              $('#admin-incidencias-error-text').text('Error obteniendo la imagen de la incidencia: ' + jqXHR.responseText);
+              $('#admin-incidencias-error').show();
+              setTimeout(function(){
+                  if ($('#admin-incidencias-error').is(':visible'))
+                      $('#admin-incidencias-error').hide();
+              }, 30000);
+          });
+        }
     });
 });

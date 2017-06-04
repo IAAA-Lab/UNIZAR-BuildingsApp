@@ -2,7 +2,11 @@
  * PhotosCtrl: Controlador encargado de las acciones de la vista de fotos de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window, $http, infoService, $ionicLoading, $ionicPopup, $cordovaCamera, APP_CONSTANTS){
+UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
+  $http, infoService, $ionicLoading, $ionicPopup, $cordovaCamera,
+  $ionicSideMenuDelegate, APP_CONSTANTS){
+
+        $ionicSideMenuDelegate.canDragContent(true);
 
         var photos = $rootScope.photos,
             numPhotos = photos.length,
@@ -17,8 +21,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             return {
                 "width": $window.innerWidth,
                 "height": $window.innerHeight-150
-            }
-        }
+            };
+        };
 
         $scope.resizeImage = function(width, height) {
             var maxWidth = $scope.dimensions.width,

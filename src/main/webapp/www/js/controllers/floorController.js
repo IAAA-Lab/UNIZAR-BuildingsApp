@@ -3,11 +3,12 @@
  ***********************************************************************/
 
 UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
-      $ionicLoading, $ionicPopup, geoService, infoService, poisService,
-      sharedProperties, loginService, notificationService, APP_CONSTANTS) {
+      $ionicLoading, $ionicPopup, $ionicSideMenuDelegate, geoService, infoService,
+      poisService, sharedProperties, loginService, notificationService, APP_CONSTANTS) {
 
     //This code will be executed every time the controller view is loaded
     $scope.$on('$ionicView.beforeEnter', function(){
+        $ionicSideMenuDelegate.canDragContent(false);
         geoService.crearPlano($scope, $http, infoService, sharedProperties, poisService, $scope.openCreatePOIModal);
     });
 
@@ -73,7 +74,8 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
                     console.log("Data to modal",$scope.data);
                     $ionicLoading.hide();
                     $scope.modalCreatePOI.show().then(function(){
-                        $('#add-poi-modal .form-error').each(function(el) { $(this).hide()});
+                        $('#add-poi-modal .form-error').each(function(el) {
+                          $(this).hide();});
                     });
                 }
             },
@@ -124,11 +126,12 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
                       };
                       console.log("Data to modal",$scope.data);
                       $ionicLoading.hide();
-                      $scope.modalCreateNotification.show().then(function(){
-                        $('#add-notification-modal .form-error').each(function(el) {
-                          $(this).hide();
+
+                        $scope.modalCreateNotification.show().then(function(){
+                          $('#add-notification-modal .form-error').each(function(el) {
+                            $(this).hide();
+                          });
                         });
-                      });
                     };
                 }
             },
@@ -146,23 +149,32 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
         notificationService.createNotification(data).then(
             function(id_notificacion) {
 
-                if (data.foto !== null) {
+                // if (data.foto !== null) {
                   $scope.uploadPictureFromInput(id_notificacion);
+                // }
 
-                  console.log("Create notification success");
-                  $ionicLoading.hide();
+                console.log("Create notification success");
+                $ionicLoading.hide();
 
-                  var successMsg = '';
-                  if (data.type == 1) {
-                    successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.cambio+'</div>';
-                  }
-                  else {
-                    successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.incidencia+'</div>';
-                  }
-
-                  $scope.showInfoPopup($scope.i18n.success.success, successMsg);
-                  $scope.modalCreateNotification.hide();
+                var successMsg = '';
+                if (data.type == 1) {
+                  successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.cambio+'</div>';
                 }
+                else {
+                  successMsg = '<div class="text-center">'+$scope.i18n.success.notifications.creation.incidencia+'</div>';
+                }
+
+                var alertPopup = $ionicPopup.alert({
+                    title: $scope.i18n.success.success,
+                    template: successMsg
+                });
+
+                alertPopup.then(function(res) {
+
+                  // Cierra la modal despues de recibir la notificacion de exito
+                  // o fracaso de la notificacion creada
+                  $scope.modalCreateNotification.hide();
+                });
             },
             function(err){
                 console.log("Error on create notification", err);
@@ -445,10 +457,17 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
     };
 
     $scope.showInfoPopup = function(title, msg){
-        $ionicPopup.alert({
-            title: title,
-            template: msg
-        });
+      if ($('.ionic-alert-popup').is(":visible") === false) {
+          $ionicPopup.alert({
+              cssClass: 'ionic-alert-popup',
+              title: title,
+              template: msg
+          });
+      }
+        // $ionicPopup.alert({
+        //     title: title,
+        //     template: msg
+        // });
     };
 
     // Upload picture to server
@@ -480,42 +499,46 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
                   'Content-Type': undefined,
                 },
                 cache: false,
-                processData: false,
-                success: function(data, textStatus, jqXHR)
-                {
-                    console.log("Success uploading photo to server", arguments);
-                    popup.close();
-                    $ionicLoading.hide();
-                    var alertPopup = $ionicPopup.alert({
-                        title: $scope.i18n.photos.modals.success_upload.title,
-                        template: '<p>'+$scope.i18n.photos.modals.success_upload.text+'</p>'
-                    });
-                    alertPopup.then(function(res){
-                        if ($('.popup-container').length > 0) {
-                            $('.popup-container').remove();
-                        }
-                    });
-                },
-                error: function (jqXHR, textStatus, errorThrown)
-                {
-                    console.log("Error uploading photo to server", arguments);
-                    $ionicLoading.hide();
-                    $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
-                }
+                processData: false
+                // success: function(data, textStatus, jqXHR)
+                // {
+                //     console.log("Success uploading photo to server", arguments);
+                //     popup.close();
+                //     $ionicLoading.hide();
+                //     var alertPopup = $ionicPopup.alert({
+                //         title: $scope.i18n.photos.modals.success_upload.title,
+                //         template: '<p>'+$scope.i18n.photos.modals.success_upload.text+'</p>'
+                //     });
+                //     alertPopup.then(function(res){
+                //         if ($('.popup-container').length > 0) {
+                //             $('.popup-container').remove();
+                //         }
+                //     });
+                // },
+                // error: function (jqXHR, textStatus, errorThrown)
+                // {
+                //     console.log("Error uploading photo to server", arguments);
+                //     $ionicLoading.hide();
+                //     $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
+                // }
             })
             .then(function() {
               console.log("Success uploading photo to server", arguments);
               $ionicLoading.hide();
-              var alertPopup = $ionicPopup.alert({
-                  title: $scope.i18n.cambios.success_upload.title,
-                  template: '<p>'+$scope.i18n.cambios.success_upload.text+'</p>'
-              });
-              alertPopup.then(function(res){
-                  if ($('.popup-container').length > 0) {
-                      $('.popup-container').remove();
-                  }
-              });
+              // var alertPopup = $ionicPopup.alert({
+              //     title: $scope.i18n.cambios.success_upload.title,
+              //     template: '<p>'+$scope.i18n.cambios.success_upload.text+'</p>'
+              // });
+              // alertPopup.then(function(res){
+              //     if ($('.popup-container').length > 0) {
+              //         $('.popup-container').remove();
+              //     }
+              // });
             });
         }
+    };
+
+    $scope.isUserLoggedIn = function() {
+      return loginService.checkUserLoggedIn();
     };
 });

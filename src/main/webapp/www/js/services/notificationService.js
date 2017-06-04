@@ -45,7 +45,7 @@ UZCampusWebMapApp.service('notificationService', function(
 
     // Construye la notifiacion a enviar
     var notificacion = {
-      "descripcion": data.descripcion,
+      "descripcion": data.ngDescripcion,
       "estado": "Pendiente",
       "foto": data.foto
     };
@@ -66,7 +66,7 @@ UZCampusWebMapApp.service('notificationService', function(
 
   this.getMisCambios = function() {
     var deferred = $q.defer();
-    console.log("obteniendo mis cambios");
+    // console.log("obteniendo mis cambios");
 
     $http({
       method: 'GET',
@@ -83,11 +83,16 @@ UZCampusWebMapApp.service('notificationService', function(
 
   this.getCambioImage = function(cambio) {
     var deferred = $q.defer();
-    console.log("obteniendo una imagen");
+    // console.log("obteniendo una imagen");
+
+    var foto = 'unizarLogo.jpg';
+    if (cambio.foto !== undefined) {
+      foto = cambio.foto;
+    }
 
     $http({
       method: 'GET',
-      url: APP_CONSTANTS.URI_API + 'notificacion/imagen/' + cambio.foto
+      url: APP_CONSTANTS.URI_API + 'notificacion/imagen/' + foto
     })
       .success(function(res) {
         deferred.resolve(res);
@@ -99,6 +104,22 @@ UZCampusWebMapApp.service('notificationService', function(
     return deferred.promise;
   };
 
-  
+  this.getPanorama = function(id_imagen) {
+    var deferred = $q.defer();
+    // console.log("obteniendo una imagen");
+
+    $http({
+      method: 'GET',
+      url: APP_CONSTANTS.URI_API + 'notificacion/imagen/' + id_imagen
+    })
+      .success(function(res) {
+        deferred.resolve(res);
+    }).
+    error(function(err) {
+        console.log("Error while obtaining an image");
+        deferred.reject(err);
+    });
+    return deferred.promise;
+  };
 
 });

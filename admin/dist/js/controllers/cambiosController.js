@@ -134,58 +134,70 @@ $(function() {
 
         var fillModal = function(mode, reload, cambioData, callback){
 
-            console.log("Filling modal");
+          console.log("Filling modal");
 
-            var selCity = $('#'+mode+'-cambio-ciudad'),
-                selCampus = $('#'+mode+'-cambio-campus'),
-                selStatus = $('#'+mode+'-cambio-estado');
+          $('#'+mode+'-cambio-espacio').val(cambioData.espacio + ' (' + cambioData.id_espacio + ')');
+          var descripcion = cambioData.descripcion;
+          descripcion = descripcion.replace(/<div>/g,'\n');
+          descripcion = descripcion.replace(/<br>/g,'');
+          descripcion = descripcion.replace(/<\/div>/g,'');
+          $('#'+mode+'-cambio-descripcion').val(descripcion);
 
-            if (mode === 'edit' && !reload) {
+          $('#'+mode+'-cambio-estado').val(cambioData.estado);
+          $('#'+mode+'-cambio-comentario_admin').val(cambioData.comentario_admin);
 
-                $('#'+mode+'-cambio-modal-title').text('');
-                $('#'+mode+'-cambio-modal-title').text('Revisar datos del cambio - ID: ' + cambioData.id_notificacion);
+          // Muestra los botones de preview de la imagen correspondientes en
+          // cada caso
+          if (cambioData.foto !== undefined) {
+            $('#preview-'+mode+'-cambio-photo-btn').show();
+            $('#preview-'+mode+'-cambio-photo-unavailable-btn').hide();
+          }
+          else {
+            $('#preview-'+mode+'-cambio-photo-btn').hide();
+            $('#preview-'+mode+'-cambio-photo-unavailable-btn').show();
+          }
 
-                selCity.empty();
-                getConstants('cities').forEach(function(city){
-                    selCity.append('<option value="' + city.value + '">' + city.label + '</option>');
-                });
-                selStatus.empty();
-                getConstants('cambio_status').forEach(function(status){
-                    selStatus.append('<option value="' + status.value + '">' + status.label + '</option>');
-                });
-            } else if (mode === 'delete' && !reload) {
-                $('#'+mode+'-cambio-modal-title').text('');
-                $('#'+mode+'-cambio-modal-title').text('Eliminar cambio - ID: ' + cambioData.id_notificacion);
+          // Si se quiere pedir más informacion hay que escribir algo en
+          // el espacio para el comentario del administrador
+          if (mode == 'edit') {
+
+            $('#edit-cambio-comentario_admin').keyup(function(){
+              var comentario_admin = $('#edit-cambio-comentario_admin').val();
+              $('#edit-cambio-revise-btn').attr('disabled', comentario_admin.length === 0 ? true : false);
+              $('#edit-cambio-update-revision-btn').attr('disabled', comentario_admin.length === 0 ? true : false);
+            });
+
+            if (cambioData.estado == 'Pendiente') {
+              $('#'+mode+'-cambio-comentario_admin').prop("disabled", false);
+              $('#edit-cambio-approve-btn').show();
+              $('#edit-cambio-revise-btn').show();
+              $('#edit-cambio-update-revision-btn').hide();
+              $('#edit-cambio-reject-btn').show();
             }
-
-            //Load data into selects fields
-            if (!reload) {
-                for (var key in cambioData) {
-                    if ($('#'+mode+'-cambio-'+key).length > 0){
-
-                        if (key == 'espacio') {
-                            $('#'+mode+'-cambio-'+key).val(cambioData.espacio + ' ('+cambioData.id_espacio+')');
-                        }
-                        else if (key == 'campus'){
-                            var campus = null;
-                            campusArray.forEach(function(c){
-                                if (c.campus === cambioData.campus) {
-                                    campus = (mode === 'edit') ? c.ID : c.campus;
-                                }
-                            });
-                            selCampus.val(campus);
-                        }
-                        else if (key == 'ciudad') {
-                            selCity.val(cambioData.ciudad[0] + cambioData.ciudad.substr(1).toLowerCase());
-                        }
-                        else {
-                          $('#'+mode+'-cambio-'+key).val(cambioData[key]);
-                        }
-                    }
-                }
+            else if (cambioData.estado == 'Aprobado') {
+              $('#'+mode+'-cambio-comentario_admin').prop("disabled", true);
+              $('#edit-cambio-approve-btn').hide();
+              $('#edit-cambio-revise-btn').hide();
+              $('#edit-cambio-update-revision-btn').hide();
+              $('#edit-cambio-reject-btn').hide();
             }
+            else if (cambioData.estado == 'Rechazado') {
+              $('#'+mode+'-cambio-comentario_admin').prop("disabled", true);
+              $('#edit-cambio-approve-btn').hide();
+              $('#edit-cambio-revise-btn').hide();
+              $('#edit-cambio-update-revision-btn').hide();
+              $('#edit-cambio-reject-btn').hide();
+            }
+            else if (cambioData.estado == 'Pendiente del usuario') {
+              $('#'+mode+'-cambio-comentario_admin').prop("disabled", true);
+              $('#edit-cambio-approve-btn').hide();
+              $('#edit-cambio-revise-btn').hide();
+              $('#edit-cambio-update-revision-btn').hide();
+              $('#edit-cambio-reject-btn').hide();
+            }
+          }
 
-            if (callback !== null) callback();
+          if (callback !== null) callback();
         };
 
         var selCity = $('#edit-cambio-ciudad'),
@@ -255,44 +267,44 @@ $(function() {
                         $('#dataTable-cambios').DataTable().ajax.reload();
                     }
                 },
-                {
-                    text: 'Ver foto',
-                    action: function ( e, dt, node, config ) {
-                        if ($('#dataTable-cambios').DataTable().rows({ selected: true })[0].length == 1) {
-                            var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
-
-                            // Obtiene la imagen asociada a ese cambio si es que existe
-                            if (cambioData.foto !== undefined) {
-
-                              getFoto(cambioData.foto,
-                                function(imageData) {
-                                  // var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
-                                  var tempImage = new Image();
-                                  tempImage.src = 'data:image/jpg;base64,' + imageData;
-                                  tempImage.onload = function() {
-                                      console.log('tempImage ', tempImage.width, tempImage.height);
-                                      var resizedImage = resizeImage(tempImage.width, tempImage.height);
-                                      console.log('resizedImage', resizedImage);
-                                      $('#image-preview-modal').modal('show');
-                                      $('#image-preview').css('width', resizedImage.width);
-                                      $('#image-preview').css('height',resizedImage.height);
-                                      $('#image-preview').attr('src', tempImage.src);
-                                  };
-                                },
-                                function(jqXHR, textStatus, errorThrown){
-                                    $('body').unmask();
-                                    // $('#edit-cambio-modal .close').click();
-                                    $('#admin-cambios-error-text').text('Error obteniendo la imagen del cambio: ' + jqXHR.responseText);
-                                    $('#admin-cambios-error').show();
-                                    setTimeout(function(){
-                                        if ($('#admin-cambios-error').is(':visible'))
-                                            $('#admin-cambios-error').hide();
-                                    }, 30000);
-                                });
-                              }
-                        }
-                    }
-                },
+                // {
+                //     text: 'Ver foto',
+                //     action: function ( e, dt, node, config ) {
+                //         if ($('#dataTable-cambios').DataTable().rows({ selected: true })[0].length == 1) {
+                //             var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
+                //
+                //             // Obtiene la imagen asociada a ese cambio si es que existe
+                //             if (cambioData.foto !== undefined) {
+                //
+                //               getFoto(cambioData.foto,
+                //                 function(imageData) {
+                //                   // var imagePath = getConstants('PHOTOS_BASE_URL') + cambioData.name;
+                //                   var tempImage = new Image();
+                //                   tempImage.src = 'data:image/jpg;base64,' + imageData;
+                //                   tempImage.onload = function() {
+                //                       console.log('tempImage ', tempImage.width, tempImage.height);
+                //                       var resizedImage = resizeImage(tempImage.width, tempImage.height);
+                //                       console.log('resizedImage', resizedImage);
+                //                       $('#image-preview-modal').modal('show');
+                //                       $('#image-preview').css('width', resizedImage.width);
+                //                       $('#image-preview').css('height',resizedImage.height);
+                //                       $('#image-preview').attr('src', tempImage.src);
+                //                   };
+                //                 },
+                //                 function(jqXHR, textStatus, errorThrown){
+                //                     $('body').unmask();
+                //                     // $('#edit-cambio-modal .close').click();
+                //                     $('#admin-cambios-error-text').text('Error obteniendo la imagen del cambio: ' + jqXHR.responseText);
+                //                     $('#admin-cambios-error').show();
+                //                     setTimeout(function(){
+                //                         if ($('#admin-cambios-error').is(':visible'))
+                //                             $('#admin-cambios-error').hide();
+                //                     }, 30000);
+                //                 });
+                //               }
+                //         }
+                //     }
+                // },
                 {
                     text: 'Revisar',
                     action: function ( e, dt, node, config ) {
@@ -333,7 +345,15 @@ $(function() {
             columns: [
                 { data: 'id_notificacion' },
                 { data: 'estado', defaultContent: '' },
-                { data: 'descripcion', defaultContent: '' },
+                { data: 'descripcion', defaultContent: '', render: function(data){
+                    var limite = 100;
+                    var descripcion = data.substring(0, limite);
+                    if (data.length > limite) {
+                      descripcion += '...';
+                    }
+                    return descripcion;
+                  }
+                },
                 { data: 'fecha', defaultContent: 'No disponible', render: function(data, type, full, meta){
                     var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
                         day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
@@ -344,7 +364,16 @@ $(function() {
                         time = [hour,minute,second].join(':');
                     return date + ' ' + time;
                 }},
-                { data: 'foto' , defaultContent: 'No disponible'},
+                { data: 'fechaUltimaModificacion', defaultContent: 'No disponible', render: function(data, type, full, meta){
+                    var month = data.date.month < 10 ? '0' + data.date.month : data.date.month,
+                        day = data.date.day < 10 ? '0' + data.date.day : data.date.day,
+                        hour = data.time.hour < 10 ? '0' + data.time.hour : data.time.hour,
+                        minute = data.time.minute < 10 ? '0' + data.time.minute : data.time.minute,
+                        second = data.time.second < 10 ? '0' + data.time.second : data.time.second,
+                        date = [data.date.year,month,day].join('-'),
+                        time = [hour,minute,second].join(':');
+                    return date + ' ' + time;
+                }},
                 { data: 'ciudad' , defaultContent: 'No disponible', render: function(data, type, full, meta){
                     if (data !== undefined) {
                       return data[0] + data.toLowerCase().substr(1);
@@ -360,8 +389,8 @@ $(function() {
         });
     });
 
-    //Define action on click Save button for modify cambio data
-    $('#edit-cambio-btn').click(function(){
+    //Define action on clicking 'Approve' button
+    $('#edit-cambio-approve-btn').click(function(){
         $('body').mask('Enviando...');
 
         var originalCambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0],
@@ -369,11 +398,166 @@ $(function() {
 
         //Fill data to send
         for (var key in originalCambioData) {
-            if ($('#edit-cambio-'+key).length > 0){
-                sendData[key] = $('#edit-cambio-'+key).val();
-            }else
-                sendData[key] = originalCambioData[key];
+            if (key == 'descripcion') {
+              sendData[key] = originalCambioData[key];
+            }else if ($('#edit-cambio-'+key).length > 0){
+              sendData[key] = $('#edit-cambio-'+key).val();
+            }else {
+              sendData[key] = originalCambioData[key];
+            }
+
+            // Modifies cambio state
+            if (key == 'estado') {
+              sendData[key] = 'Aprobado';
+            }
         }
+
+        // Adds the commentary of the admin if there is one
+        if ($('#edit-cambio-comentario_admin').val().length > 0) {
+          sendData.comentario_admin = $('#edit-cambio-comentario_admin').val();
+        }
+
+        updateCambio(
+            sendData,
+            function(data){
+                $('#dataTable-cambios').DataTable().ajax.reload();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-success-text').text('Información del cambio actualizada correctamente');
+                $('#admin-cambios-success').show();
+                $('body').unmask();
+            },
+            function(jqXHR, textStatus, errorThrown){
+                $('body').unmask();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-error-text').text('Error editando la información del cambio: ' + jqXHR.responseText);
+                $('#admin-cambios-error').show();
+                setTimeout(function(){
+                    if ($('#admin-cambios-error').is(':visible'))
+                        $('#admin-cambios-error').hide();
+                }, 30000);
+            });
+    });
+
+    //Define action on clicking 'Approve' button
+    $('#edit-cambio-revise-btn').click(function(){
+        $('body').mask('Enviando...');
+
+        var originalCambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0],
+            sendData = {};
+
+            //Fill data to send
+            for (var key in originalCambioData) {
+                if (key == 'descripcion') {
+                  sendData[key] = originalCambioData[key];
+                }else if ($('#edit-cambio-'+key).length > 0){
+                  sendData[key] = $('#edit-cambio-'+key).val();
+                }else {
+                  sendData[key] = originalCambioData[key];
+                }
+
+                // Modifies cambio state
+                if (key == 'estado') {
+                  sendData[key] = 'Pendiente del usuario';
+                }
+            }
+
+        // Adds the commentary of the admin if there is one
+        if ($('#edit-cambio-comentario_admin').val().length > 0) {
+          sendData.comentario_admin = $('#edit-cambio-comentario_admin').val();
+        }
+
+        updateCambio(
+            sendData,
+            function(data){
+                $('#dataTable-cambios').DataTable().ajax.reload();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-success-text').text('Información del cambio actualizada correctamente');
+                $('#admin-cambios-success').show();
+                $('body').unmask();
+            },
+            function(jqXHR, textStatus, errorThrown){
+                $('body').unmask();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-error-text').text('Error editando la información del cambio: ' + jqXHR.responseText);
+                $('#admin-cambios-error').show();
+                setTimeout(function(){
+                    if ($('#admin-cambios-error').is(':visible'))
+                        $('#admin-cambios-error').hide();
+                }, 30000);
+            });
+    });
+
+    //Define action on clicking 'Update revision' button
+    $('#edit-cambio-update-revision-btn').click(function(){
+        $('body').mask('Enviando...');
+
+        var originalCambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0],
+            sendData = {};
+
+            //Fill data to send
+            for (var key in originalCambioData) {
+                if (key == 'descripcion') {
+                  sendData[key] = originalCambioData[key];
+                }else if ($('#edit-cambio-'+key).length > 0){
+                  sendData[key] = $('#edit-cambio-'+key).val();
+                }else {
+                  sendData[key] = originalCambioData[key];
+                }
+
+                // Modifies cambio state
+                if (key == 'estado') {
+                  sendData[key] = 'Pendiente del usuario';
+                }
+            }
+
+        // Adds the commentary of the admin if there is one
+        if ($('#edit-cambio-comentario_admin').val().length > 0) {
+          sendData.comentario_admin = $('#edit-cambio-comentario_admin').val();
+        }
+
+        updateCambio(
+            sendData,
+            function(data){
+                $('#dataTable-cambios').DataTable().ajax.reload();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-success-text').text('Información del cambio actualizada correctamente');
+                $('#admin-cambios-success').show();
+                $('body').unmask();
+            },
+            function(jqXHR, textStatus, errorThrown){
+                $('body').unmask();
+                $('#edit-cambio-modal .close').click();
+                $('#admin-cambios-error-text').text('Error editando la información del cambio: ' + jqXHR.responseText);
+                $('#admin-cambios-error').show();
+                setTimeout(function(){
+                    if ($('#admin-cambios-error').is(':visible'))
+                        $('#admin-cambios-error').hide();
+                }, 30000);
+            });
+    });
+
+    //Define action on clicking 'Reject' button
+    $('#edit-cambio-reject-btn').click(function(){
+        $('body').mask('Enviando...');
+
+        var originalCambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0],
+            sendData = {};
+
+            //Fill data to send
+            for (var key in originalCambioData) {
+                if (key == 'descripcion') {
+                  sendData[key] = originalCambioData[key];
+                }else if ($('#edit-cambio-'+key).length > 0){
+                  sendData[key] = $('#edit-cambio-'+key).val();
+                }else {
+                  sendData[key] = originalCambioData[key];
+                }
+
+                // Modifies cambio state
+                if (key == 'estado') {
+                  sendData[key] = 'Rechazado';
+                }
+            }
 
         // Adds the commentary of the admin if there is one
         if ($('#edit-cambio-comentario_admin').val().length > 0) {
@@ -475,7 +659,7 @@ $(function() {
     $('#preview-delete-cambio-photo-btn').on('click', function() {
       var cambioData = $('#dataTable-cambios').DataTable().rows({ selected: true }).data()[0];
 
-      // Obtiene la imagen asociada a ese cambio si es que existe
+      // Obtiene la imagen asociada a ese cambio si esta existe
       if (cambioData.foto !== undefined) {
 
         getFoto(cambioData.foto,

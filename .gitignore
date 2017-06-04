@@ -10,13 +10,14 @@ WebContent/platforms
 WebContent/node_modules/
 WebContent/bower_components/
 WebContent/.bowerrc
+WebContent/res/
 src/main/webapp/.bowerrc
 admin/bower_components/
 sql/
 photos/
 .directory
 
-# ---------- Java 
+# ---------- Java
 *.class
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -56,3 +57,5 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 src/main/resources/config\.properties
+
+src/main/webapp/res/

@@ -40,7 +40,6 @@
                         <th>Estado</th>
                         <th>Descripción</th>
                         <th>Fecha creación</th>
-                        <th>Foto</th>
                         <th>Ciudad</th>
                         <th>Campus</th>
                         <th>Edificio</th>
@@ -61,61 +60,54 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="edit-incidencia-modal-title">Editar datos de la incidencia</h4>
+                <h4 class="modal-title" id="edit-incidencia-modal-title">Revisar datos de la incidencia</h4>
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
                     <div class="form-group">
-                        <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-ciudad"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="campus" class="col-sm-2 control-label">Campus</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-campus"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="edificio" class="col-sm-2 control-label">Edificio</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-edificio"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="planta" class="col-sm-2 control-label">Planta</label>
-                        <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-planta"></select>
-                        </div>
-                    </div>
-                    <div class="form-group">
                         <label for="espacio" class="col-sm-2 control-label">Espacio</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-espacio"></select>
+                            <input class="form-control" id="edit-incidencia-espacio" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group" id="edit-incidencia-descripcion-form-group">
+                        <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control" id="edit-incidencia-descripcion"
+                                    style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="estado" class="col-sm-2 control-label">Estado</label>
                         <div class="col-sm-10">
-                            <select class="form-control" id="edit-incidencia-estado"></select>
+                            <input class="form-control" id="edit-incidencia-estado" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario" class="col-sm-2 control-label">Usuario</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="edit-incidencia-usuario" disabled></input>
                         </div>
                     </div>
                     <div class="form-group" id="edit-incidencia-comentario_admin-form-group">
                         <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
                         <div class="col-sm-10">
-                            <textarea class="form-control" id="edit-incidencia-comentario_admin"></textarea>
+                            <textarea class="form-control" id="edit-incidencia-comentario_admin"
+                                      style="height:10em;max-height:15em;resize:vertical"></textarea>
                         </div>
                     </div>
                     <div class="form-group" style="text-align: center">
                         <button type="button" class="btn btn-default" id="preview-edit-incidencia-photo-btn"
                                 data-toggle="popover">Ver foto</button>
+                        <button type="button" class="btn btn-default" id="preview-edit-incidencia-photo-unavailable-btn"
+                                  disabled>No hay foto disponible</button>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="edit-incidencia-btn">Guardar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
+              <button type="button" style="float:left" class="btn btn-primary" id="edit-incidencia-approve-btn">Aprobar</button>
+              <button type="button" style="float:left" class="btn btn-danger" id="edit-incidencia-reject-btn">Rechazar</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
             </div>
         </div>
     </div>
@@ -123,67 +115,58 @@
 
 <div class="modal fade" id="delete-incidencia-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="delete-incidencia-modal-title">Eliminar incidencia</h4>
-            </div>
-            <div class="modal-body">
-                <div class="panel panel-default">
-                    <div class="panel-body" id="delete-incidencia-modal-panel">
-                        ¿Está seguro de eliminar la incidencia seleccionada?
-                    </div>
-                    <form class="form-horizontal">
-                        <div class="form-group">
-                            <label for="ciudad" class="col-sm-2 control-label">Ciudad</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-ciudad" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="campus" class="col-sm-2 control-label">Campus</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-campus" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="edificio" class="col-sm-2 control-label">Edificio</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-edificio" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="planta" class="col-sm-2 control-label">Planta</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-planta" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="espacio" class="col-sm-2 control-label">Espacio</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-espacio" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="estado" class="col-sm-2 control-label">Estado</label>
-                            <div class="col-sm-10">
-                                <input type="text" class="form-control" id="delete-incidencia-estado" disabled>
-                            </div>
-                        </div>
-                        <div class="form-group" style="display:none">
-                            <input type="text" class="form-control" id="delete-incidencia-name">
-                        </div>
-                        <div class="form-group" style="text-align: center">
-                            <button type="button" class="btn btn-default" id="preview-delete-incidencia-photo-btn">Ver foto</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-primary" id="delete-incidencia-btn">Eliminar</button>
-                <button type="button" class="btn btn-danger" data-dismiss="modal">Cancelar</button>
-            </div>
-        </div>
+      <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="delete-incidencia-modal-title">Eliminar incidencia</h4>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal">
+                  <div class="form-group">
+                      <label for="espacio" class="col-sm-2 control-label">Espacio</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-espacio" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group" id="delete-incidencia-descripcion-form-group">
+                      <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" id="delete-incidencia-descripcion"
+                                  style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="estado" class="col-sm-2 control-label">Estado</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-estado" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="usuario" class="col-sm-2 control-label">Usuario</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-usuario" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group" id="delete-incidencia-comentario_admin-form-group">
+                      <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
+                      <div class="col-sm-10">
+                          <textarea class="form-control" id="edit-cambio-comentario_admin"
+                                    style="height:10em;max-height:15em;resize:vertical"></textarea>
+                      </div>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <button type="button" class="btn btn-default" id="preview-delete-incidencia-photo-btn"
+                              data-toggle="popover">Ver foto</button>
+                      <button type="button" class="btn btn-default" id="preview-delete-incidencia-photo-unavailable-btn"
+                                disabled>No hay foto disponible</button>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" style="float:left" class="btn btn-danger" id="delete-incidencia-btn">Eliminar</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          </div>
+      </div>
     </div>
 </div>
 

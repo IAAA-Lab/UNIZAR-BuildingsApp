@@ -1,58 +1,29 @@
 <ion-view title={{i18n.changes.title}} id="changes-view">
+  <ion-tabs class="tabs-top tabs-striped tabs-icon-top tabs-positive">
 
-  <ion-nav-buttons side="left">
-    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-  </ion-nav-buttons>
+    <!-- User Pending Tab -->
+    <ion-tab badge="badgeCount('Pendiente del usuario')" badge-style="badge-assertive" title="Pendientes" icon="ion-clock"
+             on-select="setStatusShown('Pendiente del usuario')" href="#/app/changes/pending">
+      <ion-nav-view name="tab-changes-pending"></ion-nav-view>
+    </ion-tab>
 
-  <ion-content>
+    <!-- pending Tab -->
+    <ion-tab badge="badgeCount('Pendiente')" badge-style="badge-calm" title="Esperando" icon="ion-cloud"
+             on-select="setStatusShown('Pendiente')" href="#/app/changes/waiting">
+      <ion-nav-view name="tab-changes-waiting"></ion-nav-view>
+    </ion-tab>
 
-    <!-- Lista de categorías según estado de los cambios -->
-    <ion-list>
-      <ion-card ng-repeat="s in status track by $index">
-        <ion-item ng-style="{'background' : true ? getStatusRGBA($index) : 'none'}"
-                  ng-click="toggleStatusShown(s)">
-          <i ng-class="{ 'ion-cloud': $index == 0, 'ion-checkmark-circled': $index == 1, 'ion-close-circled': $index == 2, 'ion-clock': $index == 3,}"
-             style="font-size:20px">  {{status[$index].value}}</i>
+    <!-- Approved Tab -->
+    <ion-tab badge="badgeCount('Aprobado')" badge-style="badge-calm" title="Aprobados" icon="ion-checkmark"
+             on-select="setStatusShown('Aprobado')" href="#/app/changes/approved">
+      <ion-nav-view name="tab-changes-approved"></ion-nav-view>
+    </ion-tab>
 
-                <!-- {{status[$index].value}} -->
-                <!-- <ion-badge item-right>9</ion-badge> -->
-        </ion-item>
+    <!-- Rejected Tab -->
+    <ion-tab badge="badgeCount('Rechazado')" badge-style="badge-calm" title="Rechazados" icon="ion-close"
+             on-select="setStatusShown('Rechazado')" href="#/app/changes/rejected">
+      <ion-nav-view name="tab-changes-rejected"></ion-nav-view>
+    </ion-tab>
 
-        <!-- Lista de cambios de cada categoría -->
-        <ion-list>
-          <ion-item class="item-accordion"
-                    ng-repeat="cambio in getCambiosEstado(s)"
-                    ng-show="isStatusShown(s)">
-            <ion-card>
-              <ion-card-header>
-                <ion-item ng-style="{'background' : true ? getCambioRGBA($index, cambio) : 'none'}">
-                  <span style="float:left">{{cambio.espacio}}</span>
-                  <span style="float:right">{{cambio.fecha}}</span>
-                </ion-item>
-              </ion-card-header>
-            <br>
-              <ion-card-content class="item-text-wrap">
-                  {{cambio.descripcion | limitTo:200}}{{cambio.descripcion.length > 200 ? '...' : ''}}
-                <br><br>
-
-                <span class="button button-positive" style="float:left" ng-click="showDetails(cambio)">Ver detalles</span>
-                <span class="button button-positive" style="float:right" ng-click="showResponse(cambio)">Responder</span>
-              </ion-card-content>
-            </ion-card>
-          </ion-item>
-
-          <!-- Si no hay cambios se muestra este elemento -->
-          <ion-item ng-show="isStatusEmpty(s) && isStatusShown(s)">
-            <ion-card>
-              <ion-card-content class="item-text-wrap">
-                No hay cambios con este estado.
-              </ion-card-content>
-            </ion-card>
-          </ion-item>
-
-        </ion-list>
-
-      </ion-card>
-    </ion-list>
-  </ion-content>
+  </ion-tabs>
 </ion-view>

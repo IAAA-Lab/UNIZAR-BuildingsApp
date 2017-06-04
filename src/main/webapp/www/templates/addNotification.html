@@ -11,7 +11,7 @@
             <div class="list">
                 <label class="item item-input">
                     <span class="input-label">{{i18n.notifications.modals.creation.labels.room}}</span>
-                    <input type="text" name="room" ng-model="data.room" ng-readonly="existsRoom" required>
+                    <input style="background-color:white" type="text" name="room" ng-model="data.room" ng-readonly="existsRoom" required>
                 </label>
                 <label class="item item-input form-error"
                         ng-show="addNotificationform.$submitted && addNotificationform.room.$error.required">
@@ -19,11 +19,12 @@
                 </label>
                 <label class="item item-input" ng-if="data.type==2">
                     <span class="input-label">{{i18n.notifications.modals.creation.labels.email}}</span>
-                    <input type="email" name="email" ng-model="data.email" ng-readonly="existsEmail" required>
+                    <input style="background-color:white"
+                           type="email" name="email" ng-model="data.email" ng-readonly="existsEmail">
                 </label>
                 <label class="item item-input">
                     <span class="input-label">{{i18n.notifications.modals.creation.labels.comments}}</span>
-                    <textarea name="comment" ng-model="data.comments" resizable="false" required></textarea>
+                    <textarea style="height:10em;max-height:15em;resize:vertical;width:60%" name="comment" ng-model="data.comments" resizable="false" required></textarea>
                 </label>
                 <label class="item item-input form-error comments-error" style="display: block"
                         ng-show="addNotificationform.$submitted && addNotificationform.comment.$error.required">

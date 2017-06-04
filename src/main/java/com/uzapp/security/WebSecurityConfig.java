@@ -46,7 +46,32 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			.antMatchers("/")
 			.antMatchers(HttpMethod.OPTIONS, "/**")
 			.antMatchers(HttpMethod.POST, "/checkToken")
+
+			// Photos
+			.antMatchers(HttpMethod.GET, "/photos/approved/{\\w+}")
+			.antMatchers(HttpMethod.POST, "/photos/upload")
+			.antMatchers(HttpMethod.PUT, "/photos/")
+			.antMatchers(HttpMethod.POST, "/photos/insert")
+
+			// Pois
+			.antMatchers(HttpMethod.GET, "/pois/{\\d+}")
+			.antMatchers(HttpMethod.POST, "/pois/")
+			.antMatchers(HttpMethod.PUT, "/pois/")
+			.antMatchers("/pois/{\\w+}/{\\w+}/")
+			.antMatchers("/pois/request")
+
+			.antMatchers("/busquedas/**")
+			.antMatchers("/estancias/**")
+
+			.antMatchers(HttpMethod.POST, "/notificacion/incidencia")
+			.antMatchers(HttpMethod.POST, "/notificacion/photo")
+			.antMatchers(HttpMethod.GET, "/notificacion/imagen/{\\w+}")
+			// .antMatchers("/notificacion/**")
+
+			.antMatchers("/checkToken")
+			.antMatchers("/checkAdmin")
 			.antMatchers("/beans");
+			// .antMatchers("/**");
 	}
 
     @Override
@@ -57,15 +82,43 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
         http.csrf().disable() // disable csrf for our requests.
             .authorizeRequests()
-//            .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
+          //  .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
             // .antMatchers("/").permitAll()
             // .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
             // .antMatchers(HttpMethod.POST, "/checkToken").permitAll()
             .antMatchers(HttpMethod.POST, "/login").permitAll()
-            // .antMatchers("/beans").permitAll()
-            .anyRequest().authenticated()
+
+						// Operaciones permitidas a usuario registrados
+
+						// Operaciones permitidas a administradores
+						// .antMatchers("/database/**").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/photos/").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.DELETE, "/photos/{\\d+}").access("hasRole('ROLE_ADMIN')")
+
+						.antMatchers(HttpMethod.GET, "/pois/").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/pois/request/pending").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/pois/request/{\\d+}/{\\w+}/{\\w+}").access("hasRole('ROLE_ADMIN')")
+
+						.antMatchers(HttpMethod.GET, "/users/info").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+						.antMatchers(HttpMethod.POST, "/users/create").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.PUT, "/users/edit").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.POST, "/mail").access("hasRole('ROLE_ADMIN')")
+
+						.antMatchers(HttpMethod.GET, "/notificacion").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/notificacion/cambio").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.POST, "/notificacion/cambio/{\\d+}").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+						.antMatchers(HttpMethod.PUT, "/notificacion/cambio/{\\d+}").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+						.antMatchers(HttpMethod.DELETE, "/notificacion/cambio/{\\d+}").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/notificacion/incidencia").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.POST, "/notificacion/incidencia/{\\d+}").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+						.antMatchers(HttpMethod.PUT, "/notificacion/incidencia/{\\d+}").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.DELETE, "/notificacion/incidencia/{\\d+}").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.GET, "/notificacion/cambio/user").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
+
+
+						.anyRequest().authenticated()
             .and()
-//            .addFilterBefore(new CorsFilter(), UsernamePasswordAuthenticationFilter.class)
+          //  .addFilterBefore(new CorsFilter(), UsernamePasswordAuthenticationFilter.class)
             // And filter other requests to check the presence of JWT in header
             .addFilterBefore(new JWTAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
             // We filter the api/login requests

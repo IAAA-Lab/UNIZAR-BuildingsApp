@@ -31,19 +31,37 @@ $(function() {
         login(formData,
             function(data, textStatus, jqXHR)
             {
-                console.log('Login success',data,textStatus, jqXHR);
-
                 localStorage.setItem('token', jqXHR.getResponseHeader('Authorization'));
 
-                // Cookies.set('session-admin-cookie', $.md5(data.username, data.id));
-                // sessionStorage.setItem('userData', JSON.stringify(data));
-                window.location.href = 'index.html';
+                // Comprueba que el usuario es admin
+                checkAdmin(
+                  function(data, textStatus, jqXHR) {
+
+                    // El usuario es un administrador
+
+                    // Cookies.set('session-admin-cookie', $.md5(data.username, data.id));
+                    // sessionStorage.setItem('userData', JSON.stringify(data));
+                    console.log('Login success',data,textStatus, jqXHR);
+                    window.location.href = 'index.html';
+                  },
+                  function(jqXHR, textStatus, errorThrown) {
+                    console.log('Login error', jqXHR, errorThrown);
+                    localStorage.removeItem('token');
+                    $('body').unmask();
+                    $('#login-error-text').text("El usuario y contraseña proporcionados no son válidos. Vuelve a intentarlo ;D");
+                    $('#login-error').show();
+                    setTimeout(function(){
+                        if ($('#login-error').is(':visible'))
+                            $('#login-error').hide();
+                    }, 30000);
+                  }
+              );
             },
             function (jqXHR, textStatus, errorThrown)
             {
                 console.log('Login error', jqXHR, errorThrown);
                 $('body').unmask();
-                $('#login-error-text').text(jqXHR.responseText);
+                $('#login-error-text').text("El usuario y contraseña proporcionados no son válidos. Vuelve a intentarlo");
                 $('#login-error').show();
                 setTimeout(function(){
                     if ($('#login-error').is(':visible'))

@@ -10,12 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.uzapp.dominio.User;
 
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.util.ArrayList;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -96,18 +95,23 @@ public class Users {
               }
 
               // Obtains username from token to retrieve the
-              // user's email
+              // user's info
           		JwtInfo jwtInfo = jwt.parseToken(token);
               String username = jwtInfo.getUsername();
 
-              String query = "SELECT email FROM users " +
+              String query = "SELECT * FROM users " +
                               "WHERE username = '" + username + "'";
               preparedStmt = connection.prepareStatement(query);
               ResultSet rs = preparedStmt.executeQuery();
 
               if (rs.next()) {
+                user.setId(rs.getInt("id"));
                 user.setUsername(username);
                 user.setEmail(rs.getString("email"));
+                user.setName(rs.getString("name"));
+                user.setSurnames(rs.getString("surnames"));
+                user.setBirthDate(rs.getDate("birthdate"));
+                user.setRole(rs.getString("role"));
 
                 return new ResponseEntity<>(user, HttpStatus.OK);
               }
@@ -250,6 +254,102 @@ public class Users {
                 return new ResponseEntity<>("User not found", HttpStatus.NOT_FOUND);
             }
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+        }
+    }
+
+    @RequestMapping(
+            value = "",
+            method = RequestMethod.GET)
+    public ResponseEntity<?> getAllUsers(){
+        logger.info("Servicio: get all users");
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        try {
+            connection = ConnectionManager.getConnection();
+            ArrayList<User> usuarios = new ArrayList<User>();
+
+            String query = "SELECT * FROM users";
+            preparedStmt = connection.prepareStatement(query);
+            ResultSet rs = preparedStmt.executeQuery();
+
+            while (rs.next()) {
+
+              User user = new User();
+              user.setId(rs.getInt("id"));
+              user.setUsername(rs.getString("username"));
+              user.setEmail(rs.getString("email"));
+              user.setName(rs.getString("name"));
+              user.setSurnames(rs.getString("surnames"));
+              user.setBirthDate(rs.getDate("birthdate"));
+              user.setRole(rs.getString("role"));
+
+              usuarios.add(user);
+            }
+
+            return new ResponseEntity<>(usuarios, HttpStatus.OK);
+          }
+          catch (SQLException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        finally {
+            try { if (preparedStmt != null) preparedStmt.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+            try { if (connection != null) connection.close(); }
+            catch (Exception excep) { excep.printStackTrace(); }
+        }
+    }
+
+    @RequestMapping(
+            value = "/{id}",
+            method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteUser(
+      @PathVariable("id") int id){
+        logger.info("Servicio: delete user");
+
+        Connection connection = null;
+        PreparedStatement preparedStmt = null;
+        int rowsDeleted = 0;
+
+        try {
+            connection = ConnectionManager.getConnection();
+            // JwtUtil jwt = new JwtUtil();
+            // User user = new User();
+            //
+            // if (token.length() != 0) {
+            //
+            //   // Splits the string to get rid of 'Bearer ' prefix
+            //   if (token.startsWith("Bearer ")) {
+            //     token = token.split(" ")[1];
+            //   }
+            //
+            //   // Obtains username from token to retrieve the
+            //   // user's info
+          	// 	JwtInfo jwtInfo = jwt.parseToken(token);
+            //   String username = jwtInfo.getUsername();
+
+          String query = "DELETE FROM users " +
+                          "WHERE id = '" + id + "'";
+
+          preparedStmt = connection.prepareStatement(query);
+          rowsDeleted = preparedStmt.executeUpdate();
+
+          if (rowsDeleted > 0) {
+            return new ResponseEntity<>(HttpStatus.OK);
+          }
+          else {
+              return new ResponseEntity<>("Error deleting usuario",
+                HttpStatus.INTERNAL_SERVER_ERROR);
+          }
         } catch (SQLException e) {
             e.printStackTrace();
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

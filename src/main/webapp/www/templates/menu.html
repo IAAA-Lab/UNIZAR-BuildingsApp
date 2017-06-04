@@ -1,7 +1,15 @@
-<ion-side-menus>
+<ion-side-menus enable-menu-with-back-views="true">
+  <!-- enable-menu-with-back-views="true", este atributo evita que
+el menu lateral desaparezca en el cambio de vista -->
 
   <ion-pane ion-side-menu-content>
-    <ion-nav-bar class="bar-positive nav-title-slide-ios7">
+    <ion-nav-bar align-title="center" class="bar-positive nav-title-slide-ios7">
+      <ion-nav-buttons side="left">
+        <button menu-toggle="left" class="button button-icon icon ion-navicon">
+          <span id="notifications-badge" class="badge badge-assertive"
+                ng-if="showNotifications()">{{ numCambiosNuevos }}</span>
+        </button>
+      </ion-nav-buttons>
     </ion-nav-bar>
     <ion-nav-view name="menuContent" animation="slide-left-right"></ion-nav-view>
   </ion-pane>
@@ -54,17 +62,18 @@
             <i class="icon ion-log-in"></i><span>{{i18n.login.title}}</span>
           </ion-item>
 
-          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/changes"
+          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/changes/pending"
                     ng-show="isUserLoggedIn()">
-            <i class="icon ion-person"></i><span>{{i18n.changes.title}}</span>
+            <i class="icon ion-person">
+              <span class="badge badge-assertive" id="notifications-menu-badge"
+                  ng-show="showNotifications()" color="danger">{{ numCambiosNuevos }}
+              </span>
+            </i>
+            <span>{{i18n.changes.title}}</span>
           </ion-item>
           <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/home"
                     ng-show="isUserLoggedIn()" ng-click="logout()">
             <i class="icon ion-log-out"></i><span>{{i18n.logout.title}}</span>
-          </ion-item>
-
-          <ion-item item-type="item-icon-left" nav-clear menu-close href="#/app/panorama">
-            <i class="icon ion-android-image"></i><span>{{i18n.panoramas.menu}}</span>
           </ion-item>
         </ion-list>
       </div>

@@ -3,16 +3,20 @@
  ***********************************************************************/
 
 UZCampusWebMapApp.controller('LoginCtrl', function($scope, $rootScope, $timeout,
-  $ionicLoading, $ionicPopup, $cordovaCamera, $state, infoService, photosService,
-  translationService, loginService, APP_CONSTANTS){
+  $ionicLoading, $ionicPopup, $cordovaCamera, $window, $ionicSideMenuDelegate, infoService,
+  photosService, translationService, loginService, APP_CONSTANTS){
+
+  $ionicSideMenuDelegate.canDragContent(true);
   $scope.data = {};
 
   $scope.login = function() {
+    var nombre = $scope.data.username;
     loginService.postLogin($scope.data.username, $scope.data.password)
       .then(function(data) {
 
         // Login successful
-        $state.go('app.home');
+        $window.location = '#/app/home';
+        $ionicLoading.show({ template: 'Bienvenido ' + nombre , noBackdrop: true, duration: 3000});
       },
       function(data) {
         var alertPopup = $ionicPopup.alert({

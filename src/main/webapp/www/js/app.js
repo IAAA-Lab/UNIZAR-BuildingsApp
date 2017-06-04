@@ -6,7 +6,8 @@
 
 var UZCampusWebMapApp = angular.module(
             'UZCampusWebMapApp',
-            ['ionic', 'angularSlideables','ngResource','ngRoute','ngCordova']
+            ['ionic', 'angularSlideables','ngResource','ngRoute','ngCordova',
+             'angular-content-editable']
     );
 
 UZCampusWebMapApp.run(function($ionicPlatform) {
@@ -18,12 +19,24 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
         }
       });
     })
+    .filter("trust", ['$sce', function($sce) {
+      return function(htmlCode){
+        return $sce.trustAsHtml(htmlCode);
+      };
+    }])
     .config(['$routeProvider', function($routeProvider) {
         $routeProvider.when('/:type/:ciudad', {
             templateUrl: "templates/map.html"
         });
     }])
-    .config(function($stateProvider, $urlRouterProvider, $httpProvider) {
+    .config(function($stateProvider, $urlRouterProvider, $httpProvider,
+                      $ionicConfigProvider) {
+
+      // Cuando las tabs se colocan arriba hay un bug que las oculta,
+      // se ponen debajo de la nav-bar del sidemenu
+      // revisar antes de descomentar: https://github.com/driftyco/ionic/issues/3288
+      // $ionicConfigProvider.tabs.position('top');
+
       $stateProvider
           .state('app', {
             url: "/app",
@@ -85,21 +98,49 @@ UZCampusWebMapApp.run(function($ionicPlatform) {
           })
           .state('app.changes', {
             url: "/changes",
+            abstract: true,
             views: {
               'menuContent':{
                 templateUrl: "templates/changes.html",
+                controller: 'ChangesAbstractCtrl'
+              }
+            }
+          })
+          .state('app.changes.pending', {
+            url: "/pending",
+            views: {
+              'tab-changes-pending':{
+                templateUrl: "templates/tab-changes.html",
                 controller: 'ChangesCtrl'
               }
             }
           })
-          .state('app.changeDetails', {
-              url: "/changeDetails/:cambio",
-              views: {
-                  'menuContent':{
-                      templateUrl: "templates/changeDetails.html",
-                      controller: 'ChangeDetailsCtrl'
-                  }
+          .state('app.changes.waiting', {
+            url: "/waiting",
+            views: {
+              'tab-changes-waiting':{
+                templateUrl: "templates/tab-changes.html",
+                controller: 'ChangesCtrl'
               }
+            }
+          })
+          .state('app.changes.approved', {
+            url: "/approved",
+            views: {
+              'tab-changes-approved':{
+                templateUrl: "templates/tab-changes.html",
+                controller: 'ChangesCtrl'
+              }
+            }
+          })
+          .state('app.changes.rejected', {
+            url: "/rejected",
+            views: {
+              'tab-changes-rejected':{
+                templateUrl: "templates/tab-changes.html",
+                controller: 'ChangesCtrl'
+              }
+            }
           })/*
           .state('app.favs', {
             url: "/favs",

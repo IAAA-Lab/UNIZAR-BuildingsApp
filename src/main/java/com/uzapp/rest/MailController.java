@@ -40,16 +40,8 @@ public class MailController {
       .getResourceAsStream("config.properties");
       Properties prop = new Properties();
       prop.load(input);
-      username = prop.getProperty("mailUser");
-      password = prop.getProperty("mailPass");
-
-      // final String username = "username@gmail.com";
-      // final String password = "password";
-
-      prop.put("mail.smtp.auth", "true");
-      prop.put("mail.smtp.starttls.enable", "true");
-      prop.put("mail.smtp.host", "smtp.gmail.com");
-      prop.put("mail.smtp.port", "587");
+      username = prop.getProperty("mail.user");
+      password = prop.getProperty("mail.pass");
 
       Session session = Session.getInstance(prop,
       new javax.mail.Authenticator() {
@@ -59,7 +51,7 @@ public class MailController {
       });
 
     	Message message = new MimeMessage(session);
-    	message.setFrom(new InternetAddress(username + "@gmail.com"));
+    	message.setFrom(new InternetAddress(username));
     	message.setRecipients(Message.RecipientType.TO,
     		InternetAddress.parse(mail.getDestinatario()));
     	message.setSubject("Tu incidencia ha sido resuelta");

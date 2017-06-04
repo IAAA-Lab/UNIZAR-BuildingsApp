@@ -9,6 +9,16 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd
 	">
 
+<context:property-placeholder location="classpath:config.properties"/>
+
 <!-- Declaración de los beans necesarios -->
+<bean id="dataSource"
+	class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+
+	<property name="driverClassName" value="org.postgresql.Driver" />
+	<property name="url" value="${JDBC_CONNECTION_STRING}" />
+	<property name="username" value="${dbuser}" />
+	<property name="password" value="${dbpassword}" />
+</bean>
 
 </beans>

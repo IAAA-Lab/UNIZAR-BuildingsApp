@@ -10,9 +10,9 @@ $.ajaxSetup({
 });
 
 function checkToken(){
-    console.log('Checkin token: ', window.location.pathname);
+    console.log('Checking token: ', window.location.pathname);
     $.ajax({
-      url : getConstants('API_URL') + '/checkToken',
+      url : getConstants('API_URL') + '/checkAdmin',
       type: 'POST',
       success: function(data, textStatus, jqXHR)
       {
@@ -43,6 +43,24 @@ function checkToken(){
           // User is already at login page
           return;
         }
+      }
+    });
+}
+
+function checkAdmin(success, error){
+    console.log('Checking token: ', window.location.pathname);
+    $.ajax({
+      url : getConstants('API_URL') + '/checkAdmin',
+      type: 'POST',
+      success: function(data, textStatus, jqXHR)
+      {
+          console.log('Success on checking user permissions',data);
+          success(data, textStatus, jqXHR);
+      },
+      error: function (jqXHR, textStatus, errorThrown)
+      {
+          console.log('Error on checking user permissions', jqXHR, errorThrown);
+          error(jqXHR, textStatus, errorThrown);
       }
     });
 }

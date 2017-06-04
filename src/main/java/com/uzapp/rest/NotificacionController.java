@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,6 +58,7 @@ public class NotificacionController {
 
   // Base photos path
 	private static String photosPath = "";
+  private static String photosNotificationsPath = "";
 
 	// Initalize photos base path var from config properties file
 	static {
@@ -66,6 +68,7 @@ public class NotificacionController {
 			Properties prop = new Properties();
 			prop.load(input);
 			photosPath = prop.getProperty("photos_path");
+      photosNotificationsPath = prop.getProperty("photos_notifications_path");
 		}
 		catch (IOException e) {
 			e.printStackTrace(System.err);
@@ -166,6 +169,21 @@ public class NotificacionController {
   }
 
   /**
+  * API: Create a request to delte all cambios
+  */
+  @RequestMapping(
+          value = "/cambio",
+          method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteAllCambios()
+  {
+      logger.info("Service: delete all cambios");
+
+      // El tipo 0 equivale a todas las notificaciones (usuario registrado)
+      int tipoNotificacion = 1;
+      return deleteNotificaciones(tipoNotificacion);
+  }
+
+  /**
   * API: Create a request to create a 'incidencia' notification
   */
   @RequestMapping(
@@ -249,6 +267,21 @@ public class NotificacionController {
   * API: Create a request to retrieve all notifications
   */
   @RequestMapping(
+          value = "/incidencia",
+          method = RequestMethod.DELETE)
+  public ResponseEntity<?> deleteAllIncidencias()
+  {
+      logger.info("Service: delete all incidencias");
+
+      // El tipo 0 equivale a todas las notificaciones (usuario registrado)
+      int tipoNotificacion = 2;
+      return deleteNotificaciones(tipoNotificacion);
+  }
+
+  /**
+  * API: Create a request to retrieve all notifications
+  */
+  @RequestMapping(
           value = "",
           method = RequestMethod.GET)
   public ResponseEntity<?> getAllNotificaciones()
@@ -307,12 +340,13 @@ public class NotificacionController {
   // NO MORE ENDPOINTS BELOW //
 
   private ResponseEntity<?> getPhotoByName(String name, HttpServletResponse response) {
+    FileInputStream fis = null;
 
     if(!name.equals("")){
       try
       {
         String imageString = null;
-        String fullName = photosPath + name + ".jpg";
+        String fullName = photosNotificationsPath + name + ".jpg";
 
         // // Creates a byte[] with photo name
         logger.info("Photo name", fullName);
@@ -320,7 +354,7 @@ public class NotificacionController {
         byte[] image = new byte[(int) file.length()];
 
         // Reads image bytes into 'bytesArray'
-        FileInputStream fis = new FileInputStream(file);
+        fis = new FileInputStream(file);
         fis.read(image);
 
         // Converts image to base64
@@ -336,6 +370,12 @@ public class NotificacionController {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
       }
+      finally {
+        try {
+          if (fis != null) fis.close();
+        }
+        catch (Exception excep) { excep.printStackTrace(); }
+      }
     } else {
       return new ResponseEntity<>("Photo download failed because name " + name + " was empty", HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -344,9 +384,15 @@ public class NotificacionController {
   private ResponseEntity<?> updateNotificationPhoto(String name,
         MultipartFile file, int id_notificacion) {
 
+    FileOutputStream fos = null;
+    BufferedOutputStream stream = null;
+
     if (!file.isEmpty()) {
 			try
 			{
+
+        // Deletes previous image from disk
+        deleteImagenNotificacion(id_notificacion);
 
         // Inserts photo name with its notification info
         insertNotificationPhoto(name, id_notificacion);
@@ -357,17 +403,19 @@ public class NotificacionController {
 
         // Creates file with photo data
 				byte[] bytes = file.getBytes();
-				logger.info("File path", photosPath + File.separator);
-				File dir = new File(photosPath + File.separator);
+				logger.info("File path", photosNotificationsPath + File.separator);
+				File dir = new File(photosNotificationsPath + File.separator);
 
 				if (!dir.exists())
 					dir.mkdirs();
 
 				// Creates file on server
 				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
-				BufferedOutputStream stream = new BufferedOutputStream( new FileOutputStream(serverFile));
+        fos = new FileOutputStream(serverFile);
+				stream = new BufferedOutputStream(fos);
 				stream.write(bytes);
 				stream.close();
+        fos.close();
 
 				logger.info("Server File Location=" + serverFile.getAbsolutePath());
 
@@ -377,6 +425,13 @@ public class NotificacionController {
 				e.printStackTrace();
 				return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 			}
+      finally {
+        try {
+          if (stream != null) stream.close();
+          if (fos != null) fos.close();
+        }
+        catch (Exception excep) { excep.printStackTrace();}
+      }
 		} else {
 			return new ResponseEntity<>("Photo upload failed because file " + name + " was empty", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -430,7 +485,9 @@ public class NotificacionController {
 
       // Obtains the username of current user from spring security context
       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-      String username = auth.getName();
+      String username = "Invitado";
+
+      if (auth != null) username = auth.getName();
 
       // Creates current date and time
       LocalDateTime actualDate = LocalDateTime.now();
@@ -441,9 +498,9 @@ public class NotificacionController {
 
       String query = "INSERT INTO tb_notificaciones(" +
         "tipo_notificacion,id_espacio,descripcion,fecha,id_usuario," +
-        "id_admin_validador,estado,foto,email_usuario,comentario_admin" +
-        ")" +
-        "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        "id_admin_validador,estado,foto,email_usuario,comentario_admin," +
+        "fecha_ultima_modificacion)" +
+        "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
       preparedStmt = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
       preparedStmt.setInt(1, tipoNotificacion);
@@ -456,6 +513,7 @@ public class NotificacionController {
       preparedStmt.setString(8, notificacion.getFoto());
       preparedStmt.setString(9, notificacion.getEmail_usuario());
       preparedStmt.setString(10, notificacion.getComentario_admin());
+      preparedStmt.setTimestamp(11, creationDateTime);
 
       rowsInserted = preparedStmt.executeUpdate();
 
@@ -520,6 +578,7 @@ public class NotificacionController {
         notificacion.setFoto(rs.getString("foto"));
         notificacion.setEmail_usuario(rs.getString("email_usuario"));
         notificacion.setComentario_admin(rs.getString("comentario_admin"));
+        notificacion.setFechaUltimaModificacion(rs.getTimestamp("fecha_ultima_modificacion").toLocalDateTime());
 
         return new ResponseEntity<>(gson.toJson(notificacion), HttpStatus.OK);
       }
@@ -559,6 +618,9 @@ public class NotificacionController {
         query += " WHERE tipo_notificacion = '" + tipoNotificacion + "'";
       }
 
+      // Ordena las notifiaciones de mas reciente a menos reciente
+      query += " ORDER BY fecha_ultima_modificacion DESC";
+
       preparedStmt = connection.prepareStatement(query);
       ResultSet rs = preparedStmt.executeQuery();
 
@@ -577,6 +639,7 @@ public class NotificacionController {
         notificacion.setFoto(rs.getString("foto"));
         notificacion.setEmail_usuario(rs.getString("email_usuario"));
         notificacion.setComentario_admin(rs.getString("comentario_admin"));
+        notificacion.setFechaUltimaModificacion(rs.getTimestamp("fecha_ultima_modificacion").toLocalDateTime());
 
         // Obtiene informacion adicional sobre el espacio
         Estancias estanciasRestController = new Estancias();
@@ -632,6 +695,9 @@ public class NotificacionController {
         query += " AND tipo_notificacion = '" + tipoNotificacion + "'";
       }
 
+      // Ordena las notifiaciones de mas reciente a menos reciente
+      query += " ORDER BY fecha_ultima_modificacion DESC";
+
       System.out.println("Query: " + query);
 
       preparedStmt = connection.prepareStatement(query);
@@ -652,6 +718,7 @@ public class NotificacionController {
         notificacion.setFoto(rs.getString("foto"));
         notificacion.setEmail_usuario(rs.getString("email_usuario"));
         notificacion.setComentario_admin(rs.getString("comentario_admin"));
+        notificacion.setFechaUltimaModificacion(rs.getTimestamp("fecha_ultima_modificacion").toLocalDateTime());
 
         // Obtiene informacion adicional sobre el espacio
         Estancias estanciasRestController = new Estancias();
@@ -691,6 +758,12 @@ public class NotificacionController {
     try
     {
     	logger.info("Service: update notificacion");
+
+      // Creates current date and time
+      LocalDateTime actualDate = LocalDateTime.now();
+      Timestamp updateDateTime = Timestamp.from(actualDate.toInstant(ZoneOffset.ofHours(2)));
+
+      Gson gson = new Gson();
     	connection = ConnectionManager.getConnection();
 
       // COALESCE: tiene 2 parametros, aplica el primero que no sea null,
@@ -707,7 +780,8 @@ public class NotificacionController {
                           " estado = COALESCE(?,estado)," +
                           " foto = COALESCE(?,foto)," +
                           " email_usuario = COALESCE(?,email_usuario)," +
-                          " comentario_admin = COALESCE(?,comentario_admin)" +
+                          " comentario_admin = COALESCE(?,comentario_admin)," +
+                          " fecha_ultima_modificacion = ?" +
                           " WHERE id_notificacion = '" + id_notificacion + "'" +
                           " AND tipo_notificacion = '" + tipoNotificacion + "'";
 
@@ -721,17 +795,17 @@ public class NotificacionController {
       preparedStmt.setString(7, notificacion.getFoto());
       preparedStmt.setString(8, notificacion.getEmail_usuario());
       preparedStmt.setString(9, notificacion.getComentario_admin());
+      preparedStmt.setTimestamp(10, updateDateTime);
 
       int rowsUpdated = preparedStmt.executeUpdate();
 
       if (rowsUpdated > 0) {
-        return new ResponseEntity<>("Success updating notification data with ID: " +
-          id_notificacion, HttpStatus.OK);
+        String res = "Success updating notification data with ID: " + id_notificacion;
+        return new ResponseEntity<>(gson.toJson(res), HttpStatus.OK);
       }
       else {
-
-        return new ResponseEntity<>("Error updating photo data with ID: " +
-          id_notificacion, HttpStatus.INTERNAL_SERVER_ERROR);
+          String res = "Error updating notification data with ID: " + id_notificacion;
+        return new ResponseEntity<>(gson.toJson(res), HttpStatus.INTERNAL_SERVER_ERROR);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -752,10 +826,13 @@ public class NotificacionController {
     int rowsDeleted = 0;
 
     try {
+
+      // Primero elimina del servidor la imagen asociada a la notificacion
+      deleteImagenNotificacion(id_notificacion);
+
       Gson gson = new Gson();
       connection = ConnectionManager.getConnection();
 
-      Notificacion notificacion = new Notificacion();
       String query = "DELETE FROM tb_notificaciones " +
                       "WHERE id_notificacion = '" + id_notificacion + "' " +
                       "AND tipo_notificacion = '" + tipoNotificacion + "'";
@@ -764,6 +841,7 @@ public class NotificacionController {
       rowsDeleted = preparedStmt.executeUpdate();
 
       if (rowsDeleted > 0) {
+
         return new ResponseEntity<>(gson.toJson("Notificacion eliminada"), HttpStatus.OK);
       }
       else {
@@ -795,6 +873,10 @@ public class NotificacionController {
       Notificacion notificacion = new Notificacion();
       String query = "DELETE FROM tb_notificaciones";
 
+      if (tipoNotificacion != 0) {
+        query += " WHERE tipo_notificacion = " + tipoNotificacion;
+      }
+
       preparedStmt = connection.prepareStatement(query);
       rowsDeleted = preparedStmt.executeUpdate();
 
@@ -810,6 +892,55 @@ public class NotificacionController {
     catch (SQLException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    finally {
+        try { if (preparedStmt != null) preparedStmt.close(); }
+        catch (Exception excep) { excep.printStackTrace(); }
+        try { if (connection != null) connection.close(); }
+        catch (Exception excep) { excep.printStackTrace(); }
+    }
+  }
+
+  private void deleteImagenNotificacion(int id_notificacion) {
+    Connection connection = null;
+    PreparedStatement preparedStmt = null;
+
+    try {
+      Gson gson = new Gson();
+      connection = ConnectionManager.getConnection();
+
+      String query = "SELECT foto FROM tb_notificaciones " +
+                            "WHERE id_notificacion = '" + id_notificacion + "'";
+
+      preparedStmt = connection.prepareStatement(query);
+      ResultSet rs = preparedStmt.executeQuery();
+
+      if (rs.next()) {
+
+        String name = rs.getString("foto");
+        System.out.println(name);
+
+        //Delete photo from disk
+        String fullPathFile = photosNotificationsPath + name;
+        logger.info("File path to delete", fullPathFile);
+
+        System.out.println(fullPathFile);
+        File fileToDelete = new File(fullPathFile);
+
+        // File dir = new File(photosNotificationsPath + File.separator);
+        // File fileToDelete = new File(dir.getAbsolutePath() + File.separator + name);
+        // System.out.println(fileToDelete.getAbsolutePath());
+
+        // Unlocks previous locks and allows to delete file
+        // FileOutputStream fos = new FileOutputStream(fileToDelete);
+        // fos.close();
+
+	      Files.delete(fileToDelete.toPath());
+        System.out.println("Imagen borrada correctamente: " + fullPathFile);
+      }
+    }
+    catch (Exception e) {
+        e.printStackTrace();
     }
     finally {
         try { if (preparedStmt != null) preparedStmt.close(); }

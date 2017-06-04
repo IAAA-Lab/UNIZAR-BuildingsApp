@@ -9900,16 +9900,54 @@ img[usemap] {
   width: auto; }
 
 #img-logo {
-  height: 10%;
-  width: 30%;
-  margin-top: 5%;
-  margin-right: 40%;
-  margin-left: 35%; }
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: auto;
+  margin-left: auto; }
+
+.smallScreen #img-logo {
+  width: 50%;
+  height: 50%; }
 
 #aragonMapImg {
   text-align: center;
   margin-top: 10%;
   margin-left: 10%; }
+
+#notification-button {
+  position: relative;
+  width: 42px;
+  top: 1px;
+  right: 1px;
+  overflow: visible !important; }
+
+#notifications-badge {
+  background-color: #ef473a;
+  color: white;
+  position: absolute;
+  padding: 0;
+  right: -5px;
+  top: 2px;
+  border-radius: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  height: 17px;
+  width: 17px;
+  line-height: normal; }
+
+#notifications-menu-badge {
+  background-color: #ef473a;
+  color: white;
+  position: absolute;
+  padding-top: 0px;
+  padding-left: 5px;
+  left: 2px;
+  border-radius: 100%;
+  font-family: inherit;
+  font-size: 12px;
+  height: 17px;
+  width: 17px;
+  line-height: normal; }
 
 .mymenu .menu-level1 {
   margin-top: 15px;
@@ -10117,3 +10155,82 @@ img[usemap] {
 
 .popup p {
   text-align: justify; }
+
+#changes-view button.button.button-positive {
+  max-width: 425px;
+  margin-left: auto;
+  margin-right: auto; }
+
+#changes-view div.editable:hover {
+  background-color: #eee; }
+
+#changes-view .inputfile {
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: -1; }
+
+#changes-view .inputfile + label {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block; }
+
+#changes-view .ng-hide.ng-hide-animate {
+  display: none !important; }
+
+@media (max-width: 767px) {
+  #changes-view .bigScreen {
+    display: none; }
+  #changes-view .smallScreen {
+    display: block; } }
+
+@media (min-width: 768px) {
+  #changes-view .bigScreen {
+    display: block; }
+  #changes-view .smallScreen {
+    display: none; } }
+
+#changes-view .tab-item .badge {
+  opacity: 1 !important; }
+
+#changes-view .tab-item {
+  position: relative; }
+
+#home-view .card-background-page .smalScreen ion-card {
+  position: relative;
+  text-align: center; }
+
+#home-view .card-background-page div.map-card {
+  position: relative;
+  text-align: center; }
+
+#home-view .card-background-page .card-title {
+  position: absolute;
+  top: 36%;
+  font-size: 2.0em;
+  width: 100%;
+  font-weight: bold;
+  color: #fff; }
+
+#home-view .card-background-page .card-subtitle {
+  font-size: 1.0em;
+  position: absolute;
+  top: 52%;
+  width: 100%;
+  color: #fff; }
+
+@media (max-width: 767px) {
+  #home-view .card-background-page .bigScreen {
+    display: none; }
+  #home-view .card-background-page .smallScreen {
+    display: block; } }
+
+@media (min-width: 768px) {
+  #home-view .card-background-page .bigScreen {
+    display: block; }
+  #home-view .card-background-page .smallScreen {
+    display: none; } }

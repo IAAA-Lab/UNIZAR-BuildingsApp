@@ -1,4 +1,6 @@
-UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, poisService, APP_CONSTANTS, $ionicModal, $ionicPopup, $ionicLoading) {
+UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService,
+  poisService, loginService, APP_CONSTANTS, $ionicModal, $ionicPopup, $ionicLoading,
+  $ionicActionSheet) {
 
     return ({
         crearMapa: crearMapa,
@@ -556,7 +558,7 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
 
                     infoService.getRoomInfo(id).then(
                         function (data) {
-                            if (data == null) {
+                            if (data === null) {
                                 console.log("There's no info on room ", id);
                                 var errorMsg = '<div class="text-center">'+$scope.i18n.errors.info.selected_room+'</div>';
                                 showInfoPopup($scope.i18n.errors.warning, errorMsg);
@@ -564,19 +566,31 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
                                 $scope.infoRoom = data;
                                 console.log("infoEstancia",data);
 
-                                var html_list = '<div><ul class="list-group">';
-                                var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
-                                html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
-                                html_list = html_list + html_list_items + '</ul></div>';
-                                var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="getRoomInfo(this)">'+$scope.i18n.floor.popups.room.button.info+' </button></div>';
+                                // Centers map in the room selected
+                                var mapaPlanta = sharedProperties.getFloorMap();
+                                mapaPlanta.panTo(roomLatLng);
 
-                                var html_button_cambio = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 1)">'+$scope.i18n.floor.popups.room.button.cambio+' </button></div>';
-                                var html_button_incidencia = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 2)">'+$scope.i18n.floor.popups.room.button.incidencia+' </button></div>';
+                                // Shows actionsheet
+                                showRoomOptions(data);
 
-                                var html =  html_list + html_button + html_button_cambio + html_button_incidencia;
 
-                                var currentMap = sharedProperties.getFloorMap();
-                                L.popup().setLatLng(roomLatLng).setContent(html).openOn(currentMap);
+                                // var html_list = '<div><ul class="list-group">';
+                                // var html_list_items = '<li class="list-group-item">'+data.ID_espacio+'</li>';
+                                // html_list_items += '<li class="list-group-item">'+data.ID_centro+'</li>';
+                                // html_list = html_list + html_list_items + '</ul></div>';
+                                // var html_button = '<div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="getRoomInfo(this)">'+$scope.i18n.floor.popups.room.button.info+' </button></div>';
+                                //
+                                // var html_button_cambio = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 1)">'+$scope.i18n.floor.popups.room.button.cambio+' </button></div>';
+                                // var html_button_incidencia = '<br><div class="info-btn-div"><button value="'+data.ID_espacio+'" class="button button-small button-positive" onclick="createNotification(this.value, 2)">'+$scope.i18n.floor.popups.room.button.incidencia+' </button></div>';
+                                //
+                                // if (!loginService.checkUserLoggedIn()) {
+                                //   html_button_cambio = '';
+                                // }
+                                //
+                                // var html =  html_list + html_button + html_button_cambio + html_button_incidencia;
+                                //
+                                // var currentMap = sharedProperties.getFloorMap();
+                                // L.popup().setLatLng(roomLatLng).setContent(html).openOn(currentMap);
                             }
                         },
                         function(err){
@@ -673,12 +687,41 @@ UZCampusWebMapApp.service('geoService', function(sharedProperties, infoService, 
     }
 
     function showInfoPopup(title, msg){
-        if ($('.ionic-alert-popup').is(":visible") == false) {
+        if ($('.ionic-alert-popup').is(":visible") === false) {
             $ionicPopup.alert({
                 cssClass: 'ionic-alert-popup',
                 title: title,
                 template: msg
             });
         }
+    }
+
+    function showRoomOptions(data) {
+      console.log(data);
+      var options = {
+        titleText: data.ID_espacio + ' - ' + data.ID_centro,
+        buttons: [{
+          text: '<i class="icon ion-information-circled"></i> Más información'
+        }, {
+          text: '<i class="icon ion-paper-airplane"></i> Notificar incidencia'
+        },],
+        cancelText: 'Cancelar',
+        cancel: function() {
+        },
+        buttonClicked: function(index) {
+          if (index === 0) getRoomInfo({value: data.ID_espacio});
+          else if (index == 1) createNotification(data.ID_espacio, 2); // incidencia
+          else if (index == 2) createNotification(data.ID_espacio, 1); // cambio
+          return true;
+        }
+      };
+
+      if (loginService.checkUserLoggedIn()) {
+        options.buttons.push({
+          text: '<i class="icon ion-wrench"></i> Notificar cambio'
+        });
+      }
+
+      $ionicActionSheet.show(options);
     }
 });

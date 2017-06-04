@@ -2,6 +2,7 @@ package com.uzapp.security.jwt.utils;
 
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.Claims;
@@ -12,15 +13,14 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtUtil {
 
-//    private static String secret;
+   private static String secret;
 
-    private long EXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10; // 10 days
-    private String secret = "ThisIsASecret";
+   private long EXPIRATIONTIME = 1000 * 60 * 60 * 24 * 10; // 10 days
 
-//    @Value("${jwt.secret}")
-//	private void setSecret(String secret) {
-//    	JwtUtil.secret = secret;
-//    }
+   @Value("${jwt.secret}")
+   private void setSecret(String secret) {
+   	 JwtUtil.secret = secret;
+   }
 
 	/**
      * Generates a JWT token containing username as subject,
@@ -35,13 +35,6 @@ public class JwtUtil {
     	Claims claims = Jwts.claims().setSubject(u.getUsername());
         claims.put("userId", u.getId() + "");
         claims.put("role", u.getRole());
-
-        // Generates random byte array key and converts to base64
-//        SecretKey secretKey = MacProvider.generateKey(SignatureAlgorithm.HS512);
-//        String base64EncodeKey = TextCodec.BASE64.encode(secretKey.getEncoded());
-
-        // debug
-//        System.out.println("CLAVE SECRETA: " + base64EncodeKey);
 
         return Jwts.builder()
         		.setClaims(claims)
