@@ -23,6 +23,8 @@ UZCampusWebMapApp.controller('PanoramaCtrl', function($scope, $rootScope, $timeo
 
               // Crea el panorama con las dimensiones adecuadas
               $scope.createPSV();
+              // $scope.PSV.getNavbarButton('gyroscope').show();
+              // console.log($scope.PSV.getNavbarButton('gyroscope'));
               console.log("PANO SIZE: " + JSON.stringify($scope.PSV.getSize()));
           };
       });
@@ -46,7 +48,9 @@ UZCampusWebMapApp.controller('PanoramaCtrl', function($scope, $rootScope, $timeo
         navbar: true,
         navbar_style: {
           background_color: 'rgba(58, 67, 77, 0.7)'
-        }
+        },
+        gyroscope: true,
+        move_inertia: false
         // caption: "Esto es una imagen panorámica de prueba :D"
       });
     };

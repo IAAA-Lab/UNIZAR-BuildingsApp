@@ -10,6 +10,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
   console.log("Changes controller");
   $ionicSideMenuDelegate.canDragContent(true);
   $scope.mostrado = false;
+  $scope.popupActive = false;
 
   //Calculates image dimensions based on device dimensions
   $scope.calculateDimensions = function() {
@@ -368,10 +369,13 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
           title: $scope.i18n.changes.modals.success_upload.title,
           template: '<p>'+$scope.i18n.changes.modals.success_upload.text+'</p>'
         });
+        $scope.popupActive = true;
+
         alertPopup.then(function(res){
           if ($('.popup-container').length > 0) {
             $('.popup-container').remove();
 
+            // $scope.popupActive = false;
             $scope.updateChangeList(cambio);
             // $scope.refreshCambios();
           }
@@ -711,12 +715,13 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
     });
 
     if (!cambioEsta) {
-      
+
       // El cambio ya ha sido incluido en la lista y por lo tanto no hay que añadirlo
       cambios.Pendiente.splice(0, 0, cambio);
       console.log(cambios);
       changeInfoService.setNumCambiosNuevosEstado('Pendiente', cambios.Pendiente.length);
     }
+    $scope.popupActive = false;
   };
 
   $scope.getScrollPosition = function(){
@@ -730,6 +735,10 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
     //  $ionicScrollDelegate.scrollBy(0,20,true);
     //  $scope.mostrado = true;
    }
+  };
+
+  $scope.isPopupAcive = function() {
+    return $scope.popupActive;
   };
 
   $scope.showDebug = function(debugInfo){

@@ -38,9 +38,6 @@ $(function() {
                   function(data, textStatus, jqXHR) {
 
                     // El usuario es un administrador
-
-                    // Cookies.set('session-admin-cookie', $.md5(data.username, data.id));
-                    // sessionStorage.setItem('userData', JSON.stringify(data));
                     console.log('Login success',data,textStatus, jqXHR);
                     window.location.href = 'index.html';
                   },

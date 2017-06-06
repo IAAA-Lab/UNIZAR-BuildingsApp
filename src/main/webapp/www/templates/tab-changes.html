@@ -6,7 +6,7 @@
       icon="dots" ng-if="cargar" ></ion-spinner>
     </div>
 
-    <button ng-show="areChangesToLoad()"
+    <button ng-show="areChangesToLoad() && !isPopupAcive()"
             class="button-block button-positive button"
             ng-click="showNewChanges()">
         <span ng-show="difNumCambiosNuevos > 1">Cargar {{ difNumCambiosNuevos }} cambios nuevos</span>
@@ -32,12 +32,6 @@
 
         <div ng-show="areDetailsShown($index)">
 
-          <div style="margin-top:16px" class="item-borderless" style="white-space:normal">
-            <span style="font-weight:600">Localización</span>
-            <hr>
-            {{cambio.cambio.ciudad}}, {{cambio.cambio.campus}}, {{cambio.cambio.edificio}}, planta {{cambio.cambio.planta}}
-          </div>
-
           <label ng-show="isStatus('Pendiente del usuario')"
                  for="imageInput{{$index}}" class="button button-block button-positive" style="margin-top:10px"
                  data-tap-disabled="true" ng-click="setCurrentChange($index,$event)">Cambiar imagen
@@ -47,6 +41,12 @@
                      name="photo" id="imageInput{{$index}}"
                      class="inputfile" resizable="false" />
           </label>
+
+          <div style="margin-top:16px" class="item-borderless" style="white-space:normal">
+            <span style="font-weight:600">Localización</span>
+            <hr>
+            {{cambio.cambio.ciudad}}, {{cambio.cambio.campus}}, {{cambio.cambio.edificio}}, planta {{cambio.cambio.planta}}
+          </div>
 
           <div style="margin-top:16px" class="item-borderless" style="white-space:normal">
             <span style="font-weight:600">Descripción</span>
@@ -168,7 +168,8 @@
       <!-- Item body end  -->
     </div>
 
-    <span ng-show="isStatusEmpty() && !areChangesToLoad()" style="">No hay cambios con este estado.</span>
+    <span class="bigScreen" ng-show="isStatusEmpty() && !areChangesToLoad()" style="height:28px;position:absolute;top:50%;left:40%;margin-top:14px;margin-left:-14px">No hay cambios con este estado.</span>
+    <span class="smallScreen" ng-show="isStatusEmpty() && !areChangesToLoad()" style="height:28px;position:absolute;top:50%;left:22%;margin-top:14px;margin-left:-14px">No hay cambios con este estado.</span>
 
   </ion-content>
 </ion-view>

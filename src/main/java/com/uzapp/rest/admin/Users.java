@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.uzapp.dominio.User;
 
 import java.sql.Connection;
@@ -16,12 +17,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/users")
 public class Users {
 
     private static final Logger logger = LoggerFactory.getLogger(Users.class);
+
+    // @Autowired
+    private static PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private ResponseEntity<?> setUserData(ResultSet rs) {
         try {
@@ -144,10 +151,13 @@ public class Users {
         try {
             connection = ConnectionManager.getConnection();
 
+            String password = user.getPassword();
+            String encodedPassword = passwordEncoder.encode(password);
+
             String query = "INSERT INTO users(username,password,email,name,surnames,birthDate,role) values (?,?,?,?,?,?,?)";
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());
-            preparedStmt.setString(2, user.getPassword());
+            preparedStmt.setString(2, encodedPassword);
             preparedStmt.setString(3, user.getEmail());
             preparedStmt.setString(4, user.getName());
             preparedStmt.setString(5, user.getSurnames());
@@ -222,13 +232,13 @@ public class Users {
             connection = ConnectionManager.getConnection();
             String password = user.getPassword();
             String query = "";
+
             if (password == null) {
                 query = "UPDATE users SET username=?, email=?, name=?, surnames=?, birthdate=?, role=? where id=?";
             } else {
+                password = passwordEncoder.encode(password);
                 query = "UPDATE users SET username=?, email=?, name=?, surnames=?, birthdate=?, role=?, password=? where id=?";
             }
-
-            System.out.print("password: " + password);
 
             preparedStmt = connection.prepareStatement(query);
             preparedStmt.setString(1, user.getUsername());

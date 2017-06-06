@@ -130,38 +130,45 @@ $(function() {
         });
     });
 
-    //Define action on clicking 'Approve' button
+    //Define action on clicking 'Save' button
     $('#edit-usuario-save-btn').click(function(){
-        $('body').mask('Enviando...');
 
-        var originalusuarioData = $('#dataTable-usuarios').DataTable().rows({ selected: true }).data()[0],
-            sendData = {};
+      var originalusuarioData = $('#dataTable-usuarios').DataTable().rows({ selected: true }).data()[0],
+          sendData = {};
 
-        //Fill data to send
-        for (var key in originalusuarioData) {
-          sendData[key] = $('#edit-usuario-'+key).val();
-        }
-        sendData.id = originalusuarioData.id;
+      //Fill data to send
+      for (var key in originalusuarioData) {
+        sendData[key] = $('#edit-usuario-'+key).val();
+      }
+      sendData.id = originalusuarioData.id;
 
-        editUser(
-            JSON.stringify(sendData),
-            function(data){
-                $('#dataTable-usuarios').DataTable().ajax.reload();
-                $('#edit-usuario-modal .close').click();
-                $('#admin-usuarios-success-text').text('Información del usuario actualizada correctamente');
-                $('#admin-usuarios-success').show();
-                $('body').unmask();
-            },
-            function(jqXHR, textStatus, errorThrown){
-                $('body').unmask();
-                $('#edit-usuario-modal .close').click();
-                $('#admin-usuarios-error-text').text('Error editando la información del usuario: ' + jqXHR.responseText);
-                $('#admin-usuarios-error').show();
-                setTimeout(function(){
-                    if ($('#admin-usuarios-error').is(':visible'))
-                        $('#admin-usuarios-error').hide();
-                }, 30000);
-            });
+      // console.log($('#edit-usuario-pass').val());
+      if ($('#edit-usuario-pass').val().length > 0) {
+        sendData.password = $('#edit-usuario-pass').val();
+      }
+      
+      console.log("A ver");
+      console.log(sendData);
+
+      editUser(
+        JSON.stringify(sendData),
+        function(data){
+            $('#dataTable-usuarios').DataTable().ajax.reload();
+            $('#edit-usuario-modal .close').click();
+            $('#admin-usuarios-success-text').text('Información del usuario actualizada correctamente');
+            $('#admin-usuarios-success').show();
+            $('body').unmask();
+        },
+        function(jqXHR, textStatus, errorThrown){
+            $('body').unmask();
+            $('#edit-usuario-modal .close').click();
+            $('#admin-usuarios-error-text').text('Error editando la información del usuario: ' + jqXHR.responseText);
+            $('#admin-usuarios-error').show();
+            setTimeout(function(){
+                if ($('#admin-usuarios-error').is(':visible'))
+                    $('#admin-usuarios-error').hide();
+            }, 30000);
+        });
     });
 
     //Define action on click 'Eliminar' button for delete a usuario
