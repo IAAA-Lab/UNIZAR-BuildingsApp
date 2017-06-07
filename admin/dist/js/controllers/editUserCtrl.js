@@ -1,10 +1,7 @@
 $(function() {
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
-            if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
-                $('body').mask('Loading...');
-                window.location.href = 'login.html';
-            }
+            checkToken();
         }
     };
 
@@ -19,11 +16,24 @@ $(function() {
     saveBtn.hide();
     cancelBtn.hide();
 
-    var userData = JSON.parse(sessionStorage.getItem('userData'));
-    console.log('userData', userData);
-    $.each(userData, function(key,val){
-        $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
-    });
+    // Obtiene los datos del usuario de la api
+    var userData;
+
+    getUserInfo(
+      function(data, textStatus, jqXHR)
+        {
+          userData = data;
+          $.each(userData, function(key,val){
+              $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
+          });
+        }
+    );
+
+    // var userData = JSON.parse(sessionStorage.getItem('userData'));
+    // console.log('userData', userData);
+    // $.each(userData, function(key,val){
+    //     $('#edit-user-panel').find('.form-control[name="'+key+'"]').val(val);
+    // });
 
     editBtn.click(function(){
         $(this).hide();

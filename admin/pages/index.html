@@ -26,7 +26,8 @@
     <link href="../bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <!-- jQuery -->
-    <script src="../bower_components/jquery/dist/jquery.min.js"></script>
+    <!-- <script src="../bower_components/jquery/dist/jquery.min.js"></script> -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 
     <!-- Bootstrap Core JavaScript -->
     <script src="../bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -60,6 +61,7 @@
     <script src="../dist/js/controllers/dashboardController.js"></script>
     <script src="../dist/js/controllers/photosCtrl.js"></script>
     <script src="../dist/js/services/infoService.js"></script>
+    <script src="../dist/js/services/networkService.js"></script>
 
 </head>
 
@@ -87,7 +89,7 @@
                         <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-user">
-                        <li><a class='go-to' href="editUser.html" id="user-profile-link"><i class="fa fa-user fa-fw"></i> Perfil usuario</a></li>
+                        <li><a class='go-to' href="editUser.html" id="user-profile-link"><i class="fa fa-user fa-fw"></i> Mi perfil</a></li>
                         <li><a class='go-to' href="createUser.html" id="user-create-link"><i class="fa fa-group fa-fw"></i> Crear usuario</a></li>
                         <li class="divider"></li>
                         <li><a href="#" id="logout-link"><i class="fa fa-sign-out fa-fw"></i> Salir</a></li>
@@ -111,7 +113,18 @@
                             <a href="#"><i class="fa fa-wrench fa-fw"></i> Administración<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 <li>
-                                    <a href="updateDB.html" class="go-to"><i class="fa fa-map-marker fa-fw"></i> Espacios</a>
+                                    <a href="#"><i class="fa fa-map-marker fa-fw"></i> Espacios<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-third-level">
+                                        <li>
+                                            <a class="go-to" href="updateDB.html">Actualización de los espacios</a>
+                                        </li>
+                                        <li>
+                                            <a class="go-to" href="adminCambios.html">Listado de cambios</a>
+                                        </li>
+                                        <li>
+                                            <a class="go-to" href="adminIncidencias.html">Listado de incidencias</a>
+                                        </li>
+                                    </ul>
                                 </li>
                                 <li>
                                     <a href="#"><i class="fa fa-bullseye fa-fw"></i> Puntos de interés<span class="fa arrow"></span></a>
@@ -132,6 +145,14 @@
                                         </li>
                                         <li>
                                             <a class="go-to" href="uploadPhoto.html">Añadir fotos</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="#"><i class="fa fa-users fa-fw"></i> Usuarios<span class="fa arrow"></span></a>
+                                    <ul class="nav nav-third-level">
+                                        <li>
+                                            <a class="go-to" href="adminUsers.html">Listado usuarios</a>
                                         </li>
                                     </ul>
                                 </li>

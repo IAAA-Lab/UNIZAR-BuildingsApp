@@ -1,8 +1,8 @@
 <ion-view title={{i18n.photos.title}} xmlns="http://www.w3.org/1999/html" id="photos-view">
 
-    <ion-nav-buttons side="left">
+    <!-- <ion-nav-buttons side="left">
         <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
-    </ion-nav-buttons>
+    </ion-nav-buttons> -->
 
     <ion-content >
         <div id="roomImage"></div>
@@ -10,15 +10,15 @@
 
         <div class="botones">
 
-            <button id="btnNextPhoto" class="button button-full button-stable ion-arrow-right-a" 
+            <button id="btnNextPhoto" class="button button-full button-stable ion-arrow-right-a"
                     ng-disabled="disableBtnNext" ng-click="next()">
             </button>
-    
-            <button id="btnAddPhoto" class="button button-full button-positive ng-binding" 
+
+            <button id="btnAddPhoto" class="button button-full button-positive ng-binding"
                     ng-click="addPhoto()">{{i18n.photos.buttons.add}}
             </button>
-            
-            <button id="btnPrevPhoto" class="button button-full button-stable ion-arrow-left-a" 
+
+            <button id="btnPrevPhoto" class="button button-full button-stable ion-arrow-left-a"
                     ng-disabled="disableBtnPrevious" ng-click="previous()">
             </button>
         </div>

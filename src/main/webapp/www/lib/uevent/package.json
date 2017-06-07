@@ -1,0 +1,92 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "uevent@~1.0.0",
+        "scope": null,
+        "escapedName": "uevent",
+        "name": "uevent",
+        "rawSpec": "~1.0.0",
+        "spec": ">=1.0.0 <1.1.0",
+        "type": "range"
+      },
+      "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer"
+    ]
+  ],
+  "_from": "uevent@>=1.0.0 <1.1.0",
+  "_id": "uevent@1.0.0",
+  "_inCache": true,
+  "_location": "/uevent",
+  "_nodeVersion": "5.3.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/uevent-1.0.0.tgz_1458047233839_0.6218113128561527"
+  },
+  "_npmUser": {
+    "name": "mistic100",
+    "email": "contact@git.strangeplanet.fr"
+  },
+  "_npmVersion": "3.3.12",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "uevent@~1.0.0",
+    "scope": null,
+    "escapedName": "uevent",
+    "name": "uevent",
+    "rawSpec": "~1.0.0",
+    "spec": ">=1.0.0 <1.1.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/photo-sphere-viewer"
+  ],
+  "_resolved": "https://registry.npmjs.org/uevent/-/uevent-1.0.0.tgz",
+  "_shasum": "2948a2d441d179000470e21aed126c67b000976c",
+  "_shrinkwrap": null,
+  "_spec": "uevent@~1.0.0",
+  "_where": "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer",
+  "author": "",
+  "bugs": {
+    "url": "https://github.com/mistic100/uEvent/issues"
+  },
+  "dependencies": {},
+  "description": "Event emitter micro library",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-contrib-jshint": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "jit-grunt": "^0.10.0",
+    "time-grunt": "^1.3.0"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "2948a2d441d179000470e21aed126c67b000976c",
+    "tarball": "https://registry.npmjs.org/uevent/-/uevent-1.0.0.tgz"
+  },
+  "gitHead": "b3729e809f39f160ecce76d14e675b8b701328da",
+  "homepage": "https://github.com/mistic100/uEvent",
+  "keywords": [
+    "events",
+    "emitter"
+  ],
+  "license": "MIT",
+  "main": "uevent.js",
+  "maintainers": [
+    {
+      "name": "mistic100",
+      "email": "contact@git.strangeplanet.fr"
+    }
+  ],
+  "name": "uevent",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mistic100/uEvent.git"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "version": "1.0.0"
+}

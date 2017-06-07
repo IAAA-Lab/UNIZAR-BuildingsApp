@@ -11,7 +11,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 import org.apache.tomcat.jdbc.pool.PoolProperties;
 
 public class ConnectionManager {
-	
+
 	static Context initContext;
 	private final static String DRIVER_CLASS_NAME = "org.postgresql.Driver";
 	private static DataSource datasource ;
@@ -63,7 +63,7 @@ public class ConnectionManager {
 			return datasource.getConnection();
 
 		} catch (SQLException e) {
-			System.out.println("Driver no encontrado."); 
+			System.out.println("Driver no encontrado.");
 			e.printStackTrace();
 		}
 		return null;

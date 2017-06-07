@@ -2,12 +2,16 @@
  * PhotosCtrl: Controlador encargado de las acciones de la vista de fotos de una estancia
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window, infoService, $ionicLoading, $ionicPopup, $cordovaCamera, APP_CONSTANTS){
+UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
+  $http, infoService, $ionicLoading, $ionicPopup, $cordovaCamera,
+  $ionicSideMenuDelegate, APP_CONSTANTS){
+
+        $ionicSideMenuDelegate.canDragContent(true);
 
         var photos = $rootScope.photos,
             numPhotos = photos.length,
             firstPhoto = photos[0];
-        
+
         $scope.dimensions = {"width": APP_CONSTANTS.photosWidth, "height": APP_CONSTANTS.photosHeight};
 
         $rootScope.photoIndex = 1;
@@ -17,8 +21,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             return {
                 "width": $window.innerWidth,
                 "height": $window.innerHeight-150
-            }
-        }
+            };
+        };
 
         $scope.resizeImage = function(width, height) {
             var maxWidth = $scope.dimensions.width,
@@ -33,8 +37,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         angular.element($window).bind('resize', function(){
             $scope.$apply(function() {
-              $scope.dimensions = $scope.calculateDimensions();    
-            })       
+              $scope.dimensions = $scope.calculateDimensions();
+            })
           });
 
         //This code will be executed every time the controller view is loaded
@@ -46,7 +50,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         $rootScope.disableBtnPrevious = true;
         $rootScope.disableBtnNext = numPhotos > 1 ? false : true;
-        
+
         $scope.dimensions = $scope.calculateDimensions();
 
         var tempImage = new Image();
@@ -73,7 +77,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
                 var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
                 var imageData = '<strong>'+$scope.i18n.photos.legend.photo + $rootScope.photoIndex + $scope.i18n.photos.legend.of + numPhotos + '</strong>';
-                
+
                 $("#roomImage").html(image);
                 $("#photosData").html(imageData);
             }
@@ -93,10 +97,10 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             tempImage.onload = function() {
                 var resizedImage = $scope.resizeImage(tempImage.width, tempImage.height),
                     imageWidthHeight = 'width="' + resizedImage.width + '" height="' + resizedImage.height + '"';
-                
+
                 var image = '<img src="' + imagePath + '"'+imageWidthHeight+'></img>';
                 var imageData = '<strong>'+$scope.i18n.photos.legend.photo + $rootScope.photoIndex + $scope.i18n.photos.legend.of + numPhotos + '</strong>';
-                
+
                 $("#roomImage").html(image);
                 $("#photosData").html(imageData);
             }
@@ -123,6 +127,8 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
 
         //Open popup for adding a photo
         $scope.addPhoto = function(data) {
+
+            console.log("ADDING PHOTO");
 
             $scope.hideNoPhotosText = true;
             if (typeof(Camera) !== 'undefined') {
@@ -159,7 +165,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                                 }
                             }
                         },
-                        { 
+                        {
                             text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
                             type: 'button-assertive'
                         }
@@ -167,6 +173,9 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                 });
             }
             else {
+
+                console.log("Abriendo galeria");
+
                 var addPhotoPopup = $ionicPopup.show({
                     templateUrl: 'templates/popups/confirmUploadPhoto2.html',
                     title: $scope.i18n.photos.modals.confirm_upload2.title,
@@ -176,6 +185,9 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                             text: '<i class="fa fa-upload" aria-hidden="true"></i>',
                             type: 'button-positive',
                             onTap: function(e) {
+
+                                  console.log("VAMOS A SUBIRLA");
+
                                 e.preventDefault();
                                 var emailChecked = $('#confirm-upload-photo2-popup input[type="checkbox"]').is(':checked'),
                                     emailValue = $($('#confirm-upload-photo2-popup input')[1]).val();
@@ -186,7 +198,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                                 }
                             }
                         },
-                        { 
+                        {
                             text: '<i class="fa fa-times-circle-o" aria-hidden="true"></i>',
                             type: 'button-assertive'
                         }
@@ -245,7 +257,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
             options.params = params;
 
             var ft = new FileTransfer();
-            ft.upload(fileURL, serverURL, 
+            ft.upload(fileURL, serverURL,
                 function(){
                     console.log("Success uploading photo to server", arguments);
                     popup.close();
@@ -289,11 +301,21 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                 formData.append('email', email);
                 formData.append('mode', 'user');
                 console.log("formData", formData);
-                $.ajax({
+
+                // var name = [localStorage.room, new Date().getTime()].join('_') + '.jpg';
+                // var newParams = {
+                //   "name": name,
+                //   "file": file,
+                //   "email": email,
+                //   "mode": "user"
+                // };
+                $http({
                     url :  APP_CONSTANTS.URI_API + 'photos/upload/',
-                    type: "POST",
+                    method: "POST",
                     data : formData,
-                    contentType: false,
+                    headers: {
+                      'Content-Type': undefined,
+                    },
                     cache: false,
                     processData: false,
                     success: function(data, textStatus, jqXHR)
@@ -317,7 +339,7 @@ UZCampusWebMapApp.controller('PhotosCtrl', function($scope, $rootScope, $window,
                         $ionicLoading.hide();
                         $ionicLoading.show({template: $scope.i18n.loading_mask.error_send_image, duration:1500});
                     }
-                });     
+                });
             }
         };
 

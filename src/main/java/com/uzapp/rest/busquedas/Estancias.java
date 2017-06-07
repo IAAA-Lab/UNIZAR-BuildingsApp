@@ -24,14 +24,15 @@ import com.uzapp.dominio.Point;
 @RestController
 @RequestMapping("/estancias")
 public class Estancias {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(Estancias.class);
-	
-	public ResultSet getRoomInfo(Connection connection, String roomId) throws SQLException 
+
+	public ResultSet getRoomInfo(Connection connection, String roomId) throws SQLException
 	{
 		logger.info("Method: getRoomInfo()");
 
 		String querySelect = "SELECT DISTINCT \"TBES\".\"id_espacio\", \"TBES\".\"id_centro\", ";
+		querySelect += "SUBSTRING(\"TBES\".\"id_utc\",1,2) AS \"floors\", ";
 		querySelect += "\"TBED\".\"edificio\" AS \"edificio\", \"TBED\".\"direccion\" AS \"dir\", ";
 		querySelect += "\"TBCI\".\"CIUDADES\" AS \"ciudad\", \"TBCC\".\"CAMPUS\" AS \"campus\" ";
 
@@ -42,7 +43,7 @@ public class Estancias {
 		queryWhere +=  "AND \"TBED\".\"campus\"=\"TBCC\".\"ID\" AND \"TBCC\".\"CIUDAD\"=\"TBCI\".\"ID\"";
 
 		String query = querySelect + queryFrom + queryWhere;
-	
+
 		PreparedStatement preparedStmt = connection.prepareStatement(query);
 		preparedStmt.setString(1, roomId.trim());
 		ResultSet res = preparedStmt.executeQuery();
@@ -51,7 +52,7 @@ public class Estancias {
 	}
 
 	@RequestMapping(
-			value = "/id_estancia", 
+			value = "/id_estancia",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> roomInfo(@RequestParam("estancia") String estancia)
@@ -75,7 +76,7 @@ public class Estancias {
 			}
 
 			System.out.println("Room info result: "+gson.toJson(infoResult));
-			return new ResponseEntity<>(gson.toJson(infoResult), HttpStatus.OK);	
+			return new ResponseEntity<>(gson.toJson(infoResult), HttpStatus.OK);
 		}
 		catch (SQLException e) {
         e.printStackTrace();
@@ -86,9 +87,9 @@ public class Estancias {
       catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
-	
+
 	@RequestMapping(
-			value = "/getEstancia", 
+			value = "/getEstancia",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getRoomDetails(@RequestParam("estancia") String estancia)
@@ -128,9 +129,9 @@ public class Estancias {
       catch (Exception excep) { excep.printStackTrace(); }
 		}
 	}
-	
+
 	@RequestMapping(
-			value = "/getAllEstancias", 
+			value = "/getAllEstancias",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getAllRooms(@RequestParam("estancia") String espacio)
@@ -147,7 +148,7 @@ public class Estancias {
 			query += "WHERE \"id_espacio\" LIKE ? ORDER BY \"id_centro\" ASC";
 
 			List<Espacios> roomsResult = new ArrayList<Espacios>();
-			
+
 			preparedStmt = connection.prepareStatement(query);
 			preparedStmt.setString(1, espacio+"%");
 			System.out.println(preparedStmt);
@@ -156,9 +157,9 @@ public class Estancias {
 			while (res.next()){
 				roomsResult.add(new Espacios(res.getString("id_espacio"),res.getString("id_centro")));
 			}
-			
+
       return new ResponseEntity<>(gson.toJson(roomsResult), HttpStatus.OK);
-		} 
+		}
 		catch (SQLException e) {
         e.printStackTrace();
         return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -172,7 +173,7 @@ public class Estancias {
 	}
 
 	@RequestMapping(
-			value = "/campus", 
+			value = "/campus",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getCampusValues()
@@ -192,7 +193,7 @@ public class Estancias {
 			while (res.next()){
 				result.add(res.getString("CAMPUS"));
 			}
-			
+
 			connection.close();
       return new ResponseEntity<>(gson.toJson(result), HttpStatus.OK);
 		}
@@ -207,7 +208,7 @@ public class Estancias {
 	}
 
 	@RequestMapping(
-			value = "/{buildingId}/coordinates", 
+			value = "/{buildingId}/coordinates",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getBuildingCoordinates(@PathVariable("buildingId") String buildingId)
@@ -248,7 +249,7 @@ public class Estancias {
 	}
 
 	@RequestMapping(
-			value = "/{roomId}/center", 
+			value = "/{roomId}/center",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getRoomCenterPoint(@PathVariable("roomId") String roomId)
@@ -286,7 +287,7 @@ public class Estancias {
 	}
 
 	@RequestMapping(
-			value = "/building", 
+			value = "/building",
 			method = RequestMethod.GET,
 			produces = "application/json")
 	public ResponseEntity<?> getAllBuildings()

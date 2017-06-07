@@ -1,0 +1,76 @@
+#changes-view {
+  button.button.button-positive {
+    max-width:425px;
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  // button.button.button-positive:hover span {
+  //   padding-right: 25px;
+  // }
+  //
+  // button.button.button-positive:hover span:after {
+  //   opacity: 1;
+  //   right: 0;
+  // }
+
+  div.editable:hover{
+    background-color:#eee;
+  }
+
+  .inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+  }
+
+  .inputfile + label {
+  font-size: 1.25em;
+  font-weight: 700;
+  color: white;
+  background-color: black;
+  display: inline-block;
+  }
+
+  // .inputfile:focus + label,
+  // .inputfile + label:hover {
+  //     background-color: blue;
+  //     outline: 1px dotted #000;
+  //   	outline: -webkit-focus-ring-color auto 5px;
+  // }
+
+  .ng-hide.ng-hide-animate {
+    display: none !important;
+  }
+
+  @media (max-width: 767px) {
+    .bigScreen {
+      display: none;
+    }
+    .smallScreen {
+      display: block;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .bigScreen {
+      display: block;
+    }
+    .smallScreen {
+      display: none;
+    }
+  }
+
+  .tab-item .badge {
+    // background-color: rgba(239, 71, 58, 1) !important;
+    opacity:1 !important;
+  }
+
+  // prevents badges on tabs to jump (graphic bug) when getting value '0'
+  .tab-item {
+    position: relative;
+  }
+}

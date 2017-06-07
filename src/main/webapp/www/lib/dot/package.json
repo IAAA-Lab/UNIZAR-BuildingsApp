@@ -1,0 +1,119 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "dot@github:olado/doT#master",
+        "scope": null,
+        "escapedName": "dot",
+        "name": "dot",
+        "rawSpec": "github:olado/doT#master",
+        "spec": "github:olado/doT#master",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:olado/doT.git#master",
+          "sshUrl": "git+ssh://git@github.com/olado/doT.git#master",
+          "httpsUrl": "git+https://github.com/olado/doT.git#master",
+          "gitUrl": "git://github.com/olado/doT.git#master",
+          "shortcut": "github:olado/doT#master",
+          "directUrl": "https://raw.githubusercontent.com/olado/doT/master/package.json"
+        }
+      },
+      "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer"
+    ]
+  ],
+  "_from": "olado/doT#master",
+  "_id": "dot@1.1.1",
+  "_inCache": true,
+  "_location": "/dot",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "dot@github:olado/doT#master",
+    "scope": null,
+    "escapedName": "dot",
+    "name": "dot",
+    "rawSpec": "github:olado/doT#master",
+    "spec": "github:olado/doT#master",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:olado/doT.git#master",
+      "sshUrl": "git+ssh://git@github.com/olado/doT.git#master",
+      "httpsUrl": "git+https://github.com/olado/doT.git#master",
+      "gitUrl": "git://github.com/olado/doT.git#master",
+      "shortcut": "github:olado/doT#master",
+      "directUrl": "https://raw.githubusercontent.com/olado/doT/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "/photo-sphere-viewer"
+  ],
+  "_resolved": "git://github.com/olado/doT.git#8cae202f96aab66b644007c63fc38bc9e6ffaa8c",
+  "_shasum": "326d4de14956a84149b3d8cb029115ac3d29df95",
+  "_shrinkwrap": null,
+  "_spec": "dot@github:olado/doT#master",
+  "_where": "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer",
+  "author": {
+    "name": "Laura Doktorova",
+    "email": "ldoktorova@gmail.com"
+  },
+  "bin": {
+    "dottojs": "./bin/dot-packer"
+  },
+  "bugs": {
+    "url": "https://github.com/olado/doT/issues"
+  },
+  "dependencies": {},
+  "description": "Concise and fast javascript templating compatible with nodejs and other javascript environments",
+  "devDependencies": {
+    "commander": "*",
+    "coveralls": "^2.11.14",
+    "eslint": "^3.9.1",
+    "if-node-version": "^1.1.0",
+    "jshint": "*",
+    "mkdirp": "*",
+    "mocha": "*",
+    "nyc": "^8.3.2",
+    "pre-commit": "^1.1.3",
+    "uglify-js": "*"
+  },
+  "engines": [
+    "node >=0.2.6"
+  ],
+  "gitHead": "8cae202f96aab66b644007c63fc38bc9e6ffaa8c",
+  "homepage": "http://github.com/olado/doT",
+  "keywords": [
+    "template",
+    "fast",
+    "simple",
+    "templating"
+  ],
+  "license": "MIT",
+  "main": "index",
+  "name": "dot",
+  "nyc": {
+    "exclude": [
+      "test",
+      "node_modules"
+    ],
+    "reporter": [
+      "lcov",
+      "text-summary"
+    ]
+  },
+  "optionalDependencies": {},
+  "readme": "# doT\r\n\r\nCreated in search of the fastest and concise JavaScript templating function with emphasis on performance under V8 and nodejs. It shows great performance for both nodejs and browsers.\r\n\r\ndoT.js is fast, small and has no dependencies.\r\n\r\n[![Build Status](https://travis-ci.org/olado/doT.svg?branch=master)](https://travis-ci.org/olado/doT)\r\n[![npm version](https://badge.fury.io/js/dot.svg)](https://www.npmjs.com/package/dot)\r\n[![Coverage Status](http://coveralls.io/repos/github/olado/doT/badge.svg?branch=master)](https://coveralls.io/github/olado/doT?branch=master)\r\n\r\n\r\n## Features\r\n    custom delimiters\r\n    runtime evaluation\r\n    runtime interpolation\r\n    compile-time evaluation\r\n    partials support\r\n    conditionals support\r\n    array iterators\r\n    encoding\r\n    control whitespace - strip or preserve\r\n    streaming friendly\r\n    use it as logic-less or with logic, it is up to you\r\n\r\n## Docs, live playground and samples\r\n\r\nhttp://olado.github.com/doT (todo: update docs with new features added in version 1.0.0)\r\n\r\n## New in version 1.0.0\r\n\r\n####Added parameters support in partials\r\n\r\n\t{{##def.macro:param:\r\n\t\t<div>{{=param.foo}}</div>\r\n\t#}}\r\n\r\n\t{{#def.macro:myvariable}}\r\n\r\n####Node module now supports auto-compilation of dot templates from specified path\r\n\r\n\tvar dots = require(\"dot\").process({ path: \"./views\"});\r\n\r\nThis will compile .def, .dot, .jst files found under the specified path.\r\nDetails\r\n   * It ignores sub-directories.\r\n   * Template files can have multiple extensions at the same time.\r\n   * Files with .def extension can be included in other files via {{#def.name}}\r\n   * Files with .dot extension are compiled into functions with the same name and\r\n   can be accessed as renderer.filename\r\n   * Files with .jst extension are compiled into .js files. Produced .js file can be\r\n   loaded as a commonJS, AMD module, or just installed into a global variable (default is set to window.render)\r\n   * All inline defines defined in the .jst file are\r\n   compiled into separate functions and are available via _render.filename.definename\r\n \r\n   Basic usage:\r\n ```\r\n        var dots = require(\"dot\").process({path: \"./views\"});\r\n        dots.mytemplate({foo:\"hello world\"});\r\n ```\r\n   The above snippet will:\r\n\t* Compile all templates in views folder (.dot, .def, .jst)\r\n  \t* Place .js files compiled from .jst templates into the same folder\r\n     \t   These files can be used with require, i.e. require(\"./views/mytemplate\")\r\n  \t* Return an object with functions compiled from .dot templates as its properties\r\n  \t* Render mytemplate template\r\n \r\n####CLI tool to compile dot templates into js files\r\n\r\n\t./bin/dot-packer -s examples/views -d out/views\r\n\r\n## Example for express\r\n\tMany people are using doT with express. I added an example of the best way of doing it examples/express:\r\n\r\n[doT with express](examples/express)\r\n\r\n## Notes\r\n    doU.js is here only so that legacy external tests do not break. Use doT.js.\r\n    doT.js with doT.templateSettings.append=false provides the same performance as doU.js.\r\n\r\n## Author\r\nLaura Doktorova [@olado](http://twitter.com/olado)\r\n\r\n## License\r\ndoT is licensed under the MIT License. (See LICENSE-DOT)\r\n\r\n<p align=\"center\">\r\n  <img src=\"http://olado.github.io/doT/doT-js-100@2x.png\" alt=\"logo by Kevin Kirchner\"/>\r\n</p>\r\n\r\nThank you [@KevinKirchner](https://twitter.com/kevinkirchner) for the logo.\r\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/olado/doT.git"
+  },
+  "scripts": {
+    "bundle": "uglifyjs doT.js -o doT.min.js -c -m --preamble '/* Laura Doktorova https://github.com/olado/doT */'",
+    "eslint": "if-node-version '>=4' eslint *.js --ignore-pattern *.min.js",
+    "prepublish": "npm run bundle",
+    "test": "npm run eslint && npm run test-cov",
+    "test-cov": "nyc mocha test/*.test.js"
+  },
+  "version": "1.1.1"
+}

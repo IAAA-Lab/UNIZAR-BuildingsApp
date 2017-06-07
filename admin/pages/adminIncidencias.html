@@ -1,0 +1,188 @@
+<!-- Controller && Services -->
+<script src="../dist/js/controllers/incidenciasController.js"></script>
+<script src="../dist/js/services/infoService.js"></script>
+<script src="../dist/js/services/notificationService.js"></script>
+<script src="../dist/js/services/networkService.js"></script>
+
+<div class="alert alert-success alert-dismissible" role="alert" id="admin-incidencias-success">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span id="admin-incidencias-success-text"></span>
+</div>
+
+<div class="alert alert-danger alert-dismissible" role="alert" id="admin-incidencias-error">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <span id="admin-incidencias-error-text"></span>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <h2 class="page-header">Administración de incidencias en los espacios</h2>
+    </div>
+</div>
+<div class="row" id="admin-incidencias-explanation">
+    <div class="col-lg-8">
+        En la tabla inferior se muestran los datos de todas las incidencias notificadas en los espacios. Se podrán llevar a cabo las siguientes acciones seleccionando una fila de la tabla:
+        <ul>
+            <li>Revisar los datos relativos a una incidencia</li>
+            <li>Aprobar/rechazar una incidencia pendiente</li>
+            <li>Añadir una aclaración acerca de la decisión tomada sobre la incidencia</li>
+            <li>Eliminar una incidencia</li>
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="dataTable_wrapper">
+            <table width="100%" class="table table-striped table-bordered table-hover" id="dataTable-incidencias">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Estado</th>
+                        <th>Descripción</th>
+                        <th>Fecha creación</th>
+                        <th>Ciudad</th>
+                        <th>Campus</th>
+                        <th>Edificio</th>
+                        <th>Planta</th>
+                        <th>Espacio</th>
+                        <th>Espacio ID</th>
+                        <th>Dirección</th>
+                        <th>Usuario</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="edit-incidencia-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="edit-incidencia-modal-title">Revisar datos de la incidencia</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="espacio" class="col-sm-2 control-label">Espacio</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="edit-incidencia-espacio" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group" id="edit-incidencia-descripcion-form-group">
+                        <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                        <div class="col-sm-10">
+                          <textarea class="form-control" id="edit-incidencia-descripcion"
+                                    style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="estado" class="col-sm-2 control-label">Estado</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="edit-incidencia-estado" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="usuario" class="col-sm-2 control-label">Usuario</label>
+                        <div class="col-sm-10">
+                            <input class="form-control" id="edit-incidencia-usuario" disabled></input>
+                        </div>
+                    </div>
+                    <div class="form-group" id="edit-incidencia-comentario_admin-form-group">
+                        <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
+                        <div class="col-sm-10">
+                            <textarea class="form-control" id="edit-incidencia-comentario_admin"
+                                      style="height:10em;max-height:15em;resize:vertical"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group" style="text-align: center">
+                        <button type="button" class="btn btn-default" id="preview-edit-incidencia-photo-btn"
+                                data-toggle="popover">Ver foto</button>
+                        <button type="button" class="btn btn-default" id="preview-edit-incidencia-photo-unavailable-btn"
+                                  disabled>No hay foto disponible</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" style="float:left" class="btn btn-primary" id="edit-incidencia-approve-btn">Aprobar</button>
+              <button type="button" style="float:left" class="btn btn-danger" id="edit-incidencia-reject-btn">Rechazar</button>
+              <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="delete-incidencia-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="delete-incidencia-modal-title">Eliminar incidencia</h4>
+          </div>
+          <div class="modal-body">
+              <form class="form-horizontal">
+                  <div class="form-group">
+                      <label for="espacio" class="col-sm-2 control-label">Espacio</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-espacio" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group" id="delete-incidencia-descripcion-form-group">
+                      <label for="descripcion" class="col-sm-2 control-label">Descripción</label>
+                      <div class="col-sm-10">
+                        <textarea class="form-control" id="delete-incidencia-descripcion"
+                                  style="height:10em;max-height:15em;resize:vertical" disabled></textarea>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="estado" class="col-sm-2 control-label">Estado</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-estado" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group">
+                      <label for="usuario" class="col-sm-2 control-label">Usuario</label>
+                      <div class="col-sm-10">
+                          <input class="form-control" id="delete-incidencia-usuario" disabled></input>
+                      </div>
+                  </div>
+                  <div class="form-group" id="delete-incidencia-comentario_admin-form-group">
+                      <label for="comentario_admin" class="col-sm-2 control-label">Comentario</label>
+                      <div class="col-sm-10">
+                          <textarea class="form-control" id="edit-cambio-comentario_admin"
+                                    style="height:10em;max-height:15em;resize:vertical"></textarea>
+                      </div>
+                  </div>
+                  <div class="form-group" style="text-align: center">
+                      <button type="button" class="btn btn-default" id="preview-delete-incidencia-photo-btn"
+                              data-toggle="popover">Ver foto</button>
+                      <button type="button" class="btn btn-default" id="preview-delete-incidencia-photo-unavailable-btn"
+                                disabled>No hay foto disponible</button>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" style="float:left" class="btn btn-danger" id="delete-incidencia-btn">Eliminar</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+          </div>
+      </div>
+    </div>
+</div>
+
+<div class="modal fade" id="image-preview-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title" id="myModalLabel">Previa de imagen</h4>
+      </div>
+      <div class="modal-body">
+        <img src="" id="image-preview">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>

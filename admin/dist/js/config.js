@@ -13,7 +13,8 @@ if (window.location.hostname === 'localhost') constants = constants_dev;
 else constants = constants_prod;
 
 constants.preview_sizes = {
-    maxWidth: 720,
+    // maxWidth: 720,
+    maxWidth: 568, // este es el limite de la modal (siempre tiene la misma anchura)
     maxHeight: 380
 };
 
@@ -62,6 +63,25 @@ constants.photo_status = [
         { label: 'Rechazada', value: 'Rejected', id: 3}
     ];
 
+constants.cambio_status = [
+        { label: 'Pendiente', value: 'Pendiente', id: 1},
+        { label: 'Aprobado', value: 'Aprobado', id: 2},
+        { label: 'Rechazado', value: 'Rechazado', id: 3},
+        { label: 'Pendiente del usuario', value: 'Pendiente del usuario', id: 4}
+    ];
+
+constants.incidencia_status = [
+        { label: 'Pendiente', value: 'Pendiente', id: 1},
+        { label: 'Aprobada', value: 'Aprobado', id: 2},
+        { label: 'Rechazada', value: 'Rechazado', id: 3},
+        { label: 'Pendiente del usuario', value: 'Pendiente del usuario', id: 4}
+    ];
+
+constants.user_role = [
+        { label: 'ADMIN', value: 'ADMIN', id: 1},
+        { label: 'USER', value: 'USER', id: 2}
+    ];
+
 function getConstants(key){
     return constants[key];
-};
+}

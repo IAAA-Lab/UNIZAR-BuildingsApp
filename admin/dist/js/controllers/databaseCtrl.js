@@ -1,10 +1,11 @@
 $(function() {
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
-            if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
-                $('body').mask('Loading...');
-                window.location.href = "login.html";
-            }
+            // if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
+            //     $('body').mask('Loading...');
+            //     window.location.href = "login.html";
+            // }
+            checkToken();
         }
     };
 
@@ -22,7 +23,7 @@ $(function() {
             var database_tables = JSON.parse(data);
             var html = '<table><tr>';
             database_tables.forEach(function(table,i){
-                
+
                 if (i!==0 && i%3===0) {
                     if (i === database_tables.length -1) {
                         html += '</tr>';

@@ -1,10 +1,11 @@
 $(function() {
     document.onreadystatechange = function (e) {
         if (document.readyState === 'complete') {
-            if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
-                $('body').mask('Loading...');
-                window.location.href = 'login.html';
-            }
+            // if (typeof Cookies.get('session-admin-cookie') == 'undefined'){
+            //     $('body').mask('Loading...');
+            //     window.location.href = 'login.html';
+            // }
+            checkToken();
         }
     };
 
@@ -132,13 +133,13 @@ $(function() {
         };
 
         var fillModal = function(mode, reload, photoData, callback){
-            
+
             var selCity = $('#'+mode+'-photo-city'),
                 selCampus = $('#'+mode+'-photo-campus'),
                 selStatus = $('#'+mode+'-photo-status');
 
             if (mode === 'edit' && !reload) {
-                
+
                 $('#'+mode+'-photo-modal-title').text('');
                 $('#'+mode+'-photo-modal-title').text('Editar datos de la imagen - ID: ' + photoData.id);
 
@@ -200,7 +201,7 @@ $(function() {
                         $('#admin-photos-error').hide();
                 }, 30000);
             }
-            $('body').unmask(); 
+            $('body').unmask();
         };
 
         selCity.change(function(){

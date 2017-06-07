@@ -2,7 +2,10 @@
  * SearchCtrl: Controlador encargado de las acciones de la vista de busqueda de estancias
  ***********************************************************************/
 
-UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoService, $window, $ionicLoading, $ionicPopup) {
+UZCampusWebMapApp.controller('SearchCtrl', function($scope, $rootScope, infoService,
+  $window, $ionicLoading, $ionicPopup, $ionicSideMenuDelegate) {
+
+        $ionicSideMenuDelegate.canDragContent(true);
 
         $scope.showInfoPopup = function(title, msg){
             $ionicPopup.alert({

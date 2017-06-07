@@ -36,11 +36,29 @@
   "favs":{
     "title": "Favourites"
   },
+  "login":{
+    "title": "Login",
+    "username": "Username",
+    "password": "Password"
+  },
+  "logout":{
+    "title": "Logout"
+  },
+  "changes":{
+    "title": "My changes"
+  },
+  "changeDetails":{
+    "title": "Edit change"
+  },
   "floor": {
     "title": "Floor",
     "popups":{
       "room":{
-        "button": "Room details"
+        "button":{
+          "info": "Room details",
+          "cambio": "Notify change",
+          "incidencia": "Notify incidence"
+          }
       },
       "edit_poi":{
         "button": "Edit",
@@ -206,6 +224,58 @@
       }
     }
   },
+  "notifications":{
+    "modals":{
+      "creation":{
+        "title":{
+           "cambio": "New Change",
+           "incidencia": "New Incidence"
+        },
+        "labels": {
+          "room": "Room",
+          "comments": "Description",
+          "photo": "Photo",
+          "email": "Email"
+        },
+        "buttons":{
+          "create":{
+            "cambio": "Send change",
+            "incidencia": "Send incidence"
+          }
+        },
+        "errors":{
+          "mandatory_field": {
+            "room": "Room is a mandatory field",
+            "comments": "Description is a mandatory field"
+          }
+        }
+      },
+      "confirm_creation":{
+        "title":{
+          "cambio": "Confirm change sending",
+          "incidencia": "Confirm incidence sending"
+        },
+        "text1":{
+          "cambio": "If you confirm the Change creation, a request will be sent for an admin to review.",
+          "incidencia": "If you confirm the Incidence creation, a request will be sent for an admin to review."
+        },
+          "buttons":{
+          "ok": "Send",
+          "cancel": "Cancel"
+        }
+      }
+    }
+  },
+  "cambios":{
+    "success_upload":{
+      "title": "Change successfully uploaded",
+      "text": "The change has been successfully uploaded. Remember it must be first approved or rejected by an admin."
+    }
+  },
+  "panoramas":{
+    "title": "View panoramic image",
+    "menu": "Test 360 images"
+  },
   "errors":{
     "error": "¡Error!",
     "warning": "¡Warning!",
@@ -231,6 +301,12 @@
       "edition": "There's been an error sending<br>the request for POI modification",
       "delete": "There's been an error sending<br>the request for delete the POI",
       "search": "There's been an error recovering<br>the Points of Interest"
+    },
+    "notifications":{
+      "creation":{
+        "cambio": "There's been an error sending the change",
+        "incidencia": "There's been an error sending the incidence"
+      }
     }
   },
   "success":{
@@ -239,6 +315,12 @@
       "creation": "Request for create the POI successfully sent.",
       "edition": "Request for modify the POI successfully sent.",
       "delete": "Request for delete the POI successfully sent."
+    },
+    "notifications":{
+      "creation":{
+        "cambio": "Change successfully sent",
+        "incidencia": "Incidence successfully sent"
+      }
     }
   },
   "loading_mask":{

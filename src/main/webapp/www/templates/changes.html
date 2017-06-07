@@ -1,0 +1,29 @@
+<ion-view title={{i18n.changes.title}} id="changes-view">
+  <ion-tabs class="tabs-top tabs-striped tabs-icon-top tabs-positive">
+
+    <!-- User Pending Tab -->
+    <ion-tab badge="badgeCount('Pendiente del usuario')" badge-style="badge-assertive" title="Pendientes" icon="ion-clock"
+             on-select="setStatusShown('Pendiente del usuario')" href="#/app/changes/pending">
+      <ion-nav-view name="tab-changes-pending"></ion-nav-view>
+    </ion-tab>
+
+    <!-- pending Tab -->
+    <ion-tab badge="badgeCount('Pendiente')" badge-style="badge-calm" title="Esperando" icon="ion-cloud"
+             on-select="setStatusShown('Pendiente')" href="#/app/changes/waiting">
+      <ion-nav-view name="tab-changes-waiting"></ion-nav-view>
+    </ion-tab>
+
+    <!-- Approved Tab -->
+    <ion-tab badge="badgeCount('Aprobado')" badge-style="badge-calm" title="Aprobados" icon="ion-checkmark"
+             on-select="setStatusShown('Aprobado')" href="#/app/changes/approved">
+      <ion-nav-view name="tab-changes-approved"></ion-nav-view>
+    </ion-tab>
+
+    <!-- Rejected Tab -->
+    <ion-tab badge="badgeCount('Rechazado')" badge-style="badge-calm" title="Rechazados" icon="ion-close"
+             on-select="setStatusShown('Rechazado')" href="#/app/changes/rejected">
+      <ion-nav-view name="tab-changes-rejected"></ion-nav-view>
+    </ion-tab>
+
+  </ion-tabs>
+</ion-view>

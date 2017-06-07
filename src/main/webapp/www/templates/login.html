@@ -1,0 +1,25 @@
+<ion-view title={{i18n.login.title}}>
+
+  <!-- <ion-nav-buttons side="left">
+    <button menu-toggle="left" class="button button-icon icon ion-navicon"></button>
+  </ion-nav-buttons> -->
+
+  <ion-content class="padding">
+    <!-- <div class="card" style="max-width:400px;margin-left:auto;margin-right:auto"> -->
+      <div class="list list-inset" style="max-width:400px;margin-left:auto;margin-right:auto">
+          <label class="item item-input">
+              <input type="text"
+                     placeholder="{{i18n.login.username}}"
+                     ng-model="data.username">
+          </label>
+          <label class="item item-input">
+              <input type="password"
+                     placeholder="{{i18n.login.password}}"
+                     ng-model="data.password">
+          </label>
+      </div>
+      <button style="max-width:400px;margin-left:auto;margin-right:auto"
+      class="button button-block button-positive" ng-click="login()">{{i18n.login.title}}</button>
+    <!-- </div> -->
+  </ion-content>
+</ion-view>

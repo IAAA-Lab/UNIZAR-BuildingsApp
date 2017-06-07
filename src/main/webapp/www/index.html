@@ -29,6 +29,16 @@
     <script src="http://maps.google.com/maps/api/js?v=3&sensor=false"></script>
     <script src="lib/leaflet/leaflet-plugins/L.TileLayer.BetterWMS.js"></script>
 
+    <!-- Photo Sphere Viewer libraries (and dependencies) -->
+    <link rel="stylesheet" href="lib/photo-sphere-viewer/dist/photo-sphere-viewer.min.css"/>
+    <script src="lib/three/build/three.min.js"></script>
+    <script src="lib/d.js/lib/D.min.js"></script>
+    <script src="lib/uevent/uevent.min.js"></script>
+    <script src="lib/dot/doT.min.js"></script>
+    <script src="lib/photo-sphere-viewer/dist/photo-sphere-viewer.min.js"></script>
+
+    <!-- Angular content editable -->
+    <script src="lib/angular-content-editable/dist/angular-content-editable.min.js"></script>
 
     <!-- Cordova script (this will be a 404 during development) -->
     <script src="lib/ng-cordova.min.js"></script>
@@ -39,12 +49,20 @@
     <script src="js/constants.js"></script>
     <script src="js/directives/formAddPOI.js"></script>
     <script src="js/directives/formEditPOI.js"></script>
+    <script src="js/directives/formAddNotification.js"></script>
+    <script src="js/directives/fileReader.js"></script>
+    <script src="js/directives/contenteditable.js"></script>
     <script src="js/services/sharedProperties.js"></script>
     <script src="js/services/geoService.js"></script>
     <script src="js/services/translationService.js"></script>
+    <script src="js/services/apiService.js"></script>
+    <script src="js/services/notificationService.js"></script>
+    <script src="js/factories/changeInfoServiceFactory.js"></script>
+    <script src="js/factories/loginServiceFactory.js"></script>
     <script src="js/factories/infoServiceFactory.js"></script>
     <script src="js/factories/poisServiceFactory.js"></script>
     <script src="js/factories/photosServiceFactory.js"></script>
+    <script src="js/factories/fileReaderFactory.js"></script>
     <script src="js/controllers/topController.js"></script>
     <script src="js/controllers/translateController.js"></script>
     <script src="js/controllers/mapController.js"></script>
@@ -52,6 +70,10 @@
     <script src="js/controllers/roomDetailsController.js"></script>
     <script src="js/controllers/photosController.js"></script>
     <script src="js/controllers/searchController.js"></script>
+    <script src="js/controllers/loginController.js"></script>
+    <script src="js/controllers/changesController.js"></script>
+    <script src="js/controllers/changesAbstractController.js"></script>
+    <script src="js/controllers/panoramaController.js"></script>
     <script src="js/controllers/appController.js"></script>
 
     <!-- Librerias para geolocalizar al usuario-->
@@ -62,9 +84,23 @@
     <link rel="stylesheet" href="lib/leaflet/leaflet-plugins/search/leaflet-search.mobile.src.css" >
     <link rel="stylesheet" href="lib/leaflet/leaflet-plugins/search/leaflet-search.src.css" />
     <script src="lib/leaflet/leaflet-plugins/search/leaflet-search.src.js" ></script>
+
+
+    <style>
+    .loading-container{
+      -webkit-align-items: flex-start;
+      -moz-align-items: flex-start;
+      align-items: flex-start;
+      padding-top: 54px;
+      .loading{
+      border-radius: 30px;
+      }
+    }
+    </style>
 </head>
 
 <body ng-app="UZCampusWebMapApp" ng-controller="TranslationCtrl">
+    <!-- <ion-nav-bar></ion-nav-bar> -->
     <ion-nav-view ></ion-nav-view>
 </body>
 
@@ -86,6 +122,13 @@
         localStorage.room = room.value;
         window.location = "#/app/roomDetails";
     }
+
+    // Creacion de una notificacion
+    function createNotification(id, tipoNotificacion){
+      var scope = angular.element($('#plan')).scope();
+      scope.openCreateNotificationModal(id, tipoNotificacion);
+    }
+
     //Edición de un POI
     function editPOI(){
         var id = $('.button-edit-poi').data().id;

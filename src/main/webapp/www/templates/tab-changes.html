@@ -1,0 +1,175 @@
+<ion-view title={{i18n.changes.title}} id="changes-view">
+  <ion-content on-scroll="getScrollPosition()" delegate-handle="mainScroll">
+
+    <div style="margin:auto">
+      <ion-spinner style="width:28px;height:28px;position:absolute;top:50%;left:50%;margin-top:14px;margin-left:-14px"
+      icon="dots" ng-if="cargar" ></ion-spinner>
+    </div>
+
+    <button ng-show="areChangesToLoad() && !isPopupAcive()"
+            class="button-block button-positive button"
+            ng-click="showNewChanges()">
+        <span ng-show="difNumCambiosNuevos > 1">Cargar {{ difNumCambiosNuevos }} cambios nuevos</span>
+        <span ng-show="difNumCambiosNuevos == 1">Cargar {{ difNumCambiosNuevos }} cambio nuevo</span>
+        <span ng-show="difNumCambiosNuevos < 0">Se han actualizado cambios de esta lista</span>
+    </button>
+
+    <div class="card smallScreen" ng-repeat="cambio in getCambiosEstado() | orderBy: '-cambio.fechaUltimaModificacionComp'">
+      <div class="item item-body">
+
+        <img ng-src="{{cambio.imagen.src}}" class="item item-image full-image"></img>
+
+        <div style="margin-top:16px;font-weight:600;clear:both;overflow:auto">
+          <span style="float:left">{{cambio.cambio.espacio}}</span>
+          <span style="float:right">{{cambio.cambio.fechaUltimaModificacion}}</span>
+        </div>
+
+        <button ng-show="!areDetailsShown($index)"
+                class="button-block button-positive button"
+                ng-click="showDetails($event, cambio, $index)">
+            <span>Ver detalles</span>
+        </button>
+
+        <div ng-show="areDetailsShown($index)">
+
+          <label ng-show="isStatus('Pendiente del usuario')"
+                 for="imageInput{{$index}}" class="button button-block button-positive" style="margin-top:10px"
+                 data-tap-disabled="true" ng-click="setCurrentChange($index,$event)">Cambiar imagen
+
+               <input type="file"
+                     ng-file-select
+                     name="photo" id="imageInput{{$index}}"
+                     class="inputfile" resizable="false" />
+          </label>
+
+          <div style="margin-top:16px" class="item-borderless" style="white-space:normal">
+            <span style="font-weight:600">Localización</span>
+            <hr>
+            {{cambio.cambio.ciudad}}, {{cambio.cambio.campus}}, {{cambio.cambio.edificio}}, planta {{cambio.cambio.planta}}
+          </div>
+
+          <div style="margin-top:16px" class="item-borderless" style="white-space:normal">
+            <span style="font-weight:600">Descripción</span>
+            <hr>
+            <div ng-show="isStatus('Pendiente del usuario')"
+                 contenteditable
+                 data-tap-disabled="true"
+                 index="$index"
+                 change="cambio"
+                 ng-model="cambio.cambio.descripcion"
+                 class="editable"
+                 strip-br="true">
+            </div>
+            <div ng-bind-html="cambio.cambio.descripcion | trust"
+                 ng-show="!isStatus('Pendiente del usuario')"
+                 style="word-break:break-word;white-space:pre-wrap">
+            </div>
+          </div>
+
+          <div style="margin-top:16px" class="item-borderless" style="white-space:normal" text-wrap>
+            <span style="font-weight:600">Comentario del administrador</span>
+            <hr>
+            {{cambio.cambio.comentario_admin.length > 0
+                ? cambio.cambio.comentario_admin
+                : 'El administrador no ha realizado ningún comentario.'
+            }}
+          </div>
+
+          <br>
+          <button ng-show="isStatus('Pendiente del usuario')" ng-disabled="!isChangeUpdated($index)" class="button button-positive" style="float:left" ng-click="updateCambio(cambio, $index)">Actualizar</button>
+          <button ng-show="isStatus('Pendiente del usuario')" class="button button-assertive" style="float:right" ng-click="hideDetails($index)">Cancelar</button>
+          <button ng-show="!isStatus('Pendiente del usuario')" class="button button-block button-positive" style="float:right" ng-click="hideDetails($index)">Ocultar detalles</button>
+        </div>
+      </div>
+      <!-- Item body end  -->
+    </div>
+
+    <div class="card bigScreen" ng-repeat="cambio in getCambiosEstado() | orderBy: '-cambio.fechaUltimaModificacionComp'">
+      <div class="item item-body">
+        <div class="row">
+          <div class="col col-top col-33">
+            <div style="margin-bottom:10px;font-weight:600;clear:both;overflow:auto">
+              <span style="float:left">{{cambio.cambio.espacio}}</span>
+              <span style="float:right">{{cambio.cambio.fecha}}</span>
+            </div>
+
+            <img ng-src="{{cambio.imagen.src}}"
+                 class="item item-image full-image"></img>
+
+            <div ng-show="isStatus('Pendiente del usuario')">
+              <label for="imageInput{{$index}}" class="button button-block button-positive" style="margin-top:10px"
+                     data-tap-disabled="true" ng-click="setCurrentChange($index,$event)">Cambiar imagen
+
+                   <input type="file"
+                         ng-file-select
+                         name="photo{{$index}}" id="imageInput{{$index}}"
+                         class="inputfile" resizable="false" />
+              </label>
+
+              <button ng-disabled="!isChangeUpdated($index)" class="button button-positive"
+                      style="float:left;width:45%" ng-click="updateCambio(cambio, $index)">Actualizar</button>
+              <button ng-disabled="!isChangeUpdated($index)" class="button button-assertive"
+                      style="float:right;width:45%" ng-click="resetDetails($index)">Deshacer</button>
+            </div>
+
+            <!-- <div>
+              <label  ng-show="isStatus('Pendiente')"
+                      class="button button-block button-energized">Pendiente</label>
+              <label  ng-show="isStatus('Aprobado')"
+                      class="button button-block button-balanced">Aprobado</label>
+              <label  ng-show="isStatus('Rechazado')"
+                      class="button button-block button-assertive">Rechazado</label>
+            </div> -->
+
+            <div style="padding-top:20px;font-size:16px;font-weight:100;clear:both;overflow:auto">
+              <span style="float:left">Ultima modificación: {{cambio.cambio.fechaUltimaModificacion}}</span>
+            </div>
+
+            <div style="padding-top:20px;font-size:16px;font-weight:600;clear:both;overflow:auto">
+              <span style="float:left">{{cambio.cambio.ciudad}}, {{cambio.cambio.campus}}, {{cambio.cambio.edificio}}, planta {{cambio.cambio.planta}}</span>
+            </div>
+          </div>
+
+          <div class="col col-10"></div>
+          <div class="col col-top">
+
+            <!-- Descripcion -->
+            <div class="item-borderless" style="white-space:normal">
+              <span style="font-weight:600">Descripción</span>
+              <hr>
+              <div ng-show="isStatus('Pendiente del usuario')"
+                   style="word-break:break-word"
+                   contenteditable
+                   index="$index"
+                   change="cambio"
+                   ng-model="cambio.cambio.descripcion"
+                   class="editable">
+              </div>
+              <div ng-bind-html="cambio.cambio.descripcion | trust"
+                   ng-show="!isStatus('Pendiente del usuario')"
+                   style="word-break:break-word;white-space:pre-wrap">
+              </div>
+            </div>
+
+            <!-- Comentario del administrador -->
+            <div style="margin-top:40px;white-space:normal" class="item-borderless wrapper">
+              <span style="font-weight:600">Comentario del administrador</span>
+              <hr>
+              <div style="word-break:break-word;white-space:pre-wrap">{{cambio.cambio.comentario_admin.length > 0
+                    ? cambio.cambio.comentario_admin
+                    : 'El administrador no ha realizado ningún comentario.'
+                }}
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!-- Item body end  -->
+    </div>
+
+    <span class="bigScreen" ng-show="isStatusEmpty() && !areChangesToLoad()" style="height:28px;position:absolute;top:50%;left:40%;margin-top:14px;margin-left:-14px">No hay cambios con este estado.</span>
+    <span class="smallScreen" ng-show="isStatusEmpty() && !areChangesToLoad()" style="height:28px;position:absolute;top:50%;left:22%;margin-top:14px;margin-left:-14px">No hay cambios con este estado.</span>
+
+  </ion-content>
+</ion-view>

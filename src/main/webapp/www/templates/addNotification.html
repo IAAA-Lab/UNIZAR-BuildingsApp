@@ -1,0 +1,47 @@
+<ion-modal-view id="add-notification-modal">
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title" ng-if="data.type==1">{{i18n.notifications.modals.creation.title.cambio}}</h1>
+        <h1 class="title" ng-if="data.type==2">{{i18n.notifications.modals.creation.title.incidencia}}</h1>
+        <button class="button button-clear button-primary" ng-click="modalCreateNotification.hide()">
+            <i class="icon ion-close-circled"></i>
+        </button>
+    </ion-header-bar>
+    <ion-content class="padding">
+        <form name="addNotificationform" form-add-notification novalidate>
+            <div class="list">
+                <label class="item item-input">
+                    <span class="input-label">{{i18n.notifications.modals.creation.labels.room}}</span>
+                    <input style="background-color:white" type="text" name="room" ng-model="data.room" ng-readonly="existsRoom" required>
+                </label>
+                <label class="item item-input form-error"
+                        ng-show="addNotificationform.$submitted && addNotificationform.room.$error.required">
+                    <span>{{i18n.notifications.modals.creation.errors.mandatory_field.room}}</span>
+                </label>
+                <label class="item item-input" ng-if="data.type==2">
+                    <span class="input-label">{{i18n.notifications.modals.creation.labels.email}}</span>
+                    <input style="background-color:white"
+                           type="email" name="email" ng-model="data.email" ng-readonly="existsEmail">
+                </label>
+                <label class="item item-input">
+                    <span class="input-label">{{i18n.notifications.modals.creation.labels.comments}}</span>
+                    <textarea style="height:10em;max-height:15em;resize:vertical;width:60%" name="comment" ng-model="data.comments" resizable="false" required></textarea>
+                </label>
+                <label class="item item-input form-error comments-error" style="display: block"
+                        ng-show="addNotificationform.$submitted && addNotificationform.comment.$error.required">
+                    <span>{{i18n.notifications.modals.creation.errors.mandatory_field.comments}}</span>
+                </label>
+
+                <!-- Add image -->
+                <label class="item item-input">
+                    <span class="input-label">{{i18n.notifications.modals.creation.labels.photo}}</span>
+                    <input type="file" name="photo" ng-model="data.foto" resizable="false">
+                </label>
+
+                <button type="submit" class="button button-full button-positive" ng-click="submit(data)">
+                    <span ng-if="data.type==1">{{i18n.notifications.modals.creation.buttons.create.cambio}}</span>
+                    <span ng-if="data.type==2">{{i18n.notifications.modals.creation.buttons.create.incidencia}}</span>
+                </button>
+            </div>
+        </form>
+    </ion-content>
+</ion-modal-view>

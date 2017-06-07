@@ -85,7 +85,7 @@ html,body {
 IMG.displayed {
   display: block;
   margin-left: auto;
-  margin-right: auto 
+  margin-right: auto
 }
 
 img[usemap] {
@@ -96,15 +96,59 @@ img[usemap] {
 }
 
 #img-logo{
-  height: 10%;
-  width: 30%;
-  margin-top: 5%;
-  margin-right:40%;
-  margin-left:35%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right:auto;
+  margin-left:auto;
+}
+
+.smallScreen #img-logo {
+  width:50%;
+  height:50%;
+  // margin-top:10px;
+  // margin-bottom:10px;
 }
 
 #aragonMapImg{
   text-align: center;
   margin-top: 10%;
   margin-left: 10%;
+}
+
+#notification-button {
+   position: relative;
+   width: 42px;
+   top:1px;
+   right: 1px;
+   overflow: visible!important;
+}
+
+#notifications-badge {
+   background-color: #ef473a; // assertive color
+   color: white;
+   position: absolute;
+   padding: 0;
+   right: -5px;
+   top: 2px;
+   border-radius: 100%;
+   font-family: inherit;
+   font-size: 12px;
+   height: 17px;
+   width: 17px;
+   line-height: normal;
+}
+
+#notifications-menu-badge {
+   background-color: #ef473a; // assertive color
+   color: white;
+   position: absolute;
+   padding-top: 0px;
+   padding-left: 5px;
+   left: 2px;
+   border-radius: 100%;
+   font-family: inherit;
+   font-size: 12px;
+   height: 17px;
+   width: 17px;
+   line-height: normal;
 }

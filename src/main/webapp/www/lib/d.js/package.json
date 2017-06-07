@@ -1,0 +1,103 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "d.js@~0.7.3",
+        "scope": null,
+        "escapedName": "d.js",
+        "name": "d.js",
+        "rawSpec": "~0.7.3",
+        "spec": ">=0.7.3 <0.8.0",
+        "type": "range"
+      },
+      "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer"
+    ]
+  ],
+  "_from": "d.js@>=0.7.3 <0.8.0",
+  "_id": "d.js@0.7.5",
+  "_inCache": true,
+  "_location": "/d.js",
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/d.js-0.7.5.tgz_1469610446103_0.720355408731848"
+  },
+  "_npmUser": {
+    "name": "malko",
+    "email": "jgotti@jgotti.org"
+  },
+  "_npmVersion": "2.0.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "d.js@~0.7.3",
+    "scope": null,
+    "escapedName": "d.js",
+    "name": "d.js",
+    "rawSpec": "~0.7.3",
+    "spec": ">=0.7.3 <0.8.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/photo-sphere-viewer"
+  ],
+  "_resolved": "https://registry.npmjs.org/d.js/-/d.js-0.7.5.tgz",
+  "_shasum": "06e8b8c4f6ae979c4b817c321894ce2e1f5fa90e",
+  "_shrinkwrap": null,
+  "_spec": "d.js@~0.7.3",
+  "_where": "C:\\Users\\Alejandro\\Universidad\\TFG\\UNIZAR-BuildingsApp\\src\\main\\webapp\\node_modules\\photo-sphere-viewer",
+  "author": {
+    "name": "Jonathan Gotti",
+    "email": "jgotti@jgotti.org"
+  },
+  "bugs": {
+    "url": "https://github.com/malko/D.js/issues"
+  },
+  "dependencies": {},
+  "description": "a tiny promise/A+ library",
+  "devDependencies": {
+    "chai": "~1.7",
+    "grunt": "~0.4",
+    "grunt-contrib-uglify": "*",
+    "grunt-mocha-cli": "~1.0",
+    "grunt-version": "~0.2.2",
+    "promises-aplus-tests": "2.x"
+  },
+  "directories": {
+    "lib": "lib",
+    "test": "tests"
+  },
+  "dist": {
+    "shasum": "06e8b8c4f6ae979c4b817c321894ce2e1f5fa90e",
+    "tarball": "https://registry.npmjs.org/d.js/-/d.js-0.7.5.tgz"
+  },
+  "engines": {
+    "node": ">=0.6"
+  },
+  "gitHead": "e08d722651356c5079128caf56f412dc36ac1751",
+  "homepage": "https://github.com/malko/D.js",
+  "keywords": [
+    "Promises/A+",
+    "promises-aplus",
+    "promise",
+    "then",
+    "async"
+  ],
+  "licence": "MIT",
+  "main": "lib/D.js",
+  "maintainers": [
+    {
+      "name": "malko",
+      "email": "jgotti@jgotti.org"
+    }
+  ],
+  "name": "d.js",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/malko/D.js.git"
+  },
+  "scripts": {
+    "test": "promises-aplus-tests lib/D.js && grunt test"
+  },
+  "version": "0.7.5"
+}

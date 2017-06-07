@@ -98,7 +98,7 @@ public class POIs {
     * API: Get all POI
     */
     @RequestMapping(
-            value = "/", 
+            value = "/",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getAllPOIs()
@@ -166,11 +166,11 @@ public class POIs {
     * API: Get all POI by {building} and {floor}
     */
     @RequestMapping(
-            value = "/{building}/{floor}", 
+            value = "/{building}/{floor}",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getFloorPOIS(
-        @PathVariable("building") String building, 
+        @PathVariable("building") String building,
         @PathVariable("floor") String floor)
     {
         logger.info("Service: getFloorPOIS()");
@@ -366,7 +366,7 @@ public class POIs {
     * API: Get all pending POI requests
     */
     @RequestMapping(
-            value = "/request/pending", 
+            value = "/request/pending",
             method = RequestMethod.GET,
             produces = "application/json")
     public ResponseEntity<?> getAllPendingPOIRequests()
@@ -505,7 +505,7 @@ public class POIs {
                         rs.getTimestamp("action_date").toLocalDateTime());
             }
             return poiRequest;
-        } 
+        }
         catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e);
@@ -544,7 +544,7 @@ public class POIs {
             preparedStmtUpdatePOI.setString(2, poiRequest.getCategory());
             preparedStmtUpdatePOI.setTimestamp(3, Timestamp.from(LocalDateTime.now().toInstant(ZoneOffset.ofHours(2))));
             preparedStmtUpdatePOI.setInt(4, poiRequest.getPOI());
-            
+
             //Update status of the request
             String queryUpdateRequest = "UPDATE request SET status='approved', action_date=? WHERE id=?";
             preparedStmtUpdateRequest = connection.prepareStatement(queryUpdateRequest);
@@ -609,7 +609,7 @@ public class POIs {
                         rs.getTimestamp("action_date").toLocalDateTime());
             }
             return poiRequest;
-        } 
+        }
         catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException(e);
@@ -621,7 +621,7 @@ public class POIs {
     */
     private ResponseEntity<?> approveDeleteRequest(int id) {
         logger.info("Service: approveDeleteRequest()");
-        
+
         Connection connection = null;
         PreparedStatement preparedStmtSelect = null;
         PreparedStatement preparedStmtDelete = null;
@@ -654,7 +654,7 @@ public class POIs {
             //Execute queries
             preparedStmtDelete.executeUpdate();
             preparedStmtUpdate.executeUpdate();
-            connection.commit(); 
+            connection.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -735,7 +735,7 @@ public class POIs {
             value = "/request/{requestId}/{verb}/{action}",
             method = RequestMethod.PUT)
     public ResponseEntity<?> approveOrRejectRequest(
-        @PathVariable("requestId") int requestId, 
+        @PathVariable("requestId") int requestId,
         @PathVariable("verb") String verb,
         @PathVariable("action") String action)
     {
