@@ -48,7 +48,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	    		System.out.println("Authentication == null");
 
 	    		// there is no token, checks for credentials (user and password) in the body of the request
-	    		long bodyLength = httpServletRequest.getContentLengthLong();
+	    		long bodyLength = (long) httpServletRequest.getContentLength();
 	    		String bodyContentType = httpServletRequest.getContentType();
 
 	    		if (bodyLength > 0 && (bodyContentType != null && bodyContentType.equals("application/json"))) {
