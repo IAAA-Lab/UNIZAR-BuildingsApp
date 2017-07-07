@@ -6,12 +6,14 @@ import java.util.LinkedList;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.jsonwebtoken.JwtException;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.uzapp.bd.Users;
-import com.uzapp.security.exception.JwtMalformedException;
+import com.uzapp.security.exception.JwtMissingException;
 import com.uzapp.security.jwt.utils.JwtInfo;
 import com.uzapp.security.jwt.utils.JwtUtil;
 
@@ -42,7 +44,8 @@ public class TokenAuthenticationService {
      * @return authenticated user from validated token included in the header
      * tokenHeader of the @param response
      */
-    public Authentication getAuthentication(HttpServletRequest request) {
+    public Authentication getAuthentication(HttpServletRequest request)
+      throws JwtException {
         String token = request.getHeader(tokenHeader);
 
         if (token != null) {
@@ -89,7 +92,7 @@ public class TokenAuthenticationService {
       	else {
 
       		// error while parsing token, not valid
-      		throw new JwtMalformedException("Token not valid");
+      		throw new JwtMissingException("Token not found");
     	   }
          return null;
     }

@@ -77,7 +77,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	    		else {
 
 	    			// BAD REQUEST
-	    			httpServletResponse.sendError(400, "Info del body: " + bodyLength + " - " + bodyContentType);
+	    			httpServletResponse.sendError(400, "Credentials not found");
 	    		}
 	    	}
 	    	else {

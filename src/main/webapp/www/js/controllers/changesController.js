@@ -124,7 +124,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
 
           var lastFecha = lastDay + '-' + lastMonth + '-' + value.fechaUltimaModificacion.date.year +
                           ', ' + lastHour + ':' + lastMin;
-          var lastFechaComp = lastDay + '-' + lastMonth + '-' + value.fechaUltimaModificacion.date.year +
+          var lastFechaComp = value.fechaUltimaModificacion.date.year + '-' + lastMonth + '-' + lastDay +
                           ', ' + lastHour + ':' + lastMin + ':' + lastSecond;
 
           var city = value.ciudad.charAt(0) + value.ciudad.substring(1,value.ciudad.length).toLowerCase();
