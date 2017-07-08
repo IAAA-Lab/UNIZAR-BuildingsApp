@@ -20,6 +20,8 @@ public class MyServletContextListener
 		while (drivers.hasMoreElements()) {
 		    java.sql.Driver driver = drivers.nextElement();
 		    try {
+
+           System.out.println("Driver: " + driver);
 		       java.sql.DriverManager.deregisterDriver(driver);
 		    } catch (Exception e) {
 		        //log exception or ignore
