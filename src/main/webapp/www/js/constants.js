@@ -1,7 +1,7 @@
 UZCampusWebMapApp.constant('APP_CONSTANTS', {
     URI_API: 'http://localhost:8080/',
     URI_Geoserver: 'http://155.210.14.31:8080/geoserver/',
-    URI_Photos: 'http://localhost/photos/',
+    URI_Photos: 'http://192.168.0.102/photos/',
     URI_Sigeuz_Geoserver: 'http://155.210.21.36:8080/geoserver/',
     photosWidth: 640,
     photosHeight: 350,
