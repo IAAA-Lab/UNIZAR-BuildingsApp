@@ -43,6 +43,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// Ignores spring security filters
 		web.ignoring()
+
+			.antMatchers("/mapa/**")
+
 			.antMatchers("/")
 			.antMatchers(HttpMethod.OPTIONS, "/**")
 			.antMatchers(HttpMethod.POST, "/checkToken")
