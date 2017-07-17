@@ -44,7 +44,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		// Ignores spring security filters
 		web.ignoring()
 
-			.antMatchers("/mapa/**")
+			.antMatchers("/www/**")
 
 			.antMatchers("/")
 			.antMatchers(HttpMethod.OPTIONS, "/**")
@@ -65,6 +65,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 			.antMatchers("/busquedas/**")
 			.antMatchers("/estancias/**")
+
+			.antMatchers("/users/login")
 
 			.antMatchers(HttpMethod.POST, "/notificacion/incidencia")
 			.antMatchers(HttpMethod.POST, "/notificacion/photo")
