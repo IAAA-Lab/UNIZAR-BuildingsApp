@@ -96,7 +96,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						// Operaciones permitidas a usuario registrados
 
 						// Operaciones permitidas a administradores
-						// .antMatchers("/database/**").access("hasRole('ROLE_ADMIN')")
+						.antMatchers("/database/**").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.GET, "/photos/").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.DELETE, "/photos/{\\d+}").access("hasRole('ROLE_ADMIN')")
 
