@@ -19,18 +19,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.uzapp.security.jwt.JWTAuthenticationFilter;
 import com.uzapp.security.jwt.JWTLoginFilter;
+import com.uzapp.bd.ConnectionManager;
 
 @Configuration
 @ImportResource("classpath:spring-context.xml")
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	DataSource dataSource;
+	// @Autowired
+	// DataSource dataSource;
+	DataSource myDataSource = ConnectionManager.datasource;
 
 	@Autowired
 	public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().dataSource(dataSource)
+		auth.jdbcAuthentication().dataSource(myDataSource)
 		.passwordEncoder(passwordEncoder())
 		.usersByUsernameQuery(
 				"SELECT username, password, enabled FROM users WHERE username=?")
