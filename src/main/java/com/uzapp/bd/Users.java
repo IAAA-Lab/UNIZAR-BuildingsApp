@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import java.lang.Exception;
+
 public class Users {
 
 	public static String getUsername() {
@@ -33,7 +35,7 @@ public class Users {
 		return respuesta;
 	}
 
-	public static String getRole(String username) {
+	public static String getRole(String username) throws Exception {
 
 		String respuesta = "";
 
@@ -51,6 +53,9 @@ public class Users {
             if (rs.next()) {
             	respuesta = rs.getString(1);
             }
+						else {
+							throw new Exception("Sin rol asignado");
+						}
 
         } catch (SQLException e) {
             e.printStackTrace();

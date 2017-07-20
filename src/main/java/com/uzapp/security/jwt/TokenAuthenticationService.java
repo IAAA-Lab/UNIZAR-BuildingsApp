@@ -3,6 +3,9 @@ package com.uzapp.security.jwt;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import java.io.IOException;
+import java.lang.Exception;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -25,18 +28,25 @@ public class TokenAuthenticationService {
     /**
      * Adds the token in the header tokenheader of the response
      */
-    public void addAuthentication(HttpServletResponse response, String username) {
+    public void addAuthentication(HttpServletResponse response, String username)
+      throws IOException {
 
-      // Obtains role from database based on provided username
-      String role = Users.getRole(username);
-      System.out.println("(addAuthentication) ROL DEL USUARIO (" + username + "): " + role);
+      try {
 
-      // We generate a token now.
-    	JwtInfo tokenInfo = new JwtInfo((long) 1, username, role);
-    	String JWT = new JwtUtil().generateToken(tokenInfo);
+        // Obtains role from database based on provided username
+        String role = Users.getRole(username);
+        System.out.println("(addAuthentication) ROL DEL USUARIO (" + username + "): " + role);
+
+        // We generate a token now.
+        JwtInfo tokenInfo = new JwtInfo((long) 1, username, role);
+        String JWT = new JwtUtil().generateToken(tokenInfo);
 
         response.addHeader(tokenHeader, tokenPrefix + " " + JWT);
         response.addHeader("Access-Control-Expose-Headers", tokenHeader);
+      }
+      catch (Exception e) {
+        response.sendError(401,"Credenciales incorrectas");
+      }
     }
 
     /**
