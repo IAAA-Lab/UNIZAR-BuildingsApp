@@ -25,7 +25,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean{
 
     	// Checks if the token provided is valid
     	try {
-        
+
         SecurityContextHolder.getContext().setAuthentication(null);
 
         if (((HttpServletRequest) request).getHeader("Authorization") != null) {
@@ -37,7 +37,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean{
     	}
     	catch (MalformedJwtException ex) {
     		// filterChain.doFilter(request, response);
-   		((HttpServletResponse) response).sendError(401, "Authentication Failed: Invalid token");
+   		((HttpServletResponse) response).setStatus(401);
     	}
       catch (ExpiredJwtException ex) {
 
@@ -49,7 +49,7 @@ public class JWTAuthenticationFilter extends GenericFilterBean{
           filterChain.doFilter(request, response);
         }
         else {
-          ((HttpServletResponse) response).sendError(401, "Authentication Failed: Token expired");
+          ((HttpServletResponse) response).setStatus(401);
         }
     	}
     }

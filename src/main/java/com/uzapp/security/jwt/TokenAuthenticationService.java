@@ -45,7 +45,7 @@ public class TokenAuthenticationService {
         response.addHeader("Access-Control-Expose-Headers", tokenHeader);
       }
       catch (Exception e) {
-        response.sendError(401,"Credenciales incorrectas");
+        // response.sendError(401,"Credenciales incorrectas");
       }
     }
 
