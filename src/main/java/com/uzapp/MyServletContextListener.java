@@ -8,6 +8,8 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import com.uzapp.bd.ConnectionManager;
+
 @WebListener
 public class MyServletContextListener
                implements ServletContextListener{
@@ -15,6 +17,16 @@ public class MyServletContextListener
 	@Override
 	public void contextDestroyed(ServletContextEvent arg0) {
 		System.out.println("ServletContextListener destroyed");
+
+    try {
+
+      // closes connections pool
+      ConnectionManager.datasource.postDeregister();
+
+    }
+    catch (Exception ex) {
+      System.out.println(ex.getMessage());
+    }
 
 		Enumeration<java .sql.Driver> drivers = java.sql.DriverManager.getDrivers();
 		while (drivers.hasMoreElements()) {
