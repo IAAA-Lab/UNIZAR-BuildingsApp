@@ -3,7 +3,7 @@ $.ajaxSetup({
     beforeSend: function (xhr) {
         var token = localStorage.getItem('token');
 
-        if (token) {
+        if (token && token !== null) {
           xhr.setRequestHeader('Authorization', token);
         }
     }
