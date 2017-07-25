@@ -22,6 +22,7 @@ public class MyServletContextListener
 
       // closes connections pool
       ConnectionManager.datasource.postDeregister();
+      ConnectionManager.datasource.close();
 
     }
     catch (Exception ex) {
