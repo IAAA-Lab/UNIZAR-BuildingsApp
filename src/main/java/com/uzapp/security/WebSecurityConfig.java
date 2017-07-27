@@ -47,6 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring()
 
 			.antMatchers("/www/**")
+			.antMatchers("/www/lib/**")
 
 			.antMatchers("/")
 			.antMatchers(HttpMethod.OPTIONS, "/**")
