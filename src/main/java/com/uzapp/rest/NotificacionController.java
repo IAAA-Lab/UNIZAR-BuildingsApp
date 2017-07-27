@@ -397,13 +397,9 @@ public class NotificacionController {
         // Inserts photo name with its notification info
         insertNotificationPhoto(name, id_notificacion);
 
-        System.out.println("Nombre de imagen recibido: " + name);
-
         // Obtains room identifier from photo name ('roomId_dateAndTime.jpeg')
 				String[] photoNameParts = name.split("_");
 				String roomId = photoNameParts[0];
-
-        System.out.println("RoomId: " + roomId);
 
         // Creates file with photo data
 				byte[] bytes = file.getBytes();
@@ -414,7 +410,6 @@ public class NotificacionController {
 					dir.mkdirs();
 
 				// Creates file on server
-        System.out.println("NombreFinal: " + dir.getAbsolutePath() + File.separator + name);
 				File serverFile = new File(dir.getAbsolutePath() + File.separator + name);
         fos = new FileOutputStream(serverFile);
 				stream = new BufferedOutputStream(fos);
