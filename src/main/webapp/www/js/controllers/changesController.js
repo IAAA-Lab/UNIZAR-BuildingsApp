@@ -394,10 +394,10 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
       else if (file.type.indexOf("image") == -1) {
           $ionicLoading.show({ template: $scope.i18n.loading_mask.error_invalid_image, duration: 1500});
       }
-      // else if (file.size > 1048576) {
-      //     //TODO: [DGP] Delete condition when bug fixed on server side
-      //     $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
-      // }
+      else if (file.size > 1048576) {
+          //TODO: [DGP] Delete condition when bug fixed on server side
+          $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
+      }
       else {
           var formData = new FormData();
           formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
