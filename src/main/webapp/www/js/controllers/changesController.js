@@ -137,9 +137,12 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
           });
           var floor = value.planta < 10 ? value.planta.charAt(1) : value.planta;
 
+          console.log(value);
+
           var cambio = {
             'id': value.id_notificacion,
             'tipo': value.tipo_notificacion,
+            'id_espacio': value.id_espacio,
             'espacio': value.espacio,
             'fecha': fecha,
             'fechaUltimaModificacion': lastFecha,
@@ -354,7 +357,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
     if ($scope.isImagenUpdated(index)) {
 
       // Sube la imagen al servidor
-      $scope.uploadPictureFromInput(cambio.cambio.id, index);
+      $scope.uploadPictureFromInput(cambio.cambio.id, cambio.cambio.id_espacio, index);
     }
 
     // Actualiza la información del cambio
@@ -384,7 +387,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
   };
 
   // Upload picture to server
-  $scope.uploadPictureFromInput = function(id_notificacion, index) {
+  $scope.uploadPictureFromInput = function(id_notificacion, id_espacio, index) {
       $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
       var file = $('input[id=imageInput' + index + ']')[0].files[0];
 
@@ -399,11 +402,12 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
           $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
       }
       else {
+
           var formData = new FormData();
-          formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
+          formData.append('name', [id_espacio, new Date().getTime()].join('_') + '.jpg');
           formData.append('file', file);
           formData.append('id_notificacion', id_notificacion);
-
+          
           $http({
               url :  APP_CONSTANTS.URI_API + 'notificacion/photo',
               method: "POST",

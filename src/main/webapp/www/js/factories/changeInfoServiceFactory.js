@@ -177,6 +177,7 @@ UZCampusWebMapApp.factory('changeInfoService', function($state, $q, $window,
           var cambio = {
             'id': value.id_notificacion,
             'tipo': value.tipo_notificacion,
+            'id_espacio': value.id_espacio,
             'espacio': value.espacio,
             'fecha': fecha,
             'fechaUltimaModificacion': lastFecha,
