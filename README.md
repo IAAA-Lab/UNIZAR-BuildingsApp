@@ -49,6 +49,7 @@ The source code of this application is licensed under the GNU General Public Lic
 # Credits
 ## Contributors
 
+- Alejandro Royo Amondarain
 - Daniel García Páez
 - Jorge Garuz
 
