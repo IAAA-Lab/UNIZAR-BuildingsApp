@@ -14,7 +14,7 @@ public class ConnectionManager {
 
 	static Context initContext;
 	private final static String DRIVER_CLASS_NAME = "org.postgresql.Driver";
-	private static DataSource datasource ;
+	public static DataSource datasource;
 
 	static {
 		try {
@@ -36,7 +36,7 @@ public class ConnectionManager {
 			p.setTestOnReturn(false);
 			p.setValidationInterval(30000);
 			p.setTimeBetweenEvictionRunsMillis(30000);
-			p.setMaxActive(100);
+			p.setMaxActive(90);
 			p.setInitialSize(10);
 			p.setMaxWait(5000);
 			p.setMaxIdle(30);

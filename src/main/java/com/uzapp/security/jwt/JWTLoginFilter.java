@@ -48,7 +48,7 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	    		System.out.println("Authentication == null");
 
 	    		// there is no token, checks for credentials (user and password) in the body of the request
-	    		long bodyLength = httpServletRequest.getContentLengthLong();
+	    		long bodyLength = (long) httpServletRequest.getContentLength();
 	    		String bodyContentType = httpServletRequest.getContentType();
 
 	    		if (bodyLength > 0 && (bodyContentType != null && bodyContentType.equals("application/json"))) {
@@ -63,21 +63,25 @@ public class JWTLoginFilter extends AbstractAuthenticationProcessingFilter {
 	    			catch(JsonParseException ex) {
 
 	    				// BAD REQUEST
-	    				httpServletResponse.sendError(400,"JSON PARSE FAIL");
+	    				httpServletResponse.setStatus(400);
+              throw ex;
 	    			}
             catch(BadCredentialsException ex) {
 
               // BAD CREDENTIALS
-	    				httpServletResponse.sendError(401,"Bad credentials");
+              System.out.println(ex.getMessage());
+	    				httpServletResponse.setStatus(401);
+              throw ex;
             }
             catch(Exception e) {
-              httpServletResponse.sendError(500);
+              httpServletResponse.setStatus(500);
+              throw e;
             }
 	    		}
 	    		else {
 
 	    			// BAD REQUEST
-	    			httpServletResponse.sendError(400, "Info del body: " + bodyLength + " - " + bodyContentType);
+	    			httpServletResponse.setStatus(400);
 	    		}
 	    	}
 	    	else {

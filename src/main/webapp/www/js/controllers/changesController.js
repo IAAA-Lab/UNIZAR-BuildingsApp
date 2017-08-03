@@ -124,7 +124,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
 
           var lastFecha = lastDay + '-' + lastMonth + '-' + value.fechaUltimaModificacion.date.year +
                           ', ' + lastHour + ':' + lastMin;
-          var lastFechaComp = lastDay + '-' + lastMonth + '-' + value.fechaUltimaModificacion.date.year +
+          var lastFechaComp = value.fechaUltimaModificacion.date.year + '-' + lastMonth + '-' + lastDay +
                           ', ' + lastHour + ':' + lastMin + ':' + lastSecond;
 
           var city = value.ciudad.charAt(0) + value.ciudad.substring(1,value.ciudad.length).toLowerCase();
@@ -137,9 +137,12 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
           });
           var floor = value.planta < 10 ? value.planta.charAt(1) : value.planta;
 
+          console.log(value);
+
           var cambio = {
             'id': value.id_notificacion,
             'tipo': value.tipo_notificacion,
+            'id_espacio': value.id_espacio,
             'espacio': value.espacio,
             'fecha': fecha,
             'fechaUltimaModificacion': lastFecha,
@@ -354,7 +357,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
     if ($scope.isImagenUpdated(index)) {
 
       // Sube la imagen al servidor
-      $scope.uploadPictureFromInput(cambio.cambio.id, index);
+      $scope.uploadPictureFromInput(cambio.cambio.id, cambio.cambio.id_espacio, index);
     }
 
     // Actualiza la información del cambio
@@ -384,7 +387,7 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
   };
 
   // Upload picture to server
-  $scope.uploadPictureFromInput = function(id_notificacion, index) {
+  $scope.uploadPictureFromInput = function(id_notificacion, id_espacio, index) {
       $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
       var file = $('input[id=imageInput' + index + ']')[0].files[0];
 
@@ -394,16 +397,17 @@ UZCampusWebMapApp.controller('ChangesCtrl', function($scope, $rootScope, $timeou
       else if (file.type.indexOf("image") == -1) {
           $ionicLoading.show({ template: $scope.i18n.loading_mask.error_invalid_image, duration: 1500});
       }
-      // else if (file.size > 1048576) {
-      //     //TODO: [DGP] Delete condition when bug fixed on server side
-      //     $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
-      // }
+      else if (file.size > 1048576) {
+          //TODO: [DGP] Delete condition when bug fixed on server side
+          $ionicLoading.show({ template: $scope.i18n.loading_mask.error_image_size, duration: 1500});
+      }
       else {
+
           var formData = new FormData();
-          formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
+          formData.append('name', [id_espacio, new Date().getTime()].join('_') + '.jpg');
           formData.append('file', file);
           formData.append('id_notificacion', id_notificacion);
-
+          
           $http({
               url :  APP_CONSTANTS.URI_API + 'notificacion/photo',
               method: "POST",

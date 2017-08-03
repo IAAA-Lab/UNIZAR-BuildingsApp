@@ -150,7 +150,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
             function(id_notificacion) {
 
                 // if (data.foto !== null) {
-                  $scope.uploadPictureFromInput(id_notificacion);
+                  $scope.uploadPictureFromInput(id_notificacion, data.roomId);
                 // }
 
                 console.log("Create notification success");
@@ -471,7 +471,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
     };
 
     // Upload picture to server
-    $scope.uploadPictureFromInput = function(id_notificacion) {
+    $scope.uploadPictureFromInput = function(id_notificacion, id_espacio) {
         $ionicLoading.show({template: $scope.i18n.loading_mask.sending_image});
         var file = $('input[name=photo]')[0].files[0];
 
@@ -487,7 +487,7 @@ UZCampusWebMapApp.controller('FloorCtrl',function($scope, $http, $ionicModal,
         }
         else {
             var formData = new FormData();
-            formData.append('name', [localStorage.room, new Date().getTime()].join('_') + '.jpg');
+            formData.append('name', [id_espacio, new Date().getTime()].join('_') + '.jpg');
             formData.append('file', file);
             formData.append('id_notificacion', id_notificacion);
 

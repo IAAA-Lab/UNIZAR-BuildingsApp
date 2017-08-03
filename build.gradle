@@ -40,7 +40,7 @@ tasks.withType(JavaCompile) {
     options.encoding = "iso-8859-1"
 }
 
-/*configurations.all {//para ser compatible con tomcat7, sacado de http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-use-tomcat-7
+configurations.all {//para ser compatible con tomcat7, sacado de http://docs.spring.io/spring-boot/docs/current/reference/html/howto-embedded-servlet-containers.html#howto-use-tomcat-7
     resolutionStrategy {
         eachDependency {
             if (it.requested.group == 'org.apache.tomcat.embed') {
@@ -48,7 +48,7 @@ tasks.withType(JavaCompile) {
             }
         }
     }
-}*/
+}
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-security'

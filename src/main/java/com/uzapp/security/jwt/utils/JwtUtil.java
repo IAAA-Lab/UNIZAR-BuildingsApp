@@ -52,10 +52,10 @@ public class JwtUtil {
      * @param token the JWT token to parse
      * @return the User object extracted from specified token or null if a token is invalid.
      */
-    public JwtInfo parseToken(String token) {
+    public JwtInfo parseToken(String token) throws JwtException{
         JwtInfo u = null;
 
-        try{
+        // try{
         	Claims body = Jwts.parser()
         			.setSigningKey(secret)
         			.parseClaimsJws(token)
@@ -66,9 +66,9 @@ public class JwtUtil {
             u.setId(Long.parseLong((String) body.get("userId")));
             u.setRole((String) body.get("role"));
             u.setExpirationDate((Date) body.getExpiration());
-        } catch (JwtException e) {
-            e.printStackTrace();
-        }
+        // } catch (JwtException e) {
+        //     e.printStackTrace();
+        // }
         return u;
     }
 }

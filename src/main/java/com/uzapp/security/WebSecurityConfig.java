@@ -19,18 +19,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.uzapp.security.jwt.JWTAuthenticationFilter;
 import com.uzapp.security.jwt.JWTLoginFilter;
+import com.uzapp.bd.ConnectionManager;
 
 @Configuration
 @ImportResource("classpath:spring-context.xml")
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	DataSource dataSource;
+	// @Autowired
+	// DataSource dataSource;
+	DataSource myDataSource = ConnectionManager.datasource;
 
 	@Autowired
 	public void configAuthentication(AuthenticationManagerBuilder auth) throws Exception {
-		auth.jdbcAuthentication().dataSource(dataSource)
+		auth.jdbcAuthentication().dataSource(myDataSource)
 		.passwordEncoder(passwordEncoder())
 		.usersByUsernameQuery(
 				"SELECT username, password, enabled FROM users WHERE username=?")
@@ -43,6 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		// Ignores spring security filters
 		web.ignoring()
+
+			.antMatchers("/www/**")
+			.antMatchers("/www/lib/**")
+
 			.antMatchers("/")
 			.antMatchers(HttpMethod.OPTIONS, "/**")
 			.antMatchers(HttpMethod.POST, "/checkToken")
@@ -62,6 +68,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 			.antMatchers("/busquedas/**")
 			.antMatchers("/estancias/**")
+
+			.antMatchers("/users/login")
 
 			.antMatchers(HttpMethod.POST, "/notificacion/incidencia")
 			.antMatchers(HttpMethod.POST, "/notificacion/photo")
@@ -91,7 +99,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						// Operaciones permitidas a usuario registrados
 
 						// Operaciones permitidas a administradores
-						// .antMatchers("/database/**").access("hasRole('ROLE_ADMIN')")
+						.antMatchers("/database/**").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.GET, "/photos/").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.DELETE, "/photos/{\\d+}").access("hasRole('ROLE_ADMIN')")
 
@@ -105,6 +113,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 						.antMatchers(HttpMethod.POST, "/mail").access("hasRole('ROLE_ADMIN')")
 
 						.antMatchers(HttpMethod.GET, "/notificacion").access("hasRole('ROLE_ADMIN')")
+						.antMatchers(HttpMethod.DELETE, "/notificacion").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.GET, "/notificacion/cambio").access("hasRole('ROLE_ADMIN')")
 						.antMatchers(HttpMethod.POST, "/notificacion/cambio/{\\d+}").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")
 						.antMatchers(HttpMethod.PUT, "/notificacion/cambio/{\\d+}").access("hasRole('ROLE_ADMIN') or hasRole('ROLE_USER')")

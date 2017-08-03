@@ -3,15 +3,20 @@ package com.uzapp.security.jwt;
 import java.util.Collection;
 import java.util.LinkedList;
 
+import java.io.IOException;
+import java.lang.Exception;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import io.jsonwebtoken.JwtException;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.uzapp.bd.Users;
-import com.uzapp.security.exception.JwtMalformedException;
+import com.uzapp.security.exception.JwtMissingException;
 import com.uzapp.security.jwt.utils.JwtInfo;
 import com.uzapp.security.jwt.utils.JwtUtil;
 
@@ -23,18 +28,25 @@ public class TokenAuthenticationService {
     /**
      * Adds the token in the header tokenheader of the response
      */
-    public void addAuthentication(HttpServletResponse response, String username) {
+    public void addAuthentication(HttpServletResponse response, String username)
+      throws IOException {
 
-      // Obtains role from database based on provided username
-      String role = Users.getRole(username);
-      System.out.println("(addAuthentication) ROL DEL USUARIO (" + username + "): " + role);
+      try {
 
-      // We generate a token now.
-    	JwtInfo tokenInfo = new JwtInfo((long) 1, username, role);
-    	String JWT = new JwtUtil().generateToken(tokenInfo);
+        // Obtains role from database based on provided username
+        String role = Users.getRole(username);
+        System.out.println("(addAuthentication) ROL DEL USUARIO (" + username + "): " + role);
+
+        // We generate a token now.
+        JwtInfo tokenInfo = new JwtInfo((long) 1, username, role);
+        String JWT = new JwtUtil().generateToken(tokenInfo);
 
         response.addHeader(tokenHeader, tokenPrefix + " " + JWT);
         response.addHeader("Access-Control-Expose-Headers", tokenHeader);
+      }
+      catch (Exception e) {
+        // response.sendError(401,"Credenciales incorrectas");
+      }
     }
 
     /**
@@ -42,7 +54,8 @@ public class TokenAuthenticationService {
      * @return authenticated user from validated token included in the header
      * tokenHeader of the @param response
      */
-    public Authentication getAuthentication(HttpServletRequest request) {
+    public Authentication getAuthentication(HttpServletRequest request)
+      throws JwtException {
         String token = request.getHeader(tokenHeader);
 
         if (token != null) {
@@ -89,7 +102,7 @@ public class TokenAuthenticationService {
       	else {
 
       		// error while parsing token, not valid
-      		throw new JwtMalformedException("Token not valid");
+      		throw new JwtMissingException("Token not found");
     	   }
          return null;
     }

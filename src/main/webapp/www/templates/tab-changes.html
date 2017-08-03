@@ -8,6 +8,7 @@
 
     <button ng-show="areChangesToLoad() && !isPopupAcive()"
             class="button-block button-positive button"
+            style="width:80%"
             ng-click="showNewChanges()">
         <span ng-show="difNumCambiosNuevos > 1">Cargar {{ difNumCambiosNuevos }} cambios nuevos</span>
         <span ng-show="difNumCambiosNuevos == 1">Cargar {{ difNumCambiosNuevos }} cambio nuevo</span>
